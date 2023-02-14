@@ -1,0 +1,36 @@
+.register-title {
+    position: absolute;
+    width: 108px;
+    height: 47px;
+    left: 866px;
+    top: 275px;
+
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 39px;
+    line-height: 120%;
+    /* identical to box height, or 47px */
+
+    display: flex;
+    align-items: center;
+
+    /* Blue/B300 */
+
+    color: #052F5F;
+}
+
+.welcome-text {
+    //     position: absolute;
+    // width: 710px;
+    // height: 1024px;
+    // left: 0px;
+    // top: 0px;
+
+    background: linear-gradient(180deg, #005377 0%, #052F5F 100%);
+}
+
+.signup-section {
+    background-color: white;
+    color: black;
+}
