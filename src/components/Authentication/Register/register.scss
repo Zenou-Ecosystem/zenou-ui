@@ -1,33 +1,22 @@
 .register-title {
-    position: absolute;
-    width: 108px;
-    height: 47px;
-    left: 866px;
-    top: 275px;
-
-    font-family: 'Poppins';
+    font-family: 'Poppins', sans-serif;
     font-style: normal;
     font-weight: 700;
-    font-size: 39px;
-    line-height: 120%;
-    /* identical to box height, or 47px */
-
-    display: flex;
-    align-items: center;
-
-    /* Blue/B300 */
-
+    font-size: 1.6rem;
     color: #052F5F;
+    margin-bottom: 1rem;
 }
 
-.welcome-text {
-    //     position: absolute;
-    // width: 710px;
-    // height: 1024px;
-    // left: 0px;
-    // top: 0px;
-
+.welcome-container {
     background: linear-gradient(180deg, #005377 0%, #052F5F 100%);
+
+    .welcome-main-text {
+        font-family: 'Poppins', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #F1A208;
+    }
 }
 
 .signup-section {
