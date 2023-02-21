@@ -10,19 +10,18 @@ function Register() {
     const signinHandler = () => {
         navigator('/dashboard/home');
     };
-    const username = (e: any) => {
-        e.preventDefault()
-        console.log(e.target.value);
+    const username = (value: string) => {
+        console.log('Username is ', value);
 
     }
-    const email = (e: any) => {
-        e.preventDefault()
+    const email = (value: string) => {
+        console.log('Email is ', value);
     }
-    const password = (e: any) => {
-        e.preventDefault()
+    const password = (value: string) => {
+        console.log('Password is ', value);
     }
-    const cPassword = (e: any) => {
-        e.preventDefault()
+    const cPassword = (value: string) => {
+        console.log('C-Password is ', value);
     }
     return (
         <div className='container flex h-screen gap-24'>

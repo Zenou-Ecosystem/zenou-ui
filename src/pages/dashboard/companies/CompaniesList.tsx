@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fecthCompanies } from "../../../api/companies";
+import { fecthCompanies } from "../../../services/companies.service";
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
@@ -75,7 +75,7 @@ function CompaniesList() {
             <div className="filter my-4 w-11/12 m-auto flex">
                 <div className="add-btn w-2/12">
                     <Button title="New"
-                        styles="flex justify-around flex-row-reverse items-center"
+                        styles="flex justify-around flex-row-reverse items-center rounded-full"
                         onClick={openAddCompanyForm} Icon={{
                             Name: HiPlus,
                             classes: '',
@@ -93,15 +93,19 @@ function CompaniesList() {
                 </Dialog>
             </div>
 
-            {/* <div className="my-4 flex gap-4">
+            <div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <BasicCard {...cardProps} />
                 <BasicCard {...cardProps} />
                 <BasicCard {...cardProps} />
                 <BasicCard {...cardProps} />
-                <BasicCard {...cardProps} />
-            </div> */}
+            </div>
 
-            <BasicCard title="" content={() => (<Datatable data={companies} fields={['name', 'category', 'country', 'certification']} />)} />
+            <div className="w-full px-4">
+                <BasicCard title=""
+                    content={() => (<Datatable data={companies} fields={['name', 'category', 'country', 'certification']} />)}
+                    styles="p-0"
+                />
+            </div>
         </>
     );
 }

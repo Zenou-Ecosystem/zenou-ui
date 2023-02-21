@@ -11,7 +11,7 @@ function Button(prop: { title: string; onClick: Function; Icon?: any; styles?: s
 
     return (
         <div className='relative'>
-            <button id={id ?? ''} className={`bg-primary border-none rounded-md p-2 text-white w-24 ${styles ? styles : ''}`} onClick={handler}>
+            <button id={id ?? ''} className={`bg-primary border-none rounded-md p-2 hover:bg-secondary text-white w-24 ${styles ? styles : ''}`} onClick={handler}>
                 <span>{title}</span>
                 {
                     Icon ? <span className={Icon.classes}>

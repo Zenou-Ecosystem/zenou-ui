@@ -1,5 +1,4 @@
 import React from 'react'
-import { HiOutlineBeaker } from 'react-icons/hi';
 import BasicCard from '../../core/card/BasicCard';
 import Input from '../../core/Input/Input';
 

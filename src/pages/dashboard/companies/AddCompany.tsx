@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { createCompany } from '../../../api/companies';
+import { createCompany } from '../../../services/companies.service';
 import Button from '../../../core/Button/Button';
 import BasicCard from '../../../core/card/BasicCard';
 import Input from '../../../core/Input/Input';
@@ -40,6 +40,8 @@ function AddCompany() {
             language, legal_status, address
         });
         const data = await response.json();
+        console.log('Created company data is ', data);
+
         // Dispatch this data
     }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { fecthCompanies } from './api/companies';
+import { fecthCompanies } from './services/companies.service';
 import './App.scss';
 import Login from './components/Authentication/Login/Login';
 import Register from './components/Authentication/Register/Register';
