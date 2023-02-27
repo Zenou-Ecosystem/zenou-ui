@@ -6,7 +6,6 @@ function Input(prop: { type: string; onChange: Function, placeholder?: string, I
 
     const handleOnChange = (e: any) => {
         e.preventDefault();
-        console.log('The current input value is ', e.target.value);
         onChange(e.target.value);
     }
     return (

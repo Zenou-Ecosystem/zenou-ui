@@ -14,6 +14,7 @@ import Statistics from './pages/dashboard/statistics/Statistics';
 import Subscription from './pages/dashboard/subscriptions/Subscription';
 import Logout from './pages/user/Logout';
 import Profile from './pages/user/Profile';
+// import Documentation from './pages/api-docs/Documentation';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
     <div className="">
       <Routes>
         <Route path='/' element={<Register />}></Route>
+        {/* <Route path='api/docs' element={<Documentation />}></Route> */}
         <Route path='login' element={<Login />}></Route>
         <Route path='register' element={<Register />}></Route>
         <Route path='dashboard' element={<DashboardHome />}>

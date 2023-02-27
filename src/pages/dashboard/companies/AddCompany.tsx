@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
-import { createCompany } from '../../../services/companies.service';
+import { useEffect, useState } from 'react'
 import Button from '../../../core/Button/Button';
 import BasicCard from '../../../core/card/BasicCard';
 import Input from '../../../core/Input/Input';
+import { ProgressSpinner } from 'primereact/progressspinner';
+import { CompanyActionTypes } from '../../../store/action-types/company.actions';
+import useCompanyContext from '../../../hooks/useCompanyContext';
 
 function AddCompany() {
 
@@ -18,6 +20,8 @@ function AddCompany() {
     const [category, setCategory] = useState('');
     const [sector, setSector] = useState('');
     const [certification, setCertification] = useState('');
+    const [loader, setLoader] = useState(false);
+    const { state, dispatch } = useCompanyContext();
 
     const getName = (name: string) => setName(name);
     const getAddress = (address: string) => setAddress(address);
@@ -32,18 +36,26 @@ function AddCompany() {
     const getNumOfEmpl = (numOfEmpl: number) => setNumOfEmpl(numOfEmpl);
     const getComFunction = (comFunction: string) => setComFunction(comFunction);
 
-    const handleSubmission = async (e: any) => {
-        const response = await createCompany({
-            name, capital, contact, certification, country,
-            function: comFunction, sector, category
-            , number_of_employees,
-            language, legal_status, address
+    const handleSubmission = () => {
+        setLoader(true);
+        dispatch({
+            type: CompanyActionTypes.ADD_COMPANY, payload: {
+                name, capital, contact, certification, country,
+                function: comFunction, sector, category
+                , number_of_employees,
+                language, legal_status, address
+            }
         });
-        const data = await response.json();
-        console.log('Created company data is ', data);
-
-        // Dispatch this data
     }
+
+    useEffect(() => {
+        (async () => {
+            const resolvedState = await state;
+            if (resolvedState.hasCreated) {
+                setLoader(false);
+            }
+        })()
+    }, [state])
 
     const addForm = () => {
         return (<form className='w-full'>
@@ -85,7 +97,10 @@ function AddCompany() {
                     <Input type='text' placeholder='Function' onChange={getComFunction} />
                 </div>
             </div>
-            <div className="submit-btn mt-8">
+            <div className="submit-btn mt-4">
+                <div className="">
+                    {loader ? (<ProgressSpinner style={{ width: '50px', height: '50px' }} />) : ''}
+                </div>
                 <Button title='Create' onClick={handleSubmission} />
             </div>
         </form>);

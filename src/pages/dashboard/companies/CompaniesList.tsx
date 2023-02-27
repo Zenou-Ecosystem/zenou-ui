@@ -8,24 +8,43 @@ import { Dialog } from 'primereact/dialog';
 import { ICompany } from "../../../interfaces/company.interface";
 import AddCompany from "./AddCompany";
 import { HiPlus } from "react-icons/hi";
+import useAppContext from "../../../hooks/useAppContext.hooks";
+import CompanyContextProvider, { CompanyContext } from "../../../contexts/CompanyContext";
+import useCompanyContext from "../../../hooks/useCompanyContext";
+import { CompanyActionTypes } from "../../../store/action-types/company.actions";
 
 function CompaniesList() {
 
     const [companies, setCompanies] = useState<ICompany[]>([]);
     const [visible, setVisible] = useState(false);
+    const { state, dispatch } = useAppContext();
+
+    const { state: companyState, dispatch: companyDispatch } = useCompanyContext();
 
     const openAddCompanyForm = () => {
         setVisible(true);
     }
 
     useEffect(() => {
-        const func = async () => {
-            const res = await fecthCompanies();
-            const data = await res.json()
+        (async () => {
+            const res = await state;
+            let data = res?.data;
+            if (!data || data.length < 1) {
+                data = await fecthCompanies();
+            }
             setCompanies(data);
-        }
-        func();
-    }, [])
+        })();
+
+        (async () => {
+            const resolvedCompanyState = await companyState;
+            if (resolvedCompanyState.hasCreated) {
+                console.log('Company state changed => ', resolvedCompanyState);
+                setVisible(false);
+            }
+        })();
+
+    }, [state, companyState]);
+
 
     const cardProps = {
         content: `Statistics for the month of February. This is really making
@@ -71,7 +90,7 @@ function CompaniesList() {
     ];
 
     return (
-        <>
+        <CompanyContextProvider>
             <div className="filter my-4 w-11/12 m-auto flex">
                 <div className="add-btn w-2/12">
                     <Button title="New"
@@ -102,11 +121,17 @@ function CompaniesList() {
 
             <div className="w-full px-4">
                 <BasicCard title=""
-                    content={() => (<Datatable data={companies} fields={['name', 'category', 'country', 'certification']} />)}
+                    content={() => (
+                        <Datatable
+                            data={companies}
+                            fields={['name', 'category', 'country', 'certification']}
+                            actionTypes={CompanyActionTypes}
+                            context={CompanyContext}
+                        />)}
                     styles="p-0"
                 />
             </div>
-        </>
+        </CompanyContextProvider>
     );
 }
 
