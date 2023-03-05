@@ -2,9 +2,9 @@ import React from 'react'
 import BasicCard from '../../core/card/BasicCard';
 import Input from '../../core/Input/Input';
 
-function Filter(props: { fields: any[] }) {
+function Filter(props: { fields: any[], title: string }) {
 
-    const { fields } = props;
+    const { fields, title } = props;
 
     // Icon={{
     //     classes: 'absolute top-3 left-3',
@@ -25,7 +25,7 @@ function Filter(props: { fields: any[] }) {
         </div>);
     }
     return (
-        <BasicCard title='Filter Companies' content={constructFilter} />
+        <BasicCard title={title} content={constructFilter} />
     )
 }
 

@@ -102,7 +102,7 @@ function CompaniesList() {
                         }} />
                 </div>
                 <div className="filter w-10/12">
-                    <Filter fields={filterProps} />
+                    <Filter fields={filterProps} title="Filter Companies" />
                 </div>
             </div>
 
