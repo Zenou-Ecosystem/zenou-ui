@@ -5,6 +5,10 @@
     font-size: 1.6rem;
     color: #052F5F;
     margin-bottom: 1rem;
+    background-image: linear-gradient(to right, #052F5F, #F1A208);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .welcome-container {

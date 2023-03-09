@@ -91,26 +91,6 @@ function CompaniesList() {
 
     return (
         <CompanyContextProvider>
-            <div className="filter my-4 w-11/12 m-auto flex">
-                <div className="add-btn w-2/12">
-                    <Button title="New"
-                        styles="flex justify-around flex-row-reverse items-center rounded-full"
-                        onClick={openAddCompanyForm} Icon={{
-                            Name: HiPlus,
-                            classes: '',
-                            color: 'white'
-                        }} />
-                </div>
-                <div className="filter w-10/12">
-                    <Filter fields={filterProps} title="Filter Companies" />
-                </div>
-            </div>
-
-            <div className="add-form my-10">
-                <Dialog header="Register New Company" visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
-                    <AddCompany />
-                </Dialog>
-            </div>
 
             <div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <BasicCard {...cardProps} />
@@ -122,12 +102,38 @@ function CompaniesList() {
             <div className="w-full px-4">
                 <BasicCard title=""
                     content={() => (
-                        <Datatable
-                            data={companies}
-                            fields={['name', 'category', 'country', 'certification']}
-                            actionTypes={CompanyActionTypes}
-                            context={CompanyContext}
-                        />)}
+                        <>
+                            <div className="filter my-4 w-11/12 m-auto flex">
+                                <div className="add-btn w-2/12">
+                                    <Button title="New"
+                                        styles="flex justify-around flex-row-reverse items-center rounded-full"
+                                        onClick={openAddCompanyForm} Icon={{
+                                            Name: HiPlus,
+                                            classes: '',
+                                            color: 'white'
+                                        }} />
+                                </div>
+                                <div className="filter w-10/12">
+                                    <Filter fields={filterProps} title="Filter Companies" />
+                                </div>
+                            </div>
+
+                            <div className="add-form my-10">
+                                <Dialog header="Register New Company" visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
+                                    <AddCompany />
+                                </Dialog>
+                            </div>
+
+                            <Datatable
+                                data={companies}
+                                fields={['name', 'category', 'country', 'certification']}
+                                actionTypes={CompanyActionTypes}
+                                context={CompanyContext}
+                            />
+                        </>
+                    )
+
+                    }
                     styles="p-0"
                 />
             </div>

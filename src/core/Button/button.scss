@@ -1,1 +1,28 @@
-// no styles yet
+// // no styles yet
+
+// .btn:hover {
+//     animation: hoverBtn 2s ease-in-out;
+//     // scale: 1.01;
+//     transition: all;
+// }
+
+// @keyframes hoverBtn {
+//     0% {
+//         background-image: linear-gradient(to center, #fe23fe, #aefe23);
+//     }
+
+//     100% {
+//         background-image: linear-gradient(to right, #aefe23, #fe23fe);
+//     }
+// }
+
+.btn-comp {
+    background-image: linear-gradient(to right, #03264faa, #052F5F);
+}
+
+.btn-comp:hover,
+.btn-comp:focus {
+    background-image: linear-gradient(to right, #F1A208, #052F5F);
+    scale: 1.02;
+    transition: 2s ease-in-out all;
+}

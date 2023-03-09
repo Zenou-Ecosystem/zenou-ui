@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom';
 import Input from '../../core/Input/Input';
 import useAppContext from '../../hooks/useAppContext.hooks';
 import { simpleSearch } from '../../services/search.service';
@@ -7,10 +8,11 @@ import { SearchActionTypes } from '../../store/action-types/search.actions';
 function Search() {
 
     const { state, dispatch } = useAppContext();
+    const router = useLocation();
 
     const handleSearch = async (query: string) => {
         if (query.length >= 1) {
-            dispatch({ type: SearchActionTypes.GLOBAL_SEARCH, payload: { state, query } });
+            dispatch({ type: SearchActionTypes.GLOBAL_SEARCH, payload: { state, index: router.state, query } });
         }
     }
 

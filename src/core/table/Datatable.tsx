@@ -97,7 +97,7 @@ function Datatable(props: {
     }
 
     return (
-        <div className="card">
+        <div className="table-card">
             <Toast ref={toast as any} />
             <ConfirmDialog />
             <DataTable value={tableDate} paginator rows={5}

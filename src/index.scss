@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+$primary: #052F5F;
+$secondary: #F1A208;
 
 body {
   margin: 0;
@@ -23,7 +25,15 @@ code {
 }
 
 .active {
-  // background-color: #F1A208;
   color: #F1A208;
   font-weight: 600;
+}
+
+.bg-dialog-header {
+  background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
+  color: white;
+}
+
+.bg-dialog-content {
+  background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
 }
