@@ -97,7 +97,7 @@ function AddCompany() {
                     <Input type='text' placeholder='Function' onChange={getComFunction} />
                 </div>
             </div>
-            <div className="submit-btn mt-4">
+            <div className="add-form-submit-btn">
                 <div className="">
                     {loader ? (<ProgressSpinner style={{ width: '50px', height: '50px' }} />) : ''}
                 </div>
@@ -113,7 +113,8 @@ function AddCompany() {
 
     return (
         <section>
-            <BasicCard {...cardProps} />
+            {/* <BasicCard {...cardProps} /> */}
+            {addForm()}
         </section>
     )
 }

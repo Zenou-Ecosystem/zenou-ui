@@ -1,10 +1,11 @@
 import { NavLink } from "react-router-dom";
 import Search from "../../components/filter/Search";
+import "./navigation.scss";
 
 const Navbar = () => {
     return (
         <>
-            <nav className="bg-white text-grayColor w-full pt-2">
+            <nav className="navbar text-grayColor w-full pt-2 font-bold capitalize">
                 <ul className="flex justify-around items-center gap-3">
                     <li className="p-2 w-1/2">
                         <Search />

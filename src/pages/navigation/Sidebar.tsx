@@ -20,12 +20,6 @@ function Sidebar() {
                     </NavLink>
                 </li>
                 <li className="py-2 w-1/2">
-                    <NavLink to="/dashboard/companies" state={'company'} className="flex flex-wrap items-center gap-2 text-lg">
-                        <FaUsers />
-                        <span>Companies</span>
-                    </NavLink>
-                </li>
-                <li className="py-2 w-1/2">
                     <NavLink to="/dashboard/laws" state={'laws'} className="flex flex-wrap items-center gap-2 text-lg">
                         <FaDirections />
                         <span>Laws</span>
@@ -41,6 +35,12 @@ function Sidebar() {
                     <NavLink to="/dashboard/actions" state={'actions'} className="flex flex-wrap items-center gap-2 text-lg">
                         <FaBook />
                         <span>Actions</span>
+                    </NavLink>
+                </li>
+                <li className="py-2 w-1/2">
+                    <NavLink to="/dashboard/companies" state={'company'} className="flex flex-wrap items-center gap-2 text-lg">
+                        <FaUsers />
+                        <span>Companies</span>
                     </NavLink>
                 </li>
                 <li className="py-2 w-1/2">

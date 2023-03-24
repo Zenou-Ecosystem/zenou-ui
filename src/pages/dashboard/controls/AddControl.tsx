@@ -94,7 +94,7 @@ function AddControl() {
                     <Input type='text' placeholder='Action Plan' onChange={getActionPlan} />
                 </div>
             </div>
-            <div className="submit-btn mt-4">
+            <div className="add-form-submit-btn">
                 <div className="">
                     {loader ? (<ProgressSpinner style={{ width: '50px', height: '50px' }} />) : ''}
                 </div>
@@ -110,7 +110,8 @@ function AddControl() {
 
     return (
         <section>
-            <BasicCard {...cardProps} />
+            {/* <BasicCard {...cardProps} /> */}
+            {addForm()}
         </section>
     )
 }

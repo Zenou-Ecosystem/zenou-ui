@@ -29,11 +29,15 @@ code {
   font-weight: 600;
 }
 
-.bg-dialog-header {
-  background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
-  color: white;
+.add-form-submit-btn {
+  @apply flex flex-col justify-center items-center mt-4;
 }
 
-.bg-dialog-content {
-  background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
-}
+// .bg-dialog-header {
+//   background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
+//   color: white;
+// }
+
+// .bg-dialog-content {
+//   background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
+// }

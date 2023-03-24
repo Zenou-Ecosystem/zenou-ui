@@ -51,7 +51,7 @@ function Actions() {
     const cardProps = {
         content: `Statistics for the month of February. This is really making
         sense in all areas`,
-        title: 'Action Statistics'
+        title: 'Action Reports'
     }
     const handleNameFilter = (query: string) => {
         console.log("The name typed is ", query);

@@ -16,10 +16,10 @@ function AddAction() {
     const [department, setDepartment] = useState('')
     const [resources, setResources] = useState('');
     const [evaluation_criteria, setEvaluationCriteria] = useState('');
-    const [proof_of_success, setProofOfSuccess] = useState('');
+    const [evidence_of_actions, setEvidenceOfActions] = useState('');
     const [text_of_the_law, setTextOfLaw] = useState('');
     const [responsible_for, setResponsibleFor] = useState('');
-    const [action_plan, setActionPlan] = useState('');
+    const [control_plan, setControlPlan] = useState('');
 
     const getType = (type: string) => setType(type);
     const getDuration = (duration: string) => setDuration(duration);
@@ -28,9 +28,9 @@ function AddAction() {
     const getResources = (resources: string) => setResources(resources);
     const getEvaluationCriteria = (evaluation_criteria: string) => setEvaluationCriteria(evaluation_criteria);
     const getTextOfLaw = (text_of_the_law: string) => setTextOfLaw(text_of_the_law);
-    const getActionPlan = (action_plan: string) => setActionPlan(action_plan);
+    const getControlPlan = (action_plan: string) => setControlPlan(action_plan);
     const getResponsibleFor = (responsible_for: string) => setResponsibleFor(responsible_for);
-    const getProofOfSuccess = (proof_of_success: string) => setProofOfSuccess(proof_of_success);
+    const getEvidenceOfActions = (evidence_of_actions: string) => setEvidenceOfActions(evidence_of_actions);
     const [loader, setLoader] = useState(false);
     const { state, dispatch } = useActionsContext();
 
@@ -45,9 +45,9 @@ function AddAction() {
                 responsible_for,
                 resources,
                 evaluation_criteria,
-                proof_of_success,
+                evidence_of_actions,
                 text_of_the_law,
-                action_plan
+                control_plan
             }
         });
     }
@@ -67,35 +67,35 @@ function AddAction() {
                 <div className="Action-type">
                     <Input type='text' placeholder='Action Type' onChange={getType} />
                 </div>
-                <div className="Action-resources">
-                    <Input type='text' placeholder='resources' onChange={getResources} />
+                <div>
+                    <Input type='text' placeholder='Resources' onChange={getResources} />
                 </div>
-                <div className="Action-responsibleFor">
+                <div >
                     <Input type='text' placeholder='ResponsibleFor' onChange={getResponsibleFor} />
                 </div>
-                <div className="Action-evaluation-criteria">
+                <div >
                     <Input type='text' placeholder='Evaluation Criteria' onChange={getEvaluationCriteria} />
                 </div>
-                <div className="Action-ProofOfSuccess">
-                    <Input type='text' placeholder='Proof Of Success' onChange={getProofOfSuccess} />
+                <div >
+                    <Input type='text' placeholder='Proof Of Success' onChange={getEvidenceOfActions} />
                 </div>
-                <div className="Action-Duration">
+                <div >
                     <Input type='text' placeholder='Action Duration' onChange={getDuration} />
                 </div>
-                <div className="Action-Theme">
+                <div >
                     <Input type='text' placeholder='Theme' onChange={getTheme} />
                 </div>
-                <div className="Action-Department">
+                <div >
                     <Input type='text' placeholder='Department' onChange={getDepartment} />
                 </div>
-                <div className="Action-TextOfLaw">
+                <div >
                     <Input type='text' placeholder='Text Of Law' onChange={getTextOfLaw} />
                 </div>
-                <div className="Action-ActionPlan">
-                    <Input type='text' placeholder='Action Plan' onChange={getActionPlan} />
+                <div >
+                    <Input type='text' placeholder='Control Plan' onChange={getControlPlan} />
                 </div>
             </div>
-            <div className="submit-btn mt-4">
+            <div className="add-form-submit-btn">
                 <div className="">
                     {loader ? (<ProgressSpinner style={{ width: '50px', height: '50px' }} />) : ''}
                 </div>
@@ -111,7 +111,8 @@ function AddAction() {
 
     return (
         <section>
-            <BasicCard {...cardProps} />
+            {/* <BasicCard {...cardProps} /> */}
+            {addForm()}
         </section>
     )
 }
