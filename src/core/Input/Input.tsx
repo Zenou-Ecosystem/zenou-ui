@@ -6,6 +6,10 @@ function Input(prop: { type: string; onChange: Function, placeholder?: string, I
 
     const handleOnChange = (e: any) => {
         e.preventDefault();
+        if (type === 'file') {
+            onChange(e);
+            return;
+        }
         onChange(e.target.value);
     }
     return (

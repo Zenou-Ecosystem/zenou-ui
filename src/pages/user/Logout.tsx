@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function Logout() {
     const navigation = useNavigate();
     useEffect(() => {
-        navigation("/register");
+        navigation("/");
     })
     return (
         <div></div>

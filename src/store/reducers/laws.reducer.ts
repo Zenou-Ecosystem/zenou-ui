@@ -13,6 +13,7 @@ export const lawReducer = async (state: any, action: LawActions) => {
             const newState = state.data.filter((data: any) => data.id !== action.payload);
             return { ...newState };
         default:
-            throw new Error();
+        //    console.log('Do nothing');
+
     }
 }

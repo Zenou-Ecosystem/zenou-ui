@@ -4,7 +4,7 @@ import { ILaws } from "../interfaces/laws.interface";
 
 export const fetchLaws = async () => {
     try {
-        const response = axios.get(`${Config.baseUrl}/law`)
+        const response = axios.get(`${Config.baseUrl}/law`);
         return (await response).data;
     } catch (error) {
         console.log('An error occured => ', error);

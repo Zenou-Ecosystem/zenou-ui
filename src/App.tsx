@@ -21,7 +21,7 @@ function App() {
   return (
     <div className="">
       <Routes>
-        <Route path='/' element={<Register />}></Route>
+        <Route path='/' element={<Login />}></Route>
         {/* <Route path='api/docs' element={<Documentation />}></Route> */}
         <Route path='login' element={<Login />}></Route>
         <Route path='register' element={<Register />}></Route>

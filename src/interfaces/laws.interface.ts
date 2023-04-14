@@ -11,4 +11,9 @@ export interface ILaws {
     compliance: string;
     control_plan: string;
     action_plan: string;
+    options?: {
+        decree: any[],
+        order: any[],
+        decision: any[]
+    }
 }

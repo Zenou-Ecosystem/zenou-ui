@@ -119,8 +119,11 @@ function Laws() {
                             </div>
 
                             <div className="add-form my-10">
-                                <Dialog header="Register New Law" visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
-                                    <AddLaw />
+                                <Dialog header="Register New Law"
+                                    visible={visible}
+                                    style={{ width: '80vw', height: '100vh' }}
+                                    onHide={() => setVisible(false)}>
+                                    <AddLaw laws={laws} />
                                 </Dialog>
                             </div>
 
