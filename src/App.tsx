@@ -14,6 +14,7 @@ import Statistics from './pages/dashboard/statistics/Statistics';
 import Subscription from './pages/dashboard/subscriptions/Subscription';
 import Logout from './pages/user/Logout';
 import Profile from './pages/user/Profile';
+import DataDetails from './core/table/Details';
 // import Documentation from './pages/api-docs/Documentation';
 
 
@@ -33,7 +34,7 @@ function App() {
           <Route path='controls' element={<Controls />}></Route>
           <Route path='actions' element={<Actions />}></Route>
           <Route path='Subscriptions' element={<Subscription />}></Route>
-          <Route path='laws' element={<Law />}></Route>
+          <Route path='data/:id' element={<DataDetails />}></Route>
         </Route>
         <Route path='user' element={<DashboardHome />}>
           <Route path='profile' element={<Profile />}></Route>

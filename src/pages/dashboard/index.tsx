@@ -1,11 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './dashboard.scss';
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import BasicCard from '../../core/card/BasicCard'
 import Navbar from '../navigation/Navbar'
 import Sidebar from '../navigation/Sidebar'
+import { LocalStore } from '../../utils/storage.utils';
 
 function DashboardHome() {
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Perform authentication check here
+        const isAuthenticated = LocalStore.get('token');
+
+        if (!isAuthenticated) {
+            navigate("/", { replace: true });
+        }
+
+    }, [navigate]);
+
     return (
         <div className="w-full flex">
             <section className="sidebar-container md:w-1/5 lg:w-1/4">

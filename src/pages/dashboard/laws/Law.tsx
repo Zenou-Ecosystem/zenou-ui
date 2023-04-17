@@ -129,7 +129,7 @@ function Laws() {
 
                             <Datatable
                                 data={laws}
-                                fields={['title', 'theme', 'link', 'ratification', 'compliance']}
+                                fields={['title', 'theme', 'ratification', 'compliance', 'link', 'Actions']}
                                 actionTypes={LawActionTypes}
                                 context={LawContext}
                             />

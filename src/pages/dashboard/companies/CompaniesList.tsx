@@ -126,7 +126,7 @@ function CompaniesList() {
 
                             <Datatable
                                 data={companies}
-                                fields={['name', 'category', 'country', 'certification']}
+                                fields={['name', 'category', 'country', 'certification', 'Actions']}
                                 actionTypes={CompanyActionTypes}
                                 context={CompanyContext}
                             />

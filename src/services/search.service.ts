@@ -1,5 +1,5 @@
-import axios from "axios"
 import Config from "../constants/config.constants"
+import axios from "../utils/request.interceptor";
 
 export const simpleSearch = async (field: string, query: string) => {
     try {

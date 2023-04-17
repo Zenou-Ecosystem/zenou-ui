@@ -1,5 +1,5 @@
-import axios from "axios"
 import Config from "../constants/config.constants"
+import axios from "../utils/request.interceptor";
 
 export const login = async (payload: any) => {
     try {

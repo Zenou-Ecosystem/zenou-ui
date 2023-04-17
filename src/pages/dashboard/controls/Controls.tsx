@@ -127,7 +127,7 @@ function Controls() {
 
                             <Datatable
                                 data={companies}
-                                fields={['type', 'duration', 'department', 'theme', 'resources']}
+                                fields={['type', 'duration', 'department', 'theme', 'resources', 'Actions']}
                                 actionTypes={ControlActionTypes}
                                 context={ControlContext}
                             />

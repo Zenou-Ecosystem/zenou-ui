@@ -1,6 +1,6 @@
-import axios from "axios"
 import Config from "../constants/config.constants"
 import { IActions } from "../interfaces/actions.interface";
+import axios from "../utils/request.interceptor";
 
 
 export const fetchActions = async () => {

@@ -6,6 +6,7 @@ import Input from '../../../core/Input/Input';
 import { login } from '../../../services/auth.service';
 import '../Register/register.scss';
 import { Toast } from 'primereact/toast';
+import { LocalStore } from '../../../utils/storage.utils';
 
 
 function Login() {
@@ -25,6 +26,7 @@ function Login() {
                     detail: 'Welcome back',
                     life: 5000
                 });
+            LocalStore.set('token', data?.access_token);
             navigator('/dashboard/home', { replace: true });
         } else {
             (toast.current as any).show(

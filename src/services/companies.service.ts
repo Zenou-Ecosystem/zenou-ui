@@ -1,6 +1,6 @@
-import axios from "axios"
 import Config from "../constants/config.constants"
 import { ICompany } from "../interfaces/company.interface"
+import axios from "../utils/request.interceptor";
 
 export const fecthCompanies = async () => {
     try {

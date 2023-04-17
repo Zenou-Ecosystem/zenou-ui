@@ -1,6 +1,6 @@
-import axios from "axios"
 import Config from "../constants/config.constants"
 import { IControl } from "../interfaces/controls.interface"
+import axios from "../utils/request.interceptor";
 
 export const fetchControls = async () => {
     try {

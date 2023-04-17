@@ -6,6 +6,7 @@ import Input from '../../../core/Input/Input';
 import { register } from '../../../services/auth.service';
 import './register.scss';
 import { Toast } from 'primereact/toast';
+import { LocalStore } from '../../../utils/storage.utils';
 
 function Register() {
     const navigator = useNavigate();
@@ -25,6 +26,7 @@ function Register() {
                     detail: 'Account successfully created',
                     life: 5000
                 });
+            LocalStore.set('token', data?.access_token);
             navigator('/dashboard/home');
         } else {
             (toast.current as any).show(

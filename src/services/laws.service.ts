@@ -1,6 +1,6 @@
-import axios from "axios"
 import Config from "../constants/config.constants"
 import { ILaws } from "../interfaces/laws.interface";
+import axios from "../utils/request.interceptor";
 
 export const fetchLaws = async () => {
     try {

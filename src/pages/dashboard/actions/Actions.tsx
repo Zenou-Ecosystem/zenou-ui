@@ -127,7 +127,7 @@ function Actions() {
                             </div>
                             <Datatable
                                 data={companies}
-                                fields={['type', 'duration', 'department', 'theme', 'resources']}
+                                fields={['type', 'duration', 'department', 'theme', 'resources', 'Actions']}
                                 actionTypes={ActionsActionTypes}
                                 context={ActionsContext}
                             />
