@@ -6,6 +6,7 @@ export const LocalStore = {
         let val;
         if (localStorage.getItem(key)) {
             val = localStorage.getItem(key);
+            if(!val) return;
             return JSON.parse(val as any)
         }
         return false;

@@ -11,9 +11,14 @@ export interface ILaws {
     compliance: string;
     control_plan: string;
     action_plan: string;
-    options?: {
-        decree: any[],
-        order: any[],
-        decision: any[]
-    }
+    options?: Record<decisionTitles, Decision[]>;
+}
+
+type decisionTitles = "decree" | "order" | "decision"
+
+interface Decision {
+    id: string;
+    title: string;
+    reference: string;
+    description: string | null;
 }
