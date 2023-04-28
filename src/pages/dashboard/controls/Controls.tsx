@@ -13,6 +13,8 @@ import useControlContext from "../../../hooks/useControlContext";
 import { ControlActionTypes } from "../../../store/action-types/control.actions";
 import { IControl } from "../../../interfaces/controls.interface";
 import { fetchControls } from "../../../services/control.service";
+import { can } from "../../../utils/access-control.utils";
+import { AppUserActions } from "../../../constants/user.constants";
 
 function Controls() {
 
@@ -105,15 +107,19 @@ function Controls() {
                     content={() => (
                         <>
                             <div className="filter my-4 w-11/12 m-auto flex items-center">
-                                <div className="add-btn w-2/12">
-                                    <Button title="New"
-                                        styles="flex justify-around flex-row-reverse items-center rounded-full"
-                                        onClick={openAddControlForm} Icon={{
-                                            Name: HiPlus,
-                                            classes: '',
-                                            color: 'white'
-                                        }} />
-                                </div>
+                                {
+                                    !can(AppUserActions.ADD_CONTROL) ? null
+                                        :
+                                        <div className="add-btn w-2/12">
+                                            <Button title="New"
+                                                styles="flex justify-around flex-row-reverse items-center rounded-full"
+                                                onClick={openAddControlForm} Icon={{
+                                                    Name: HiPlus,
+                                                    classes: '',
+                                                    color: 'white'
+                                                }} />
+                                        </div>
+                                }
                                 <div className="filter w-10/12">
                                     <Filter fields={filterProps} title='Filter Controls' />
                                 </div>
@@ -130,6 +136,11 @@ function Controls() {
                                 fields={['type', 'duration', 'department', 'theme', 'resources', 'Actions']}
                                 actionTypes={ControlActionTypes}
                                 context={ControlContext}
+                                accessControls={{
+                                    EDIT: AppUserActions.EDIT_CONTROL,
+                                    DELETE: AppUserActions.DELETE_CONTROL,
+                                    VIEW: AppUserActions.VIEW_CONTROL
+                                }}
                             />
                         </>
                     )}

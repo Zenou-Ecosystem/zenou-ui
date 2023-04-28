@@ -2,6 +2,8 @@ import React from 'react'
 import { FaHouseUser, FaRegChartBar, FaUsers, FaDirections, FaCheckDouble, FaBook, FaSignOutAlt, FaCogs, FaFileInvoiceDollar } from 'react-icons/fa'
 import { NavLink } from 'react-router-dom';
 import './navigation.scss';
+import { can } from '../../utils/access-control.utils';
+import { AppUserActions } from '../../constants/user.constants';
 
 function Sidebar() {
     return (
@@ -13,12 +15,15 @@ function Sidebar() {
                         <span>Home</span>
                     </NavLink>
                 </li>
-                <li className="py-2 w-1/2">
-                    <NavLink to="/dashboard/stats" state={'statistics'} className="flex flex-wrap items-center gap-2 text-lg">
-                        <FaRegChartBar />
-                        <span>Statistics</span>
-                    </NavLink>
-                </li>
+                {
+                    !can(AppUserActions.VIEW_STATISTICS) ? null :
+                        <li className="py-2 w-1/2">
+                            <NavLink to="/dashboard/stats" state={'statistics'} className="flex flex-wrap items-center gap-2 text-lg">
+                                <FaRegChartBar />
+                                <span>Statistics</span>
+                            </NavLink>
+                        </li>
+                }
                 <li className="py-2 w-1/2">
                     <NavLink to="/dashboard/laws" state={'laws'} className="flex flex-wrap items-center gap-2 text-lg">
                         <FaDirections />
@@ -37,18 +42,24 @@ function Sidebar() {
                         <span>Actions</span>
                     </NavLink>
                 </li>
-                <li className="py-2 w-1/2">
-                    <NavLink to="/dashboard/companies" state={'company'} className="flex flex-wrap items-center gap-2 text-lg">
-                        <FaUsers />
-                        <span>Companies</span>
-                    </NavLink>
-                </li>
-                <li className="py-2 w-1/2">
-                    <NavLink to="/dashboard/subscriptions" state={'subscriptions'} className="flex flex-wrap items-center gap-2 text-lg">
-                        <FaFileInvoiceDollar />
-                        <span>Subscriptions</span>
-                    </NavLink>
-                </li>
+                {
+                    !can(AppUserActions.VIEW_COMPANY) ? null :
+                        <li className="py-2 w-1/2">
+                            <NavLink to="/dashboard/companies" state={'company'} className="flex flex-wrap items-center gap-2 text-lg">
+                                <FaUsers />
+                                <span>Companies</span>
+                            </NavLink>
+                        </li>
+                }
+                {
+                    !can(AppUserActions.VIEW_SUBSCRIPTION) ? null :
+                        <li className="py-2 w-1/2">
+                            <NavLink to="/dashboard/subscriptions" state={'subscriptions'} className="flex flex-wrap items-center gap-2 text-lg">
+                                <FaFileInvoiceDollar />
+                                <span>Subscriptions</span>
+                            </NavLink>
+                        </li>
+                }
                 <li className="py-2 w-1/2">
                     <NavLink to="/user/profile" state={'user'} className="flex flex-wrap items-center gap-2 text-lg">
                         <FaCogs />

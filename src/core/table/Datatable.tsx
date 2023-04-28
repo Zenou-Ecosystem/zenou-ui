@@ -6,16 +6,19 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 import { LocalStore } from '../../utils/storage.utils';
 import { useNavigate } from 'react-router-dom';
+import { can } from '../../utils/access-control.utils';
 // import "./index.scss";
 
 
 
 function Datatable(props: {
     data: any[], fields: string[],
-    actionTypes: React.ReducerAction<any>, context: React.Context<any>
+    actionTypes: React.ReducerAction<any>,
+    accessControls: { EDIT: string, VIEW: string, DELETE: string }
+    context: React.Context<any>
 }) {
 
-    const { data, fields, actionTypes, context } = props;
+    const { data, fields, actionTypes, context, accessControls } = props;
     const [tableColumns, setTableColumns] = useState<string[]>([]);
     const actions = Object.keys(actionTypes as any);
     const { state, dispatch } = useContext(context);
@@ -127,15 +130,24 @@ function Datatable(props: {
 
                             return (<Column header={key} key={index} body={
                                 <span className="flex justify-around items-center gap-2 text-xl">
-                                    <span onClick={(e) => actionHandler(e, 'view')}>
-                                        <HiEye className="text-yellow-600" />
-                                    </span>
-                                    <span onClick={(e) => actionHandler(e, 'edit')}>
-                                        <HiPencilAlt className="text-primary" />
-                                    </span>
-                                    <span onClick={(e) => actionHandler(e, 'delete')}>
-                                        <HiTrash className="text-red-600" />
-                                    </span>
+                                    {
+                                        !can(accessControls.VIEW) ? null :
+                                            <span onClick={(e) => actionHandler(e, 'view')}>
+                                                <HiEye className="text-yellow-600" />
+                                            </span>
+                                    }
+                                    {
+                                        !can(accessControls.EDIT) ? null :
+                                            <span onClick={(e) => actionHandler(e, 'edit')}>
+                                                <HiPencilAlt className="text-primary" />
+                                            </span>
+                                    }
+                                    {
+                                        !can(accessControls.DELETE) ? null :
+                                            <span onClick={(e) => actionHandler(e, 'delete')}>
+                                                <HiTrash className="text-red-600" />
+                                            </span>
+                                    }
                                 </span>
                             } style={{ width: '5%' }}>
 

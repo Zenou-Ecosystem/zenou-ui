@@ -12,6 +12,8 @@ import useAppContext from "../../../hooks/useAppContext.hooks";
 import CompanyContextProvider, { CompanyContext } from "../../../contexts/CompanyContext";
 import useCompanyContext from "../../../hooks/useCompanyContext";
 import { CompanyActionTypes } from "../../../store/action-types/company.actions";
+import { can } from "../../../utils/access-control.utils";
+import { AppUserActions } from "../../../constants/user.constants";
 
 function CompaniesList() {
 
@@ -104,15 +106,18 @@ function CompaniesList() {
                     content={() => (
                         <>
                             <div className="filter my-4 w-11/12 m-auto flex">
-                                <div className="add-btn w-2/12">
-                                    <Button title="New"
-                                        styles="flex justify-around flex-row-reverse items-center rounded-full"
-                                        onClick={openAddCompanyForm} Icon={{
-                                            Name: HiPlus,
-                                            classes: '',
-                                            color: 'white'
-                                        }} />
-                                </div>
+                                {
+                                    !can(AppUserActions.ADD_COMPANY) ? null :
+                                        <div className="add-btn w-2/12">
+                                            <Button title="New"
+                                                styles="flex justify-around flex-row-reverse items-center rounded-full"
+                                                onClick={openAddCompanyForm} Icon={{
+                                                    Name: HiPlus,
+                                                    classes: '',
+                                                    color: 'white'
+                                                }} />
+                                        </div>
+                                }
                                 <div className="filter w-10/12">
                                     <Filter fields={filterProps} title="Filter Companies" />
                                 </div>
@@ -129,6 +134,11 @@ function CompaniesList() {
                                 fields={['name', 'category', 'country', 'certification', 'Actions']}
                                 actionTypes={CompanyActionTypes}
                                 context={CompanyContext}
+                                accessControls={{
+                                    EDIT: AppUserActions.EDIT_COMPANY,
+                                    DELETE: AppUserActions.DELETE_COMPANY,
+                                    VIEW: AppUserActions.VIEW_COMPANY
+                                }}
                             />
                         </>
                     )

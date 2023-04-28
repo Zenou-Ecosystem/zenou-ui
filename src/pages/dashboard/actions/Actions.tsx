@@ -12,6 +12,8 @@ import useActionsContext from "../../../hooks/useActionsContext";
 import ActionsContextProvider, { ActionsContext } from "../../../contexts/ActionsContext";
 import AddAction from "./AddActions";
 import { ActionsActionTypes } from "../../../store/action-types/action.actions";
+import { can } from "../../../utils/access-control.utils";
+import { AppUserActions } from "../../../constants/user.constants";
 
 
 
@@ -106,15 +108,17 @@ function Actions() {
                     content={() => (
                         <>
                             <div className="filter my-4 w-11/12 m-auto flex">
-                                <div className="add-btn w-2/12">
-                                    <Button title="New"
-                                        styles="flex justify-around flex-row-reverse items-center rounded-full"
-                                        onClick={openAddActionForm} Icon={{
-                                            Name: HiPlus,
-                                            classes: '',
-                                            color: 'white'
-                                        }} />
-                                </div>
+                                {
+                                    !can(AppUserActions.ADD_ACTIONS) ? null : <div className="add-btn w-2/12">
+                                        <Button title="New"
+                                            styles="flex justify-around flex-row-reverse items-center rounded-full"
+                                            onClick={openAddActionForm} Icon={{
+                                                Name: HiPlus,
+                                                classes: '',
+                                                color: 'white'
+                                            }} />
+                                    </div>
+                                }
                                 <div className="filter w-10/12">
                                     <Filter fields={filterProps} title='Filter Actions' />
                                 </div>
@@ -130,6 +134,11 @@ function Actions() {
                                 fields={['type', 'duration', 'department', 'theme', 'resources', 'Actions']}
                                 actionTypes={ActionsActionTypes}
                                 context={ActionsContext}
+                                accessControls={{
+                                    EDIT: AppUserActions.EDIT_ACTIONS,
+                                    DELETE: AppUserActions.DELETE_ACTIONS,
+                                    VIEW: AppUserActions.VIEW_ACTIONS
+                                }}
                             />
                         </>
                     )}

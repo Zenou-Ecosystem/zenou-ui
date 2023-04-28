@@ -12,6 +12,8 @@ import useLawContext from "../../../hooks/useLawContext";
 import { ILaws } from "../../../interfaces/laws.interface";
 import { LawActionTypes } from "../../../store/action-types/laws.actions";
 import { fetchLaws } from "../../../services/laws.service";
+import { can } from "../../../utils/access-control.utils";
+import { AppUserActions } from "../../../constants/user.constants";
 
 function Laws() {
 
@@ -104,15 +106,18 @@ function Laws() {
                     content={() => (
                         <>
                             <div className="filter my-4 w-11/12 m-auto flex">
-                                <div className="add-btn w-2/12">
-                                    <Button title="New"
-                                        styles="flex justify-around flex-row-reverse items-center rounded-full"
-                                        onClick={openAddLawForm} Icon={{
-                                            Name: HiPlus,
-                                            classes: '',
-                                            color: 'white'
-                                        }} />
-                                </div>
+                                {
+                                    !can(AppUserActions.ADD_LAW) ? null :
+                                        <div className="add-btn w-2/12">
+                                            <Button title="New"
+                                                styles="flex justify-around flex-row-reverse items-center rounded-full"
+                                                onClick={openAddLawForm} Icon={{
+                                                    Name: HiPlus,
+                                                    classes: '',
+                                                    color: 'white'
+                                                }} />
+                                        </div>
+                                }
                                 <div className="filter w-10/12">
                                     <Filter fields={filterProps} title="Filter laws" />
                                 </div>
@@ -132,6 +137,11 @@ function Laws() {
                                 fields={['title', 'theme', 'ratification', 'compliance', 'Actions']}
                                 actionTypes={LawActionTypes}
                                 context={LawContext}
+                                accessControls={{
+                                    EDIT: AppUserActions.EDIT_LAW,
+                                    DELETE: AppUserActions.DELETE_LAW,
+                                    VIEW: AppUserActions.VIEW_LAW
+                                }}
                             />
                         </>
                     )
