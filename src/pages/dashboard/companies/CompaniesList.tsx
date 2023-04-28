@@ -104,7 +104,7 @@ function CompaniesList() {
           content={() => (
             <>
               <div className="filter my-4 w-11/12 m-auto flex">
-                {can(AppUserActions.ADD_COMPANY) ? null : (
+                {!can(AppUserActions.ADD_COMPANY) ? null : (
                   <div className="add-btn w-2/12">
                     <Button
                       title="New"

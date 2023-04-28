@@ -84,7 +84,6 @@ function AddControl() {
         <div className="form-elements grid md:grid-cols-2 gap-4">
           {/*type*/}
           <div className="control-type">
-            {/*<Input type='text' placeholder='Control Type' onChange={getType} />*/}
             <label htmlFor="controlType">Type</label>
             <InputText
               type="text"
