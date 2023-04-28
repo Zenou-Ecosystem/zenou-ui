@@ -41,37 +41,46 @@ function Sidebar() {
             </NavLink>
           </li>
         )}
-        <li className="py-2 w-1/2">
-          <NavLink
-            to="/dashboard/laws"
-            state={"laws"}
-            className="flex flex-wrap items-center gap-2 text-lg"
-          >
-            <FaDirections />
-            <span>Laws</span>
-          </NavLink>
-        </li>
-        <li className="py-2 w-1/2">
-          <NavLink
-            to="/dashboard/controls"
-            state={"controls"}
-            className="flex flex-wrap items-center gap-2 text-lg"
-          >
-            <FaCheckDouble />
-            <span>Controls</span>
-          </NavLink>
-        </li>
-        <li className="py-2 w-1/2">
-          <NavLink
-            to="/dashboard/actions"
-            state={"actions"}
-            className="flex flex-wrap items-center gap-2 text-lg"
-          >
-            <FaBook />
-            <span>Actions</span>
-          </NavLink>
-        </li>
-        {can(AppUserActions.VIEW_COMPANY) ? null : (
+        {
+          !can(AppUserActions.VIEW_LAW) ? null :
+            <li className="py-2 w-1/2">
+              <NavLink
+                to="/dashboard/laws"
+                state={"laws"}
+                className="flex flex-wrap items-center gap-2 text-lg"
+              >
+                <FaDirections />
+                <span>Laws</span>
+              </NavLink>
+            </li>
+        }
+        {
+          !can(AppUserActions.VIEW_CONTROL) ? null :
+            <li className="py-2 w-1/2">
+              <NavLink
+                to="/dashboard/controls"
+                state={"controls"}
+                className="flex flex-wrap items-center gap-2 text-lg"
+              >
+                <FaCheckDouble />
+                <span>Controls</span>
+              </NavLink>
+            </li>
+        }
+        {
+          !can(AppUserActions.VIEW_ACTIONS) ? null :
+            <li className="py-2 w-1/2">
+              <NavLink
+                to="/dashboard/actions"
+                state={"actions"}
+                className="flex flex-wrap items-center gap-2 text-lg"
+              >
+                <FaBook />
+                <span>Actions</span>
+              </NavLink>
+            </li>
+        }
+        {!can(AppUserActions.VIEW_COMPANY) ? null : (
           <li className="py-2 w-1/2">
             <NavLink
               to="/dashboard/companies"
