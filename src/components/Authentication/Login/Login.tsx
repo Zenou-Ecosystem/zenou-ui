@@ -26,8 +26,10 @@ function Login() {
                     detail: 'Welcome back',
                     life: 5000
                 });
-            LocalStore.set('token', data?.access_token);
+
+            LocalStore.set('user', data);
             navigator('/dashboard/home', { replace: true });
+
         } else {
             (toast.current as any).show(
                 {

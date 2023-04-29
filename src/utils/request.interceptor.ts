@@ -5,9 +5,10 @@ import { LocalStore } from "./storage.utils";
 axios.interceptors.request.use(function (config) {
     // Do something before request is sent
     const urlPath = !config.url?.includes('/auth');
+    const token = LocalStore.get('user')?.access_token;
     const headers = config.headers;
     if (urlPath && !headers.Authorization) {
-        headers.Authorization = `Bearer ${LocalStore.get('token')}`
+        headers.Authorization = `Bearer ${token}`
     }
     return config;
 }, function (error) {
@@ -18,8 +19,8 @@ axios.interceptors.request.use(function (config) {
 // Add a response interceptor
 axios.interceptors.response.use(function (response) {
     // Do something with response data
-    console.log('Response interceptor:', response);
     return response;
+
 }, function (error) {
     // Do something with response error
     return Promise.reject(error);

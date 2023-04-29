@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../../../core/Button/Button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { CompanyActionTypes } from "../../../store/action-types/company.actions";
@@ -8,6 +8,8 @@ import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { countryConstants } from "../../../constants/country.constants";
 import { register } from "../../../services/auth.service";
+import { UserTypes } from "../../../constants/user.constants";
+import { Toast } from "primereact/toast";
 
 const languageOptions = [
   {
@@ -35,7 +37,7 @@ const sectorOptions = [
 function AddCompany() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState({});
   const [language, setLanguage] = useState("");
   const [contact, setContact] = useState("");
   const [legal_status, setLegalStatus] = useState("");
@@ -48,6 +50,7 @@ function AddCompany() {
   const [certification, setCertification] = useState("");
   const [loader, setLoader] = useState(false);
   const { state, dispatch } = useCompanyContext();
+  const toast = useRef({});
 
   const getName = (name: string) => setName(name);
   const getAdminEmail = (name: string) => setAdminEmail(name);
@@ -60,7 +63,7 @@ function AddCompany() {
   const getContact = (contact: string) => setContact(contact);
   const getLanguage = (language: string) => setLanguage(language);
   const getLegalStatus = (legalStatus: string) => setLegalStatus(legalStatus);
-  const getCountry = (country: string) => setCountry(country);
+  const getCountry = (country: any) => setCountry(country?.name);
   const getNumOfEmpl = (numOfEmpl: number) => setNumOfEmpl(numOfEmpl);
   const getComFunction = (comFunction: string) => setComFunction(comFunction);
 
@@ -69,27 +72,42 @@ function AddCompany() {
 
     setLoader(true);
 
-    dispatch({
-      type: CompanyActionTypes.ADD_COMPANY,
-      payload: {
-        name,
-        capital,
-        contact,
-        certification,
-        country,
-        function: comFunction,
-        sector,
-        admin_email,
-        category,
-        number_of_employees,
-        language,
-        legal_status,
-        address,
-      },
-    });
+    // create and register the company's login account
+    register({
+      email: admin_email,
+      username: name,
+      password,
+      role: UserTypes.COMPANY_OWNER,
+    }).then((response) => {
+      dispatch({
+        type: CompanyActionTypes.ADD_COMPANY,
+        payload: {
+          name,
+          capital,
+          contact,
+          admin_email,
+          certification,
+          country,
+          function: comFunction,
+          sector,
+          category,
+          number_of_employees,
+          language,
+          legal_status,
+          address,
+        },
+      });
 
-    // create and register the company's email address
-    register({ email: address, username: name, password }).then();
+      // Show password for a while
+      (toast.current as any).show({
+        severity: "success",
+        summary: "Company Admin Account created",
+        detail: `A new company admin account has been created for
+              ${name} with credentials as Email = ${address} and Password = ${password}.
+              Please use details to always log into the company account.`,
+        life: 15000,
+      });
+    });
   };
 
   useEffect(() => {
@@ -332,6 +350,7 @@ function AddCompany() {
 
   return (
     <section>
+      <Toast ref={toast as any} />
       {/* <BasicCard {...cardProps} /> */}
       {addForm()}
     </section>

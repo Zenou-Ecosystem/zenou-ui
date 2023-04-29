@@ -7,6 +7,7 @@ import { register } from '../../../services/auth.service';
 import './register.scss';
 import { Toast } from 'primereact/toast';
 import { LocalStore } from '../../../utils/storage.utils';
+import { UserTypes } from '../../../constants/user.constants';
 
 function Register() {
     const navigator = useNavigate();
@@ -17,7 +18,7 @@ function Register() {
     const toast = useRef({});
 
     const signinHandler = async () => {
-        const data = await register({ email, username, password });
+        const data = await register({ email, username, password, role: UserTypes.ADMIN });
         if (data) {
             (toast.current as any).show(
                 {

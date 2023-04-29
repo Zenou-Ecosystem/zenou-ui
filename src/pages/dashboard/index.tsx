@@ -12,7 +12,7 @@ function DashboardHome() {
 
     useEffect(() => {
         // Perform authentication check here
-        const isAuthenticated = LocalStore.get('token');
+        const isAuthenticated = LocalStore.get('user')?.access_token;
 
         if (!isAuthenticated) {
             navigate("/", { replace: true });

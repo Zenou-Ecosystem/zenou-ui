@@ -1,6 +1,8 @@
 import { NavLink } from "react-router-dom";
 import Search from "../../components/filter/Search";
 import "./navigation.scss";
+import { can } from "../../utils/access-control.utils";
+import { AppUserActions } from "../../constants/user.constants";
 
 const Navbar = () => {
     return (
@@ -10,9 +12,12 @@ const Navbar = () => {
                     <li className="p-2 w-1/2">
                         <Search />
                     </li>
-                    <li>
-                        <NavLink end to="/dashboard/companies">Companies</NavLink>
-                    </li>
+                    {
+                        !can(AppUserActions.VIEW_COMPANY) ? null :
+                            <li>
+                                <NavLink end to="/dashboard/companies">Companies</NavLink>
+                            </li>
+                    }
                     <li>
                         <NavLink end to="/user/profile">profile</NavLink>
                     </li>
