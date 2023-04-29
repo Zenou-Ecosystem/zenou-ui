@@ -43,12 +43,14 @@ function AddCompany() {
   const [number_of_employees, setNumOfEmpl] = useState(0);
   const [comFunction, setComFunction] = useState("");
   const [category, setCategory] = useState("");
+  const [admin_email, setAdminEmail] = useState("");
   const [sector, setSector] = useState("");
   const [certification, setCertification] = useState("");
   const [loader, setLoader] = useState(false);
   const { state, dispatch } = useCompanyContext();
 
   const getName = (name: string) => setName(name);
+  const getAdminEmail = (name: string) => setAdminEmail(name);
   const getAddress = (address: string) => setAddress(address);
   const getSector = (sector: string) => setSector(sector);
   const getCategory = (category: string) => setCategory(category);
@@ -77,6 +79,7 @@ function AddCompany() {
         country,
         function: comFunction,
         sector,
+        admin_email,
         category,
         number_of_employees,
         language,
@@ -128,8 +131,6 @@ function AddCompany() {
               placeholder="Select language"
               className="w-full md:w-14rem"
             />
-
-            {/*<Input type="text" placeholder="language" onChange={getLanguage} />*/}
           </div>
 
           {/*company sector */}
@@ -143,6 +144,19 @@ function AddCompany() {
               className="w-full md:w-14rem"
               options={sectorOptions}
               placeholder="Sector of action of this Law"
+            />
+          </div>
+
+          {/*company admin email */}
+          <div className="company-admin_email">
+            <label htmlFor="admin_email">Admin email address</label>
+            <InputText
+              type="text"
+              id="admin_email"
+              name="admin_email"
+              className="p-inputtext-md w-full"
+              placeholder="Enter company admin email"
+              onChange={(e) => getAdminEmail(e.target.value)}
             />
           </div>
 
