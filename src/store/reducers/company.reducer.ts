@@ -8,7 +8,7 @@ export const companyReducer = async (state: any, action: CompanyActions) => {
       return { ...state, data, hasCreated: true };
     case "DELETE_COMPANY":
       const response = await deleteCompany(action.payload as any);
-      const newState = state.data.filter((data: any) => data.id !== action.payload);
+      const newState = state?.data.filter((data: any) => data.id !== action.payload);
       return { ...newState };
     default:
       throw new Error();

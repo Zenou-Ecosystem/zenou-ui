@@ -134,7 +134,7 @@ function Laws() {
 
                             <Datatable
                                 data={laws}
-                                fields={['title', 'theme', 'ratification', 'compliance', 'Actions']}
+                                fields={['title', 'theme', 'ratification', 'compliance', 'severity', 'decision', 'Actions']}
                                 actionTypes={LawActionTypes}
                                 context={LawContext}
                                 accessControls={{
