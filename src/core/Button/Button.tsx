@@ -6,7 +6,12 @@ function Button(prop: { title: string; onClick: Function; Icon?: any; styles?: s
 
     const handler = (e: any) => {
         e.preventDefault();
+        console.log('Happened here -> ', e);
+
         onClick();
+
+        console.log('This is the second action -> ', onClick);
+
     }
 
     return (

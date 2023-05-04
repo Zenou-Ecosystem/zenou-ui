@@ -1,7 +1,8 @@
 export enum UserTypes {
     ADMIN = "ADMIN",
     COMPANY_OWNER = "COMPANY_OWNER",
-    PERSONELL = "PERSONELL",
+    localadmin = 'add action, add control',
+    PERSONELL = "PERSONEL",
     GUEST = "GUEST",
     DEMO = "DEMO"
 }
@@ -31,3 +32,5 @@ export enum AppUserActions {
     DELETE_PERSONNEL = "DELETE_PERSONNEL",
     VIEW_SUBSCRIPTION = "VIEW_SUBSCRIPTION"
 }
+
+//  -> can only view
