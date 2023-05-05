@@ -15,6 +15,8 @@ import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Chip } from "primereact/chip";
 import { fetchLaws } from "../../../services/laws.service";
+import { fetchDepartments } from "../../../services/department.service";
+import { IDepartment } from "../../../interfaces/department.interface";
 
 const titles = [
   "convention",
@@ -26,9 +28,14 @@ const titles = [
   "guidance",
   "direction",
 ];
+
 const locations = ["international", "continental", "national"];
+
 const complianceObject = ["complaint", "non-compliant", "in progress"];
-const domains = [
+
+const decisionsObject = ["informative", "administrative", "financial"];
+
+const areaOfAction = [
   "air",
   "land",
   "water",
@@ -39,7 +46,6 @@ const domains = [
   "health",
   "agriculture",
 ];
-const decisionsObject = ["informative", "administrative", "financial"];
 
 const severity = [
   {
@@ -70,6 +76,12 @@ const initialFormState = {
     required: true,
   },
   ratification: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  department: {
     value: "",
     error: true,
     error_message: "",
@@ -117,6 +129,12 @@ const initialFormState = {
     error_message: "",
     required: true,
   },
+  text_of_law: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
   control_plan: {
     value: "",
     error: true,
@@ -124,12 +142,6 @@ const initialFormState = {
     required: true,
   },
   action_plan: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  domain: {
     value: "",
     error: true,
     error_message: "",
@@ -177,7 +189,9 @@ function AddLaw(props: { laws: ILaws[] }) {
    * @returns { void }
    * **/
   const handleChange = (isDynamicForm?: boolean) => (e: any) => {
-    let { name, value }: Record<any, string> = e.target;
+    let { name, value, type }: Record<any, string> = e.target;
+
+    type === "checkbox" && (value = e.checked);
 
     const targetProperty = isDynamicForm
       ? dynamicFormOptions[name]
@@ -269,6 +283,7 @@ function AddLaw(props: { laws: ILaws[] }) {
   const [checkOrder, setCheckedOrder] = useState(false);
   const [checkDecision, setCheckedDecision] = useState(false);
   const [optionPlaceholder, setOptionPlaceholder] = useState("");
+  const [department, setDepartment] = useState<string[]>([]);
 
   const [order, setOrder] = useState("");
 
@@ -286,9 +301,14 @@ function AddLaw(props: { laws: ILaws[] }) {
         setLoader(false);
       }
 
-      // Fetch Actions and Controls
+      // Fetch Actions,departments and Controls
       const data = await fetchActions();
       setActions(data);
+
+      let departments = await fetchDepartments();
+      if (departments) {
+        setDepartment(departments.map((dept) => dept.name));
+      }
 
       const allControls = await fetchControls();
       setControls(allControls);
@@ -297,60 +317,10 @@ function AddLaw(props: { laws: ILaws[] }) {
     })();
   }, [state]);
 
-  // Get the text entered as title for the decree.
-  // Check if an existing decree is already selected and activate the add new decree btn
-  // const getDecree = (decree: string) => {
-  //     if (decree !== "") {
-  //         setDisableAddDecree(false);
-  //     }
-  //     setDecree(decree);
-  //     setCurrentOption({
-  //         code: 'decree',
-  //         name: decree
-  //     });
-  // };
-  //
-  // const getOrder = (order: string) => {
-  //     if (order !== "") {
-  //         setDisableAddOrder(false);
-  //     }
-  //     setOrder(order);
-  //     setCurrentOption({
-  //         code: 'order',
-  //         name: order
-  //     });
-  // };
-  //
-  // const getDecisions = (decision: string) => {
-  //     if (decision !== "") {
-  //         setDisableAddDecision(false);
-  //     }
-  //     setDecisions(decision);
-  //     setCurrentOption({
-  //         code: 'decision',
-  //         name: decision
-  //     });
-  // };
-
-  // const handleSelectedOption = (e: any) => {
-  //     setSelectedOptions(e.value);
-  //     console.log('all SelectedOptions => ', selectedOptions, optionPlaceholder);
-  // }
-
   const handleCheckDecree = (e: any) => {
     setCheckedDecree(e.checked);
     setOptionPlaceholder("Decree");
-    // setOptions((prev: any) => {
-    //     let listOfOptions: any[] = [];
-    //     laws.forEach((law) => {
-    //         // decisions.forEach(({decision, order, decree}) => {
-    //         //     decree && listOfOptions.push(decree)
-    //         // } )
-    //         law.options?.decree.forEach((decree: any) => listOfOptions.push(decree));
-    //         // law.options?.order.forEach((order: any) => listOfOptions.push(order));
-    //     });
-    //     return laws;
-    // });
+
     setOrder("");
     setDecisions("");
     setCheckedOrder(false);
@@ -361,15 +331,7 @@ function AddLaw(props: { laws: ILaws[] }) {
   const handleCheckOrder = (e: any) => {
     setCheckedOrder(e.checked);
     setOptionPlaceholder("Order");
-    // setOptions((prev: any) => {
-    //     let listOfOptions: any[] = [];
-    //     laws.forEach((law) => {
-    //         law.options?.decree.forEach((decree: any) => listOfOptions.push(decree));
-    //         // law.options?.order.forEach((order: any) => listOfOptions.push(order));
-    //     });
-    //     return laws;
-    // });
-    // setDecree('');
+
     setDecisions("");
     setCheckedDecree(false);
     setCheckedDecision(false);
@@ -379,56 +341,12 @@ function AddLaw(props: { laws: ILaws[] }) {
   const handleCheckDecision = (e: any) => {
     setCheckedDecision(e.checked);
     setOptionPlaceholder("Decision");
-    // setOptions((prev: any) => {
-    //     let listOfOptions: any[] = [];
-    //     laws.forEach((law) => {
-    //         // decisions.forEach(({decision, order, decree}) => {
-    //         //     decree && listOfOptions.push(decree)
-    //         //     order && listOfOptions.push(order)
-    //         //     decision && listOfOptions.push(decision)
-    //         // } )
-    //         law.options?.decree.forEach((decree: any) => listOfOptions.push(decree));
-    //         law.options?.order.forEach((order: any) => listOfOptions.push(order));
-    //     });
-    //     return laws;
-    // });
-    // setDecree('');
+
     setOrder("");
     setCheckedDecree(false);
     setCheckedOrder(false);
     setTypedOptions([]);
   };
-
-  // const handleAddNewDecree = (e: any) => {
-  //     e.preventDefault();
-  //     setTypedOptions((prev: any) => [...prev,
-  //         {
-  //             title: dynamicFormOptions.title.value,
-  //             description: dynamicFormOptions.selectedOptions.value,
-  //             id: prev.length + 1
-  //         }
-  //     ]);
-  //     console.log(typedOptions)
-  //     // setDecree('');
-  // }
-  //
-  // const handleAddNewOrder = (e: any) => {
-  //     e.preventDefault();
-  //     setTypedOptions((prev: any) => [...prev, { ...currentOption, id: prev.length }]);
-  //     setCurrentOption({});
-  //     setOrder('');
-  //     setSelectedOptions([]);
-  //     setOrderPlaceHolder('Enter title for new Order');
-  // }
-  //
-  // const handleAddNewDecision = (e: any) => {
-  //     e.preventDefault();
-  //     setTypedOptions((prev: any) => [...prev, { ...currentOption, id: prev.length }]);
-  //     setCurrentOption({});
-  //     setDecisions('');
-  //     setSelectedOptions([]);
-  //     setDecisionPlaceHolder('Enter title for new Decision');
-  // }
 
   const handleSubmission = (e: any) => {
     e.preventDefault();
@@ -451,30 +369,10 @@ function AddLaw(props: { laws: ILaws[] }) {
 
     Object.entries(formValues).forEach(([key, value]) => {
       finalDataObject[key] =
-        key === "ratification" ? String(value.value) : value?.value;
+        key === "ratification"
+          ? new Date(String(value.value)).toLocaleDateString()
+          : value?.value;
     });
-
-    console.log(finalDataObject);
-
-    // let mainOps: any = {
-    //     decree: [],
-    //     order: [],
-    //     decision: []
-    // };
-    //
-    // const optionsToParse = [...typedOptions, ...selectedOptions];
-    //
-    // optionsToParse?.map((item: any) => {
-    //     if (mainOps[item.code]) {
-    //         if (typeof mainOps[item.code] == 'object') {
-    //             mainOps[item.code] = [...mainOps[item.code], item];
-    //         } else {
-    //             mainOps[item.code] = [item];
-    //         }
-    //     }
-    // });
-
-    // const uploadUrl = await upload(link as File);
 
     dispatch({
       type: LawActionTypes.ADD_LAW,
@@ -486,7 +384,7 @@ function AddLaw(props: { laws: ILaws[] }) {
   const addForm = () => {
     return (
       <form className="w-full">
-        <div className="form-elements grid md:grid-cols-2 gap-4">
+        <div className="form-elements grid md:grid-cols-2 gap-6">
           {/*law title*/}
           <div>
             <label htmlFor="law_title">Title</label>
@@ -500,7 +398,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               className="w-full md:w-14rem"
             />
           </div>
-
           {/*location*/}
           <div>
             <label htmlFor="location">Location</label>
@@ -514,7 +411,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               className="w-full md:w-14rem"
             />
           </div>
-
           {/*ratification*/}
           <div>
             <label htmlFor="ratification">Ratification</label> <br />
@@ -529,7 +425,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               onChange={handleChange()}
             />
           </div>
-
           {/*decision*/}
           <div>
             <label htmlFor="decision">Decisions</label>
@@ -543,7 +438,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               className="w-full md:w-14rem"
             />
           </div>
-
           {/*compliance*/}
           <div>
             <label htmlFor="compliance">Compliance</label>
@@ -557,21 +451,32 @@ function AddLaw(props: { laws: ILaws[] }) {
               placeholder="Compliance of this Law"
             />
           </div>
-
-          {/*domain */}
+          {/*department*/}
           <div>
-            <label htmlFor="domain">Domain</label>
+            <label htmlFor="department">Department</label>
             <Dropdown
-              id="domain"
-              name="domain"
-              value={formValues.domain.value}
+              id="department"
+              name="department"
+              value={formValues.department.value}
               onChange={handleChange()}
               className="w-full md:w-14rem"
-              options={domains}
-              placeholder="Domain of action of this Law"
+              options={department}
+              placeholder="Department of action of this Law"
             />
           </div>
-
+          {/*domain */}
+          <div>
+            <label htmlFor="area">Area of action</label>
+            <Dropdown
+              id="area"
+              name="area"
+              value={formValues.area.value}
+              onChange={handleChange()}
+              className="w-full md:w-14rem"
+              options={areaOfAction}
+              placeholder="Select the area of action of this law"
+            />
+          </div>
           {/*action plan*/}
           <div>
             <label htmlFor="action_plan">Action plan</label>
@@ -587,7 +492,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               className="w-full md:w-20rem"
             />
           </div>
-
           {/*control plan*/}
           <div>
             <label htmlFor="control_plan">Control plan</label>
@@ -603,7 +507,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               className="w-full md:w-20rem"
             />
           </div>
-
           {/*severity */}
           <div>
             <label htmlFor="severity">Severity</label>
@@ -618,21 +521,18 @@ function AddLaw(props: { laws: ILaws[] }) {
               placeholder="How severity id this law?"
             />
           </div>
-
-          {/*description*/}
+          {/*theme*/}
           <div>
-            <label htmlFor="description">Theme/Description</label>
-            <InputTextarea
-              autoResize
+            <label htmlFor="description">Theme</label>
+            <InputText
               value={formValues.theme.value}
-              id="description"
+              id="theme"
               onChange={handleChange()}
               name="theme"
-              placeholder="Theme/Description of the law"
+              placeholder="Theme of the law"
               className="w-full"
             />
           </div>
-
           {/*article*/}
           <div>
             <label htmlFor="article">Article</label>
@@ -647,9 +547,34 @@ function AddLaw(props: { laws: ILaws[] }) {
             />
           </div>
 
+          {/*is applicable*/}
+          <div className="flex gap-4 ">
+            <label htmlFor="is_applicable" className="">
+              Is this law applicable?{" "}
+            </label>
+            <Checkbox
+              onChange={handleChange()}
+              inputId="is_applicable"
+              name="is_applicable"
+              checked={formValues.is_applicable.value}
+            ></Checkbox>
+          </div>
+
+          {/*text of law*/}
+          <div>
+            <label htmlFor="text_of_law">Text of law</label>
+            <InputTextarea
+              autoResize
+              value={formValues.text_of_law.value}
+              id="text_of_law"
+              onChange={handleChange()}
+              name="text_of_law"
+              placeholder="Enter the details this law"
+              className="w-full"
+            />
+          </div>
           {/*checkbox options*/}
           {/* show checkboxes if title matches various options in array according to the fields in question. */}
-
           <div>
             {/*decree checkbox*/}
             <div
@@ -714,7 +639,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               </label>
             </div>
           </div>
-
           {/* This is to add support for laws that have decrees, orders or decisions */}
           <div className="flex justify-content-center flex-col gap-4">
             {/* If law has decrees, register them */}
@@ -723,23 +647,6 @@ function AddLaw(props: { laws: ILaws[] }) {
             ["law", "decree", "order"].includes(
               formValues["title"].value.toLowerCase()
             ) ? (
-              // <MultiSelect
-              //     value={selectedOptions}
-              //     onChange={handleSelectedOption}
-              //     options={options}
-              //     optionGroupChildren="decisions"
-              //     optionLabel="title"
-              //     filter placeholder={`This ${optionPlaceholder} depends on ?`}
-              //     maxSelectedLabels={3}
-              //     optionGroupTemplate={
-              //     <div>{options?.title} </div>
-              //     }
-              //     className="w-full md:w-20rem" />
-              // <TreeSelect  display='chip' emptyMessage='No input' filter
-              //              value={selectedOptions} onChange={handleSelectedOption}
-              //              options={lawsObjects} className="md:w-20rem w-full"
-              //              placeholder={`This ${optionPlaceholder} depends on ?`} >
-              // </TreeSelect>
               <>
                 <div>
                   <label htmlFor="title">Enter {optionPlaceholder} title</label>
@@ -787,18 +694,6 @@ function AddLaw(props: { laws: ILaws[] }) {
               size="small"
               className="add-new-btn"
             />
-
-            {/*<Button onClick={addOptions}*/}
-            {/*        hidden={!checkOrder}*/}
-            {/*        disabled={ (dynamicFormOptions.title.error || !dynamicFormOptions.title.value.trim()) ||*/}
-            {/*            !dynamicFormOptions.selectedOptions.value } */}
-            {/*        label="Add Order"*/}
-            {/*        icon="pi pi-plus" size="small" className='add-new-btn'/>*/}
-
-            {/*<Button onClick={handleAddNewDecision}*/}
-            {/*        hidden={!checkDecision}*/}
-            {/*        disabled={disableAddDecision} label="Add Decision"*/}
-            {/*        icon="pi pi-plus" size="small" className='add-new-btn'/>*/}
           </div>
         </div>
 

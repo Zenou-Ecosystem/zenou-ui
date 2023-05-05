@@ -10,6 +10,7 @@ import { MultiSelect } from "primereact/multiselect";
 import { fetchActions } from "../../../services/actions.service";
 import { ILaws } from "../../../interfaces/laws.interface";
 import { fetchLaws } from "../../../services/laws.service";
+import { fetchDepartments } from "../../../services/department.service";
 
 function AddControl() {
   const [type, setType] = useState("");
@@ -22,6 +23,7 @@ function AddControl() {
   const [text_of_the_law, setTextOfLaw] = useState("");
   const [responsible_for, setResponsibleFor] = useState("");
   const [action_plan, setActionPlan] = useState("");
+  const [departments, setDepartments] = useState<string[]>([]);
 
   const getType = (type: string) => setType(type);
   const getDuration = (duration: string) => setDuration(duration);
@@ -72,6 +74,11 @@ function AddControl() {
       // Fetch Actions
       const data = await fetchActions();
       setActions(data);
+
+      let department = await fetchDepartments();
+      if (department) {
+        setDepartments(department.map((dept) => dept.name));
+      }
 
       //  Fetch laws
       setLaws(await fetchLaws());
@@ -201,19 +208,15 @@ function AddControl() {
 
           {/*department*/}
           <div className="control-Department">
-            {/*<Input*/}
-            {/*  type="text"*/}
-            {/*  placeholder="Department"*/}
-            {/*  onChange={getDepartment}*/}
-            {/*/>*/}
             <label htmlFor="department">Department</label>
-            <InputText
-              type="text"
+            <Dropdown
               name="department"
               id="department"
-              className="p-inputtext-md w-full"
-              placeholder="Enter control department"
+              value={department}
               onChange={(e) => getDepartment(e.target.value)}
+              options={departments}
+              placeholder="Select various departments"
+              className="w-full md:w-14rem"
             />
           </div>
 

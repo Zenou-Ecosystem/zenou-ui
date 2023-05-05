@@ -10,6 +10,7 @@ import { Dropdown } from "primereact/dropdown";
 import { fetchControls } from "../../../services/control.service";
 import { fetchLaws } from "../../../services/laws.service";
 import { ILaws } from "../../../interfaces/laws.interface";
+import { fetchDepartments } from "../../../services/department.service";
 
 function AddAction() {
   const [type, setType] = useState("");
@@ -22,6 +23,7 @@ function AddAction() {
   const [text_of_the_law, setTextOfLaw] = useState("");
   const [responsible_for, setResponsibleFor] = useState("");
   const [control_plan, setControlPlan] = useState("");
+  const [departments, setDepartments] = useState<string[]>([]);
 
   const [controls, setControls] = useState<any[]>([]);
   const [laws, setLaws] = useState<ILaws[]>([]);
@@ -73,6 +75,11 @@ function AddAction() {
       const allControls = await fetchControls();
       setControls(allControls);
 
+      let department = await fetchDepartments();
+      if (department) {
+        setDepartments(department.map((dept) => dept.name));
+      }
+
       setLaws(await fetchLaws());
     })();
   }, [state]);
@@ -81,37 +88,6 @@ function AddAction() {
     return (
       <form className="w-full">
         <div className="form-elements grid md:grid-cols-2 gap-4">
-          {/*<div className="Action-type">*/}
-          {/*    <Input type='text' placeholder='Action Type' onChange={getType} />*/}
-          {/*</div>*/}
-          {/*<div>*/}
-          {/*    <Input type='text' placeholder='Resources' onChange={getResources} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='ResponsibleFor' onChange={getResponsibleFor} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='Evaluation Criteria' onChange={getEvaluationCriteria} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='Proof Of Success' onChange={getEvidenceOfActions} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='Action Duration' onChange={getDuration} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='Theme' onChange={getTheme} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='Department' onChange={getDepartment} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='Text Of Law' onChange={getTextOfLaw} />*/}
-          {/*</div>*/}
-          {/*<div >*/}
-          {/*    <Input type='text' placeholder='Control Plan' onChange={getControlPlan} />*/}
-          {/*</div>*/}
-
           {/*type*/}
           <div className="control-type">
             <label htmlFor="controlType">Type</label>
@@ -206,13 +182,14 @@ function AddAction() {
           {/*department*/}
           <div className="control-Department">
             <label htmlFor="department">Department</label>
-            <InputText
-              type="text"
+            <Dropdown
               name="department"
               id="department"
-              className="p-inputtext-md w-full"
-              placeholder="Enter control department"
+              value={department}
               onChange={(e) => getDepartment(e.target.value)}
+              options={departments}
+              placeholder="Select various departments"
+              className="w-full md:w-14rem"
             />
           </div>
 

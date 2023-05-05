@@ -135,7 +135,7 @@ function Laws() {
                 data={laws}
                 fields={[
                   "title",
-                  "theme",
+                  "is_applicable",
                   "ratification",
                   "compliance",
                   "severity",
