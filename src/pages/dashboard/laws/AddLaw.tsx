@@ -1,5 +1,4 @@
-import { Key, useEffect, useState } from "react";
-import Input from "../../../core/Input/Input";
+import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import useLawContext from "../../../hooks/useLawContext";
 import { MultiSelect } from "primereact/multiselect";
@@ -8,16 +7,16 @@ import { LawActionTypes } from "../../../store/action-types/laws.actions";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import "./law.scss";
-import { upload } from "../../../firebase/upload/fileUpload";
 import { ILaws } from "../../../interfaces/laws.interface";
 import { fetchActions } from "../../../services/actions.service";
 import { fetchControls } from "../../../services/control.service";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
-import { TreeSelect } from "primereact/treeselect";
 import { InputText } from "primereact/inputtext";
 import { Chip } from "primereact/chip";
 import { fetchLaws } from "../../../services/laws.service";
+import { fetchDepartments } from "../../../services/department.service";
+import { IDepartment } from "../../../interfaces/department.interface";
 
 function AddLaw(props: { laws: ILaws[] }) {
   const titles = [
@@ -32,17 +31,7 @@ function AddLaw(props: { laws: ILaws[] }) {
   ];
   const locations = ["international", "continental", "national"];
   const complianceObject = ["complaint", "non-compliant", "in progress"];
-  const domains = [
-    "air",
-    "land",
-    "water",
-    "environment",
-    "business",
-    "education",
-    "transport",
-    "health",
-    "agriculture",
-  ];
+
   const decisionsObject = ["informative", "administrative", "financial"];
 
   const severity = [
@@ -135,7 +124,7 @@ function AddLaw(props: { laws: ILaws[] }) {
       error_message: "",
       required: true,
     },
-    domain: {
+    department: {
       value: "",
       error: true,
       error_message: "",
@@ -277,6 +266,7 @@ function AddLaw(props: { laws: ILaws[] }) {
   const [checkOrder, setCheckedOrder] = useState(false);
   const [checkDecision, setCheckedDecision] = useState(false);
   const [optionPlaceholder, setOptionPlaceholder] = useState("");
+  const [department, setDepartment] = useState<string[]>([]);
 
   // const [title, setTitle] = useState('');
   // const [ratification, setRatification] = useState('')
@@ -314,9 +304,14 @@ function AddLaw(props: { laws: ILaws[] }) {
         setLoader(false);
       }
 
-      // Fetch Actions and Controls
+      // Fetch Actions,departments and Controls
       const data = await fetchActions();
       setActions(data);
+
+      let departments = await fetchDepartments();
+      if (departments) {
+        setDepartment(departments.map(dept => dept.name))
+      }
 
       const allControls = await fetchControls();
       setControls(allControls);
@@ -588,15 +583,15 @@ function AddLaw(props: { laws: ILaws[] }) {
 
           {/*domain */}
           <div>
-            <label htmlFor="domain">Domain</label>
+            <label htmlFor="department">Department</label>
             <Dropdown
-              id="domain"
-              name="domain"
-              value={formValues.domain.value}
+              id="department"
+              name="department"
+              value={formValues.department.value}
               onChange={handleChange()}
               className="w-full md:w-14rem"
-              options={domains}
-              placeholder="Domain of action of this Law"
+              options={department}
+              placeholder="Department of action of this Law"
             />
           </div>
 
@@ -681,13 +676,12 @@ function AddLaw(props: { laws: ILaws[] }) {
           <div>
             {/*decree checkbox*/}
             <div
-              className={`${
-                ["law", "decree"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
+              className={`${["law", "decree"].includes(
+                formValues["title"].value.toLowerCase()
+              )
+                ? "flex"
+                : "hidden"
+                } 
                         justify-content-center mb-2`}
             >
               <Checkbox
@@ -702,13 +696,12 @@ function AddLaw(props: { laws: ILaws[] }) {
 
             {/*order checkbox*/}
             <div
-              className={`${
-                ["law", "decree", "order"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
+              className={`${["law", "decree", "order"].includes(
+                formValues["title"].value.toLowerCase()
+              )
+                ? "flex"
+                : "hidden"
+                } 
                         justify-content-center mb-2`}
             >
               <Checkbox
@@ -723,13 +716,12 @@ function AddLaw(props: { laws: ILaws[] }) {
 
             {/*decisions checkbox*/}
             <div
-              className={`${
-                ["law", "decisions"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
+              className={`${["law", "decisions"].includes(
+                formValues["title"].value.toLowerCase()
+              )
+                ? "flex"
+                : "hidden"
+                } 
                         justify-content-center mb-2`}
             >
               <Checkbox
@@ -748,9 +740,9 @@ function AddLaw(props: { laws: ILaws[] }) {
             {/* If law has decrees, register them */}
 
             {(checkDecree || checkOrder || checkDecision) &&
-            ["law", "decree", "order"].includes(
-              formValues["title"].value.toLowerCase()
-            ) ? (
+              ["law", "decree", "order"].includes(
+                formValues["title"].value.toLowerCase()
+              ) ? (
               // <MultiSelect
               //     value={selectedOptions}
               //     onChange={handleSelectedOption}
@@ -834,18 +826,18 @@ function AddLaw(props: { laws: ILaws[] }) {
         <div>
           {typedOptions?.length
             ? typedOptions?.map((x: any) => {
-                return (
-                  <Chip
-                    removable
-                    label={x?.title}
-                    key={x.id}
-                    onRemove={(e) => {
-                      e.preventDefault();
-                      removeOptions(x.id);
-                    }}
-                  />
-                );
-              })
+              return (
+                <Chip
+                  removable
+                  label={x?.title}
+                  key={x.id}
+                  onRemove={(e) => {
+                    e.preventDefault();
+                    removeOptions(x.id);
+                  }}
+                />
+              );
+            })
             : null}
         </div>
 
