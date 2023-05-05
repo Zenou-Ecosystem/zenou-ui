@@ -1,5 +1,4 @@
-import { Key, useEffect, useState } from "react";
-import Input from "../../../core/Input/Input";
+import { useEffect, useState } from "react";
 import { ProgressSpinner } from "primereact/progressspinner";
 import useLawContext from "../../../hooks/useLawContext";
 import { MultiSelect } from "primereact/multiselect";
@@ -8,167 +7,163 @@ import { LawActionTypes } from "../../../store/action-types/laws.actions";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import "./law.scss";
-import { upload } from "../../../firebase/upload/fileUpload";
 import { ILaws } from "../../../interfaces/laws.interface";
 import { fetchActions } from "../../../services/actions.service";
 import { fetchControls } from "../../../services/control.service";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
-import { TreeSelect } from "primereact/treeselect";
 import { InputText } from "primereact/inputtext";
 import { Chip } from "primereact/chip";
 import { fetchLaws } from "../../../services/laws.service";
 
+const titles = [
+  "convention",
+  "law",
+  "decree",
+  "order",
+  "decisions",
+  "notes",
+  "guidance",
+  "direction",
+];
+const locations = ["international", "continental", "national"];
+const complianceObject = ["complaint", "non-compliant", "in progress"];
+const domains = [
+  "air",
+  "land",
+  "water",
+  "environment",
+  "business",
+  "education",
+  "transport",
+  "health",
+  "agriculture",
+];
+const decisionsObject = ["informative", "administrative", "financial"];
+
+const severity = [
+  {
+    label: "Low",
+    value: "low",
+  },
+  {
+    label: "Medium",
+    value: "medium",
+  },
+  {
+    label: "High",
+    value: "high",
+  },
+];
+
+const initialFormState = {
+  title: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  location: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  ratification: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  area: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  is_applicable: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  theme: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  item_number: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  paragraph_number: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  decision: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  compliance: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  control_plan: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  action_plan: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  domain: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  article: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  severity: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+};
+
+const selectOptions = {
+  title: {
+    value: "",
+    error: false,
+    required: true,
+    errorMessage: "This field is required",
+  },
+  selectedOptions: {
+    value: "",
+    error: false,
+    errorMessage: "This field is required",
+  },
+};
+
 function AddLaw(props: { laws: ILaws[] }) {
-  const titles = [
-    "convention",
-    "law",
-    "decree",
-    "order",
-    "decisions",
-    "notes",
-    "guidance",
-    "direction",
-  ];
-  const locations = ["international", "continental", "national"];
-  const complianceObject = ["complaint", "non-compliant", "in progress"];
-  const domains = [
-    "air",
-    "land",
-    "water",
-    "environment",
-    "business",
-    "education",
-    "transport",
-    "health",
-    "agriculture",
-  ];
-  const decisionsObject = ["informative", "administrative", "financial"];
-
-  const severity = [
-    {
-      label: "Least Severe",
-      value: 1,
-    },
-    {
-      label: "Less Severe",
-      value: 2,
-    },
-    {
-      label: "Severe",
-      value: 3,
-    },
-    {
-      label: "More Severe",
-      value: 4,
-    },
-    {
-      label: "Most Severe",
-      value: 5,
-    },
-  ];
-
-  const initialFormState = {
-    title: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    location: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    ratification: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    area: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    theme: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    item_number: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    paragraph_number: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    decision: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    compliance: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    control_plan: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    action_plan: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    domain: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    article: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-    severity: {
-      value: "",
-      error: true,
-      error_message: "",
-      required: true,
-    },
-  };
-
-  const selectOptions = {
-    title: {
-      value: "",
-      error: false,
-      required: true,
-      errorMessage: "This field is required",
-    },
-    selectedOptions: {
-      value: "",
-      error: false,
-      errorMessage: "This field is required",
-    },
-  };
-
   const [dynamicFormOptions, setDynamicFormOptions] =
     useState<Record<string, any>>(selectOptions);
 
@@ -269,43 +264,20 @@ function AddLaw(props: { laws: ILaws[] }) {
   const [laws, setLaws] = useState<ILaws[]>(props?.laws);
   const [actions, setActions] = useState<any[]>([]);
   const [controls, setControls] = useState<any[]>([]);
-  const [options, setOptions] = useState<any>();
-  const [selectedOptions, setSelectedOptions] = useState<any>([]);
   const [typedOptions, setTypedOptions] = useState<any>([]);
-  const [currentOption, setCurrentOption] = useState<any>({});
   const [checkDecree, setCheckedDecree] = useState(false);
   const [checkOrder, setCheckedOrder] = useState(false);
   const [checkDecision, setCheckedDecision] = useState(false);
   const [optionPlaceholder, setOptionPlaceholder] = useState("");
 
-  // const [title, setTitle] = useState('');
-  // const [ratification, setRatification] = useState('')
-  // const [theme, setTheme] = useState('');
-  // const [link, setLink] = useState<File>();
   const [order, setOrder] = useState("");
 
   const [decreeTitle, setDecreeTitle] = useState("");
 
   const [decisions, setDecisions] = useState("");
-  // const [compliance, setCompliance] = useState('');
-  // const [control_plan, setControlPlan] = useState('');
-  // const [action_plan, setActionPlan] = useState('');
+
   const [loader, setLoader] = useState(false);
   const { state, dispatch } = useLawContext();
-
-  const [decreePlaceHolder, setDecreePlaceHolder] = useState(
-    "What is the title of the Decree ?"
-  );
-  const [orderPlaceHolder, setOrderPlaceHolder] = useState(
-    "What is the title of the Order ? "
-  );
-  const [decisionPlaceHolder, setDecisionPlaceHolder] = useState(
-    "What is the title of the Decision ?"
-  );
-
-  const [disableAddDecree, setDisableAddDecree] = useState(true);
-  const [disableAddOrder, setDisableAddOrder] = useState(true);
-  const [disableAddDecision, setDisableAddDecision] = useState(true);
 
   useEffect(() => {
     (async () => {
