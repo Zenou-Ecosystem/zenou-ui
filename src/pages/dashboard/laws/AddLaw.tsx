@@ -16,7 +16,6 @@ import { InputText } from "primereact/inputtext";
 import { Chip } from "primereact/chip";
 import { fetchLaws } from "../../../services/laws.service";
 import { fetchDepartments } from "../../../services/department.service";
-import { IDepartment } from "../../../interfaces/department.interface";
 
 const titles = [
   "convention",
@@ -35,16 +34,10 @@ const complianceObject = ["complaint", "non-compliant", "in progress"];
 
 const decisionsObject = ["informative", "administrative", "financial"];
 
-const areaOfAction = [
-  "air",
-  "land",
-  "water",
-  "environment",
-  "business",
-  "education",
-  "transport",
-  "health",
-  "agriculture",
+const applicability = [
+  "Applicable",
+  "Non Applicable",
+  "Informative"
 ];
 
 const severity = [
@@ -93,7 +86,7 @@ const initialFormState = {
     error_message: "",
     required: true,
   },
-  is_applicable: {
+  applicability: {
     value: "",
     error: true,
     error_message: "",
@@ -465,7 +458,7 @@ function AddLaw(props: { laws: ILaws[] }) {
             />
           </div>
           {/*domain */}
-          <div>
+          {/* <div>
             <label htmlFor="area">Area of action</label>
             <Dropdown
               id="area"
@@ -476,7 +469,7 @@ function AddLaw(props: { laws: ILaws[] }) {
               options={areaOfAction}
               placeholder="Select the area of action of this law"
             />
-          </div>
+          </div> */}
           {/*action plan*/}
           <div>
             <label htmlFor="action_plan">Action plan</label>
@@ -548,16 +541,19 @@ function AddLaw(props: { laws: ILaws[] }) {
           </div>
 
           {/*is applicable*/}
-          <div className="flex gap-4 ">
-            <label htmlFor="is_applicable" className="">
-              Is this law applicable?{" "}
-            </label>
-            <Checkbox
+          <div>
+            {/* <label htmlFor="applicability" className="">
+              Is this law applicable?
+            </label> */}
+            <Dropdown
+              id="severity"
+              name="applicability"
               onChange={handleChange()}
-              inputId="is_applicable"
-              name="is_applicable"
-              checked={formValues.is_applicable.value}
-            ></Checkbox>
+              value={formValues.applicability.value}
+              inputId="applicability"
+              options={applicability}
+              placeholder="Applicability"
+            />
           </div>
 
           {/*text of law*/}
@@ -578,13 +574,12 @@ function AddLaw(props: { laws: ILaws[] }) {
           <div>
             {/*decree checkbox*/}
             <div
-              className={`${
-                ["law", "decree"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
+              className={`${["law", "decree"].includes(
+                formValues["title"].value.toLowerCase()
+              )
+                ? "flex"
+                : "hidden"
+                } 
                         justify-content-center mb-2`}
             >
               <Checkbox
@@ -599,13 +594,12 @@ function AddLaw(props: { laws: ILaws[] }) {
 
             {/*order checkbox*/}
             <div
-              className={`${
-                ["law", "decree", "order"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
+              className={`${["law", "decree", "order"].includes(
+                formValues["title"].value.toLowerCase()
+              )
+                ? "flex"
+                : "hidden"
+                } 
                         justify-content-center mb-2`}
             >
               <Checkbox
@@ -620,13 +614,12 @@ function AddLaw(props: { laws: ILaws[] }) {
 
             {/*decisions checkbox*/}
             <div
-              className={`${
-                ["law", "decisions"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
+              className={`${["law", "decisions"].includes(
+                formValues["title"].value.toLowerCase()
+              )
+                ? "flex"
+                : "hidden"
+                } 
                         justify-content-center mb-2`}
             >
               <Checkbox
@@ -644,9 +637,9 @@ function AddLaw(props: { laws: ILaws[] }) {
             {/* If law has decrees, register them */}
 
             {(checkDecree || checkOrder || checkDecision) &&
-            ["law", "decree", "order"].includes(
-              formValues["title"].value.toLowerCase()
-            ) ? (
+              ["law", "decree", "order"].includes(
+                formValues["title"].value.toLowerCase()
+              ) ? (
               <>
                 <div>
                   <label htmlFor="title">Enter {optionPlaceholder} title</label>
@@ -701,18 +694,18 @@ function AddLaw(props: { laws: ILaws[] }) {
         <div>
           {typedOptions?.length
             ? typedOptions?.map((x: any) => {
-                return (
-                  <Chip
-                    removable
-                    label={x?.title}
-                    key={x.id}
-                    onRemove={(e) => {
-                      e.preventDefault();
-                      removeOptions(x.id);
-                    }}
-                  />
-                );
-              })
+              return (
+                <Chip
+                  removable
+                  label={x?.title}
+                  key={x.id}
+                  onRemove={(e) => {
+                    e.preventDefault();
+                    removeOptions(x.id);
+                  }}
+                />
+              );
+            })
             : null}
         </div>
 
@@ -731,10 +724,6 @@ function AddLaw(props: { laws: ILaws[] }) {
     );
   };
 
-  const cardProps = {
-    title: "Law information",
-    content: addForm,
-  };
 
   return (
     <section>
