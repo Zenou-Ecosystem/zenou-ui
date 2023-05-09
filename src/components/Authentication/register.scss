@@ -1,0 +1,45 @@
+section {
+    div.welcome-container {
+        background: linear-gradient(180deg, #005377 0%, #052F5F 100%);
+
+        .welcome-main-text {
+            font-family: 'Poppins', sans-serif;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 2rem;
+            color: #F1A208;
+        }
+    }
+    div.signup-section {
+        background-color: white;
+        color: #1c1c1c;
+        h1.register-title {
+            font-weight: 600;
+            color: #052F5F;
+            margin: 0.5rem 0;
+            background-image: linear-gradient(to right, #052F5F, #F1A208);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        form {
+            div.form-control {
+                i {
+                    &.pi-lock, &.pi-lock-open, &.pi-building {
+                        z-index: 1;
+                    }
+                }
+                div.p-password {
+                    width: 100% !important;
+                    input {
+                        width: 100% !important;
+                        padding-left: 2.5rem;
+                    }
+                }
+                .p-multiselect-label {
+                    padding-left: 2.5rem !important;
+                }
+            }
+        }
+    }
+}

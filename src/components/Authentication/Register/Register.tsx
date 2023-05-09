@@ -1,122 +1,247 @@
-import React, { useRef, useState } from 'react';
-import { HiUser, HiLockClosed, HiMail, HiArrowSmRight } from "react-icons/hi";
-import { Link, useNavigate } from 'react-router-dom';
-import Button from '../../../core/Button/Button';
-import Input from '../../../core/Input/Input';
-import { register } from '../../../services/auth.service';
-import './register.scss';
-import { Toast } from 'primereact/toast';
-import { LocalStore } from '../../../utils/storage.utils';
-import { UserTypes } from '../../../constants/user.constants';
+import React, { useRef, useState } from "react";
+import { HiArrowSmRight } from "react-icons/hi";
+import { Link, useNavigate } from "react-router-dom";
+import Button from "../../../core/Button/Button";
+import { register } from "../../../services/auth.service";
+import "../register.scss";
+import { Toast } from "primereact/toast";
+import { LocalStore } from "../../../utils/storage.utils";
+import { UserTypes } from "../../../constants/user.constants";
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { Divider } from "primereact/divider";
+import { MultiSelect } from "primereact/multiselect";
 
+const domainsList = [
+  "air",
+  "land",
+  "water",
+  "environment",
+  "business",
+  "education",
+  "transport",
+  "health",
+  "agriculture",
+];
+const initialState = {
+  username: {
+    value: "",
+  },
+  email: {
+    value: "",
+  },
+  password: {
+    value: "",
+  },
+  cPassword: {
+    value: "",
+  },
+  domains: {
+    value: "",
+  },
+  address: {
+    value: "",
+  },
+};
 function Register() {
-    const navigator = useNavigate();
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [cPassword, setCpassword] = useState('');
-    const toast = useRef({});
+  const [formValues, setFormValues] =
+    useState<Record<string, any>>(initialState);
 
-    const signinHandler = async () => {
-        const data = await register({ email, username, password, role: UserTypes.ADMIN });
-        if (data) {
-            (toast.current as any).show(
-                {
-                    severity: 'success',
-                    summary: 'Signup success',
-                    detail: 'Account successfully created',
-                    life: 5000
-                });
-            LocalStore.set('token', data?.access_token);
-            navigator('/dashboard/home');
-        } else {
-            (toast.current as any).show(
-                {
-                    severity: 'error',
-                    summary: 'Registration failed',
-                    detail: 'Request was unsuccessful',
-                    life: 5000
-                });
-        }
+  const navigator = useNavigate();
+
+  const toast = useRef({});
+
+  const handleState = (e: any) => {
+    const { name, value } = e.target;
+
+    setFormValues({
+      ...formValues,
+      [name]: {
+        ...formValues[name],
+        value,
+      },
+    });
+  };
+
+  const signInHandler = async () => {
+    let payload: any = {
+      role: UserTypes.COMPANY_OWNER,
     };
+    Object.entries(formValues).forEach(([key, value]) => {
+      key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
+    });
 
-    return (
-        <div className='container flex h-screen gap-24'>
+    const data = await register(payload);
+    if (data) {
+      (toast.current as any).show({
+        severity: "success",
+        summary: "Signup success",
+        detail: "Account successfully created",
+        life: 5000,
+      });
+      LocalStore.set("token", data?.access_token);
+      navigator("/dashboard/home");
+    } else {
+      (toast.current as any).show({
+        severity: "error",
+        summary: "Registration failed",
+        detail: "Request was unsuccessful",
+        life: 5000,
+      });
+    }
+  };
 
-            <Toast ref={toast as any} />
+  return (
+    <section className="block md:flex h-screen">
+      <Toast ref={toast as any} />
 
-            <div className="welcome-container w-1/2 px-20 flex flex-col justify-center items-center">
-                <h1 className='welcome-main-text'>
-                    The best compliance management and ISO standardization
-                    software
-                </h1>
-                <p className="welcome-small-text text-white">
-                    Lorem ipsum dolor sit amet consectetur
-                    adipisicing elit. Sapiente sit, suscipit
-                    reprehenderit voluptate, tenetur error
-                    enim iure esse iusto rem, quasi provident
-                    quas aliquid asperiores necessitatibus?
-                </p>
-            </div>
-            <div className="signup-section w-1/2 flex flex-col justify-center gap-1">
-                <h1 className='register-title'>Create An Account</h1>
-                <div className="email-input w-2/3">
-                    <label htmlFor='email' className="block">Email</label>
-                    <Input type='email'
-                        onChange={(email: string) => setEmail(email)}
-                        Icon={{
-                            classes: 'absolute top-2 left-3',
-                            Name: HiMail
-                        }} />
-                </div>
-                <div className="username-input w-2/3">
-                    <label htmlFor='username' className="block">Username</label>
-                    <Input type='text'
-                        onChange={(username: string) => setUsername(username)}
-                        Icon={{
-                            classes: 'absolute top-2 left-3',
-                            Name: HiUser
-                        }} />
-                </div>
-                <div className="password-input w-2/3">
-                    <label htmlFor='password' className="block">Password</label>
-                    <Input type='password'
-                        onChange={(password: string) => setPassword(password)}
-                        Icon={{
-                            classes: 'absolute top-2 left-3',
-                            Name: HiLockClosed
-                        }} />
-                </div>
-                <div className="confirm-pass-input w-2/3">
-                    <label htmlFor='cpassword' className="block">Confirm Password</label>
-                    <Input type='password'
-                        onChange={(cPassword: string) => setCpassword(cPassword)}
-                        Icon={{
-                            classes: 'absolute top-2 left-3',
-                            Name: HiLockClosed
-                        }} name='cpassword' id='cpassword' />
-                </div>
-                <div className="w-2/3 flex justify-between my-2">
-                    {/* <div className="remember-me">
-                        <input type="checkbox" name="remember-me" id="remember-me" />
-                        <label htmlFor="remember-me" className='ml-2'>Remember me</label>
-                        <p className='text-yellow-500 cursor-pointer'>
-                            Forgot password?
-                        </p>
-                    </div> */}
-                    <span>
-                        Already have an account?
-                        <Link className='text-blue-500 cursor-pointer' to="/login">Login</Link>
-                    </span>
-                </div>
-                <Button title='Submit' Icon={{
-                    classes: 'absolute top-2 left-8',
-                    Name: HiArrowSmRight,
-                    color: 'white'
-                }} onClick={signinHandler} />
-            </div>
-        </div>
-    )
+      <div className="welcome-container w-full md:w-8/12 md:px-20 p-6 md:flex flex-col justify-center items-center">
+        <h1 className="welcome-main-text hidden md:block md:w-3/5">
+          The best compliance management and ISO standardization software
+        </h1>
+        <br />
+        <p className="text-gray-200 hidden md:block w-3/5">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente sit,
+          suscipit reprehenderit voluptate, tenetur error enim iure esse iusto
+          rem, quasi provident quas aliquid asperiores necessitatibus?
+        </p>
+      </div>
+
+      {/*form section*/}
+      <div className="signup-section p-4 md:px-10 w-full md:w-4/12 flex items-start flex-col justify-center gap-1">
+        <form className="w-full">
+          <h1 className="register-title text-2xl">Create an account</h1>
+          <Divider />
+          {/*username*/}
+          <div className="w-full flex flex-col my-4">
+            <label htmlFor="username">Username</label>
+            <span className="p-input-icon-left">
+              <i className="pi pi-user text-gray-400" />
+              <InputText
+                id="username"
+                name="username"
+                value={formValues.username.value}
+                placeholder="Enter username"
+                type="text"
+                className="w-full"
+                onChange={handleState}
+              />
+            </span>
+          </div>
+
+          {/*email*/}
+          <div className="w-full flex flex-col my-4">
+            <label htmlFor="email">Email</label>
+            <span className="p-input-icon-left">
+              <i className="pi pi-envelope text-gray-400" />
+              <InputText
+                id="email"
+                type="email"
+                name="email"
+                value={formValues.email.value}
+                placeholder="Email address"
+                className="w-full"
+                onChange={handleState}
+              />
+            </span>
+          </div>
+
+          {/*password*/}
+          <div className="w-full flex flex-col my-4 form-control">
+            <label htmlFor="password">Password</label>
+            <span className="p-input-icon-left">
+              <i className="pi pi-lock text-gray-400" />
+              <Password
+                placeholder="Enter password"
+                name="password"
+                id="password"
+                value={formValues.password.value}
+                className="password"
+                onChange={handleState}
+                toggleMask
+              />
+            </span>
+          </div>
+
+          {/*confirm password*/}
+          <div className="w-full flex flex-col my-4 form-control">
+            <label htmlFor="cPassword">Confirm password</label>
+            <span className="p-input-icon-left">
+              <i className="pi pi-lock-open text-gray-400" />
+              <Password
+                placeholder="Re-enter password"
+                className="password"
+                name="cPassword"
+                id="password"
+                value={formValues.cPassword.value}
+                onChange={handleState}
+                toggleMask
+              />
+            </span>
+          </div>
+
+          {/*domain */}
+          <div className="w-full flex flex-col my-4 form-control">
+            <label htmlFor="domain">Domains of action</label>
+            <span className="p-input-icon-left">
+              <i className="pi pi-building text-gray-400" />
+              <MultiSelect
+                id="domain"
+                name="domains"
+                filter
+                display="chip"
+                value={formValues.domains.value}
+                onChange={handleState}
+                className="w-full"
+                options={domainsList}
+                placeholder="Select the domains of action"
+              />
+            </span>
+          </div>
+
+          {/*address*/}
+          <div className="w-full flex flex-col my-4 form-control">
+            <label htmlFor="address">Address</label>
+            <span className="p-input-icon-left">
+              <i className="pi pi-map-marker text-gray-400" />
+              <InputText
+                id="address"
+                type="text"
+                name="address"
+                value={formValues.address.value}
+                placeholder="Enter address"
+                className="w-full"
+                onChange={handleState}
+              />
+            </span>
+          </div>
+
+          <div className="w-full flex flex-col items-end my-4 form-control">
+            <p className="text-gray-500 text-sm font-light">
+              Already have an account?{" "}
+              <Link
+                className="text-orange-500 underline hover:text-orange-700 font-medium"
+                to="/login"
+              >
+                Log in
+              </Link>
+            </p>
+          </div>
+
+          <Button
+            title="Submit"
+            Icon={{
+              classes: "",
+              Name: HiArrowSmRight,
+              color: "white",
+            }}
+            styles="w-full md:w-auto py-2.5 items-center justify-center"
+            onClick={signInHandler}
+          />
+        </form>
+      </div>
+    </section>
+  );
 }
 
-export default Register
+export default Register;

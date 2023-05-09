@@ -35,7 +35,7 @@ const complianceObject = ["complaint", "non-compliant", "in progress"];
 
 const decisionsObject = ["informative", "administrative", "financial"];
 
-const areaOfAction = [
+const domain = [
   "air",
   "land",
   "water",
@@ -87,7 +87,7 @@ const initialFormState = {
     error_message: "",
     required: true,
   },
-  area: {
+  domain: {
     value: "",
     error: true,
     error_message: "",
@@ -466,15 +466,15 @@ function AddLaw(props: { laws: ILaws[] }) {
           </div>
           {/*domain */}
           <div>
-            <label htmlFor="area">Area of action</label>
+            <label htmlFor="domain">Domain of action</label>
             <Dropdown
-              id="area"
-              name="area"
-              value={formValues.area.value}
+              id="domain"
+              name="domain"
+              value={formValues.domain.value}
               onChange={handleChange()}
               className="w-full md:w-14rem"
-              options={areaOfAction}
-              placeholder="Select the area of action of this law"
+              options={domain}
+              placeholder="Select the domain of law"
             />
           </div>
           {/*action plan*/}
