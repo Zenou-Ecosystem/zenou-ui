@@ -9,14 +9,10 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   scroll-behavior: smooth;
-  box-sizing: border-box;
 }
 
 code {
@@ -26,18 +22,10 @@ code {
 
 .active {
   color: #F1A208;
-  font-weight: 600;
+  border-left: 4px solid #F1A208;
+  background: #fff;
 }
 
 .add-form-submit-btn {
   @apply flex flex-col justify-center items-center mt-4;
 }
-
-// .bg-dialog-header {
-//   background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
-//   color: white;
-// }
-
-// .bg-dialog-content {
-//   background-image: linear-gradient(to bottom right, #807b72a3, #052F5F) !important;
-// }

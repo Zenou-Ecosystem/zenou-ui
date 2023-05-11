@@ -1,131 +1,102 @@
 import React from "react";
-import {
-  FaHouseUser,
-  FaRegChartBar,
-  FaUsers,
-  FaDirections,
-  FaCheckDouble,
-  FaBook,
-  FaSignOutAlt,
-  FaCogs,
-  FaFileInvoiceDollar,
-} from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import "./navigation.scss";
 import { can } from "../../utils/access-control.utils";
 import { AppUserActions } from "../../constants/user.constants";
 
-function Sidebar() {
+function SidebarComponent() {
   return (
-    <section className="sidebar w-full h-full pt-5">
-      <ul className="flex flex-col justify-center items-center gap-3">
-        <li className="py-2 w-1/2">
-          <NavLink
-            to="/dashboard/home"
-            state={"home"}
-            className="flex flex-wrap items-center gap-2 text-lg"
-          >
-            <FaHouseUser />
+    <aside className="w-2/12 md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in">
+      <h2 className="text-3xl pt-5 px-8 mb-6 pb-5 border-b border-gray-500 font-semibold">
+        Zenou.
+      </h2>
+
+      <ul className="flex px-4 flex-col gap-3">
+        <NavLink to="/dashboard/home" state={"home"} className="px-4">
+          <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+            <i className="pi pi-home"></i>
             <span>Home</span>
-          </NavLink>
-        </li>
+          </li>
+        </NavLink>
         {!can(AppUserActions.VIEW_STATISTICS) ? null : (
-          <li className="py-2 w-1/2">
-            <NavLink
-              to="/dashboard/stats"
-              state={"statistics"}
-              className="flex flex-wrap items-center gap-2 text-lg"
-            >
-              <FaRegChartBar />
+          <NavLink to="/dashboard/stats" state={"statistics"} className="px-4">
+            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+              <i className="pi pi-chart-bar"></i>
               <span>Statistics</span>
-            </NavLink>
-          </li>
+            </li>
+          </NavLink>
         )}
-        {
-          !can(AppUserActions.VIEW_LAW) ? null :
-            <li className="py-2 w-1/2">
-              <NavLink
-                to="/dashboard/laws"
-                state={"laws"}
-                className="flex flex-wrap items-center gap-2 text-lg"
-              >
-                <FaDirections />
-                <span>Laws</span>
-              </NavLink>
+        {!can(AppUserActions.VIEW_LAW) ? null : (
+          <NavLink to="/dashboard/laws" state={"laws"} className="px-4">
+            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+              <i className="pi pi-file-edit"></i>
+              <span>Laws</span>
             </li>
-        }
-        {
-          !can(AppUserActions.VIEW_CONTROL) ? null :
-            <li className="py-2 w-1/2">
-              <NavLink
-                to="/dashboard/controls"
-                state={"controls"}
-                className="flex flex-wrap items-center gap-2 text-lg"
-              >
-                <FaCheckDouble />
-                <span>Controls</span>
-              </NavLink>
+          </NavLink>
+        )}
+        {!can(AppUserActions.VIEW_CONTROL) ? null : (
+          <NavLink to="/dashboard/controls" state={"controls"} className="px-4">
+            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+              <i className="pi pi-refresh"></i>
+              <span>Controls</span>
             </li>
-        }
-        {
-          !can(AppUserActions.VIEW_ACTIONS) ? null :
-            <li className="py-2 w-1/2">
-              <NavLink
-                to="/dashboard/actions"
-                state={"actions"}
-                className="flex flex-wrap items-center gap-2 text-lg"
-              >
-                <FaBook />
-                <span>Actions</span>
-              </NavLink>
+          </NavLink>
+        )}
+        {!can(AppUserActions.VIEW_ACTIONS) ? null : (
+          <NavLink to="/dashboard/actions" state={"actions"} className="px-4">
+            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+              <i className="pi pi-book"></i>
+              <span>Actions</span>
             </li>
-        }
+          </NavLink>
+        )}
         {!can(AppUserActions.VIEW_COMPANY) ? null : (
-          <li className="py-2 w-1/2">
-            <NavLink
-              to="/dashboard/companies"
-              state={"company"}
-              className="flex flex-wrap items-center gap-2 text-lg"
-            >
-              <FaUsers />
+          <NavLink to="/dashboard/companies" state={"company"} className="px-4">
+            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+              <i className="pi pi-building"></i>
               <span>Companies</span>
-            </NavLink>
-          </li>
+            </li>
+          </NavLink>
+        )}
+        {!can(AppUserActions.VIEW_PERSONNEL) ? null : (
+          <NavLink
+            to="/dashboard/personnel"
+            state={"personnel"}
+            className="px-4"
+          >
+            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+              <i className="pi pi-users"></i>
+              <span>Employees</span>
+            </li>
+          </NavLink>
         )}
         {!can(AppUserActions.VIEW_SUBSCRIPTION) ? null : (
-          <li className="py-2 w-1/2">
-            <NavLink
-              to="/dashboard/subscriptions"
-              state={"subscriptions"}
-              className="flex flex-wrap items-center gap-2 text-lg"
-            >
-              <FaFileInvoiceDollar />
+          <NavLink
+            to="/dashboard/subscriptions"
+            state={"subscriptions"}
+            className="px-4"
+          >
+            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+              <i className="pi pi-file-edit"></i>
               <span>Subscriptions</span>
-            </NavLink>
-          </li>
+            </li>
+          </NavLink>
         )}
-        <li className="py-2 w-1/2">
-          <NavLink
-            to="/user/profile"
-            state={"user"}
-            className="flex flex-wrap items-center gap-2 text-lg"
-          >
-            <FaCogs />
+        <NavLink to="/user/profile" state={"user"} className="px-4">
+          <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+            <i className="pi pi-cog"></i>
             <span>Settings</span>
-          </NavLink>
-        </li>
-        <li className="py-2 w-1/2">
-          <NavLink
-            to="/user/logout"
-            className="flex flex-wrap items-center gap-2 text-lg"
-          >
-            <FaSignOutAlt />
+          </li>
+        </NavLink>
+        <NavLink to="/user/logout" className="rounded-md px-4">
+          <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
+            <i className="pi pi-sign-out"></i>
             <span>Log out</span>
-          </NavLink>
-        </li>
+          </li>
+        </NavLink>
       </ul>
-    </section>
+    </aside>
   );
 }
 
-export default Sidebar;
+export default SidebarComponent;

@@ -72,6 +72,7 @@ function Register() {
     });
 
     const data = await register(payload);
+    console.log(data);
     if (data) {
       (toast.current as any).show({
         severity: "success",
@@ -79,8 +80,8 @@ function Register() {
         detail: "Account successfully created",
         life: 5000,
       });
-      LocalStore.set("token", data?.access_token);
-      navigator("/dashboard/home");
+      LocalStore.set("user", data);
+      setTimeout(() => navigator("/dashboard/home"), 5000);
     } else {
       (toast.current as any).show({
         severity: "error",

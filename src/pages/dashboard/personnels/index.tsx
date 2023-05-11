@@ -4,25 +4,27 @@ import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
 import { Dialog } from "primereact/dialog";
-import AddLaw from "./AddLaw";
+import AddPersonnel from "./AddPersonnel";
 import { HiPlus } from "react-icons/hi";
 import useAppContext from "../../../hooks/useAppContext.hooks";
-import LawContextProvider, { LawContext } from "../../../contexts/LawContext";
-import useLawContext from "../../../hooks/useLawContext";
-import { ILaws } from "../../../interfaces/laws.interface";
-import { LawActionTypes } from "../../../store/action-types/laws.actions";
-import { fetchLaws } from "../../../services/laws.service";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
-import { LocalStore } from "../../../utils/storage.utils";
+import { fetchAllPersonnel } from "../../../services/personnel.service";
+import { IPersonnel } from "../../../interfaces/personnel.interface";
+import usePersonnelContext from "../../../hooks/usePersonnelContext";
+import PersonnelContextProvider, {
+  PersonnelContext,
+} from "../../../contexts/PersonnelContext";
+import { PersonnelActionTypes } from "../../../store/action-types/personnel.actions";
 
-function Laws() {
-  const [laws, setLaws] = useState<ILaws[]>([]);
+function Personnel() {
+  const [personnel, setPersonnel] = useState<IPersonnel[]>([]);
   const [visible, setVisible] = useState(false);
   const { state } = useAppContext();
-  const { state: LawState } = useLawContext();
 
-  const openAddLawForm = () => {
+  const { state: PersonnelState } = usePersonnelContext();
+
+  const openAddPersonnelForm = () => {
     setVisible(true);
   };
 
@@ -31,23 +33,24 @@ function Laws() {
       const res = await state;
       let data = res?.data;
       if (!data || data?.length < 1) {
-        data = await fetchLaws();
+        data = await fetchAllPersonnel();
       }
-      const user = LocalStore.get("user");
-      const result = data.filter((items: any) =>
-        user.domains.includes(items.department.toLowerCase())
-      );
-      setLaws(result);
+      setPersonnel(data);
     })();
 
     (async () => {
-      const resolvedLawState = await LawState;
+      const allPersonnel = await fetchAllPersonnel();
+      console.log(allPersonnel);
+    })();
+
+    (async () => {
+      const resolvedLawState = await PersonnelState;
       if (resolvedLawState.hasCreated) {
-        console.log("Law state changed => ", resolvedLawState);
+        console.log("setPersonnel state changed => ", resolvedLawState);
         setVisible(false);
       }
     })();
-  }, [state, LawState]);
+  }, [state, PersonnelState]);
 
   const cardProps = {
     content: `Statistics for the month of February. This is really making
@@ -91,7 +94,7 @@ function Laws() {
   ];
 
   return (
-    <LawContextProvider>
+    <PersonnelContextProvider>
       {/* <div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <BasicCard {...cardProps} />
                 <BasicCard {...cardProps} />
@@ -104,13 +107,16 @@ function Laws() {
           title=""
           content={() => (
             <>
-              <div className="filter my-4 w-11/12 m-auto flex">
-                {!can(AppUserActions.ADD_LAW) ? null : (
-                  <div className="add-btn w-2/12">
+              <div className="my-4 w-full m-auto flex items-center">
+                <div className="filter w-10/12">
+                  <Filter fields={filterProps} title="Filter laws" />
+                </div>
+                {!can(AppUserActions.ADD_PERSONNEL) ? null : (
+                  <div className="add-btn">
                     <Button
                       title="New"
                       styles="flex justify-around flex-row-reverse items-center rounded-full"
-                      onClick={openAddLawForm}
+                      onClick={openAddPersonnelForm}
                       Icon={{
                         Name: HiPlus,
                         classes: "",
@@ -119,39 +125,28 @@ function Laws() {
                     />
                   </div>
                 )}
-                <div className="filter w-10/12">
-                  <Filter fields={filterProps} title="Filter laws" />
-                </div>
               </div>
 
               <div className="add-form my-10">
                 <Dialog
-                  header="Register New Law"
+                  header="Create new employee"
                   visible={visible}
-                  style={{ width: "80vw", height: "100vh" }}
+                  style={{ width: "770px", maxWidth: "100%" }}
                   onHide={() => setVisible(false)}
                 >
-                  <AddLaw laws={laws} />
+                  <AddPersonnel />
                 </Dialog>
               </div>
 
               <Datatable
-                data={laws}
-                fields={[
-                  "title",
-                  "is_applicable",
-                  "ratification",
-                  "compliance",
-                  "severity",
-                  "decision",
-                  "Actions",
-                ]}
-                actionTypes={LawActionTypes}
-                context={LawContext}
+                data={personnel}
+                fields={["username", "email", "role", "Actions"]}
+                actionTypes={PersonnelActionTypes}
+                context={PersonnelContext}
                 accessControls={{
-                  EDIT: AppUserActions.EDIT_LAW,
-                  DELETE: AppUserActions.DELETE_LAW,
-                  VIEW: AppUserActions.VIEW_LAW,
+                  EDIT: AppUserActions.EDIT_PERSONNEL,
+                  DELETE: AppUserActions.DELETE_PERSONNEL,
+                  VIEW: AppUserActions.VIEW_PERSONNEL,
                 }}
               />
             </>
@@ -159,22 +154,8 @@ function Laws() {
           styles="p-0"
         />
       </div>
-    </LawContextProvider>
+    </PersonnelContextProvider>
   );
 }
 
-export default Laws;
-
-/**
- * risk
- * decisions
- * title
- * is applicable
- * severity
- * compliance
- * department
- *
- * theme is input field
- * text of law text area
- *
- * **/
+export default Personnel;

@@ -16,7 +16,6 @@ import { InputText } from "primereact/inputtext";
 import { Chip } from "primereact/chip";
 import { fetchLaws } from "../../../services/laws.service";
 import { fetchDepartments } from "../../../services/department.service";
-import { IDepartment } from "../../../interfaces/department.interface";
 
 const titles = [
   "convention",
@@ -35,16 +34,19 @@ const complianceObject = ["complaint", "non-compliant", "in progress"];
 
 const decisionsObject = ["informative", "administrative", "financial"];
 
-const domain = [
-  "air",
-  "land",
-  "water",
-  "environment",
-  "business",
-  "education",
-  "transport",
-  "health",
-  "agriculture",
+const domainsOptions = [
+  {
+    label: "Air",
+    value: "air",
+  },
+  { label: "Land", value: "land" },
+  { label: "Water", value: "water" },
+  { label: "Environment", value: "environment" },
+  { label: "Business", value: "business" },
+  { label: "Education", value: "education" },
+  { label: "Transport", value: "transport" },
+  { label: "Health", value: "health" },
+  { label: "Agriculture", value: "agriculture" },
 ];
 
 const severity = [
@@ -473,7 +475,7 @@ function AddLaw(props: { laws: ILaws[] }) {
               value={formValues.domain.value}
               onChange={handleChange()}
               className="w-full md:w-14rem"
-              options={domain}
+              options={domainsOptions}
               placeholder="Select the domain of law"
             />
           </div>
