@@ -8,6 +8,7 @@ import { Dropdown } from "primereact/dropdown";
 import { UserTypes } from "../../../constants/user.constants";
 import { register } from "../../../services/auth.service";
 import { Toast } from "primereact/toast";
+import { LocalStore } from "../../../utils/storage.utils";
 
 const initialFormValues = {
   first_name: {
@@ -66,6 +67,7 @@ function AddPersonnel() {
   };
 
   const handleSubmission = () => {
+    const user = LocalStore.get("user");
     const password = new Array(8)
       .fill(0)
       .map(() => String.fromCharCode(Math.random() * 86 + 40))
@@ -80,6 +82,7 @@ function AddPersonnel() {
     });
     payload["username"] = `${payload.first_name} ${payload.last_name}`;
     payload["domains"] = [payload.domains];
+    payload["org_id"] = user.org_id;
     delete payload.first_name;
     delete payload.last_name;
 

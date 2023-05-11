@@ -33,11 +33,7 @@ function Laws() {
       if (!data || data?.length < 1) {
         data = await fetchLaws();
       }
-      const user = LocalStore.get("user");
-      const result = data.filter((items: any) =>
-        user.domains.includes(items.department.toLowerCase())
-      );
-      setLaws(result);
+      setLaws(data);
     })();
 
     (async () => {
@@ -101,7 +97,8 @@ function Laws() {
 
       <div className="w-full px-4">
         <BasicCard
-          title=""
+          title="List of laws"
+          headerStyles="font-semibold text-3xl py-4"
           content={() => (
             <>
               <div className="filter my-4 w-11/12 m-auto flex">
@@ -126,9 +123,9 @@ function Laws() {
 
               <div className="add-form my-10">
                 <Dialog
-                  header="Register New Law"
+                  header="Register new law"
                   visible={visible}
-                  style={{ width: "80vw", height: "100vh" }}
+                  style={{ width: "800px", maxWidth: "100%", height: "100vh" }}
                   onHide={() => setVisible(false)}
                 >
                   <AddLaw laws={laws} />
@@ -139,7 +136,7 @@ function Laws() {
                 data={laws}
                 fields={[
                   "title",
-                  "is_applicable",
+                  "applicability",
                   "ratification",
                   "compliance",
                   "severity",
@@ -156,7 +153,7 @@ function Laws() {
               />
             </>
           )}
-          styles="p-0"
+          styles="px-6"
         />
       </div>
     </LawContextProvider>
@@ -164,17 +161,3 @@ function Laws() {
 }
 
 export default Laws;
-
-/**
- * risk
- * decisions
- * title
- * is applicable
- * severity
- * compliance
- * department
- *
- * theme is input field
- * text of law text area
- *
- * **/

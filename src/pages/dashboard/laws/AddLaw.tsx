@@ -18,21 +18,33 @@ import { fetchLaws } from "../../../services/laws.service";
 import { fetchDepartments } from "../../../services/department.service";
 
 const titles = [
-  "convention",
-  "law",
-  "decree",
-  "order",
-  "decisions",
-  "notes",
-  "guidance",
-  "direction",
+  { label: "Convention", value: "convention" },
+  { label: "Law", value: "law" },
+  { label: "Decree", value: "decree" },
+  { label: "Order", value: "order" },
+  { label: "Decisions", value: "decisions" },
+  { label: "Notes", value: "notes" },
+  { label: "Guidance", value: "guidance" },
+  { label: "Direction", value: "direction" },
 ];
 
-const locations = ["international", "continental", "national"];
+const locations = [
+  { label: "International", value: "international" },
+  { label: "Continental", value: "continental" },
+  { label: "National", value: "national" },
+];
 
-const complianceObject = ["complaint", "non-compliant", "in progress"];
+const complianceObject = [
+  { label: "Compliant", value: "complaint" },
+  { label: "Non compliant", value: "non_compliant" },
+  { label: "In progress", value: "in_progress" },
+];
 
-const decisionsObject = ["informative", "administrative", "financial"];
+const decisionsObject = [
+  { label: "Informative", value: "informative" },
+  { label: "Administrative", value: "administrative" },
+  { label: "Financial", value: "financial" },
+];
 
 const domainsOptions = [
   {
@@ -47,6 +59,21 @@ const domainsOptions = [
   { label: "Transport", value: "transport" },
   { label: "Health", value: "health" },
   { label: "Agriculture", value: "agriculture" },
+];
+
+const applicability = [
+  {
+    label: "Applicable",
+    value: "applicable",
+  },
+  {
+    label: "Non Applicable",
+    value: "non_applicable",
+  },
+  {
+    label: "Informative",
+    value: "informative",
+  },
 ];
 
 const severity = [
@@ -89,13 +116,13 @@ const initialFormState = {
     error_message: "",
     required: true,
   },
-  domain: {
+  domains: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  is_applicable: {
+  applicability: {
     value: "",
     error: true,
     error_message: "",
@@ -466,13 +493,14 @@ function AddLaw(props: { laws: ILaws[] }) {
               placeholder="Department of action of this Law"
             />
           </div>
-          {/*domain */}
+          {/*domains*/}
           <div>
             <label htmlFor="domain">Domain of action</label>
-            <Dropdown
+            <MultiSelect
+              filter
               id="domain"
-              name="domain"
-              value={formValues.domain.value}
+              name="domains"
+              value={formValues.domains.value}
               onChange={handleChange()}
               className="w-full md:w-14rem"
               options={domainsOptions}
@@ -550,16 +578,19 @@ function AddLaw(props: { laws: ILaws[] }) {
           </div>
 
           {/*is applicable*/}
-          <div className="flex gap-4 ">
-            <label htmlFor="is_applicable" className="">
-              Is this law applicable?{" "}
-            </label>
-            <Checkbox
+          <div>
+            <label htmlFor="applicability">Is this law applicable?</label>
+            <Dropdown
+              id="severity"
+              name="applicability"
               onChange={handleChange()}
-              inputId="is_applicable"
-              name="is_applicable"
-              checked={formValues.is_applicable.value}
-            ></Checkbox>
+              value={formValues.applicability.value}
+              inputId="applicability"
+              optionLabel="label"
+              className="w-full md:w-14rem"
+              options={applicability}
+              placeholder="Select applicability"
+            />
           </div>
 
           {/*text of law*/}
@@ -731,11 +762,6 @@ function AddLaw(props: { laws: ILaws[] }) {
         </div>
       </form>
     );
-  };
-
-  const cardProps = {
-    title: "Law information",
-    content: addForm,
   };
 
   return (

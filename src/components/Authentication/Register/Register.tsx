@@ -11,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Divider } from "primereact/divider";
 import { MultiSelect } from "primereact/multiselect";
+import { createCompany } from "../../../services/companies.service";
 
 const domainsList = [
   "air",
@@ -71,24 +72,43 @@ function Register() {
       key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
     });
 
-    const data = await register(payload);
-    console.log(data);
-    if (data) {
-      (toast.current as any).show({
-        severity: "success",
-        summary: "Signup success",
-        detail: "Account successfully created",
-        life: 5000,
-      });
-      LocalStore.set("user", data);
-      setTimeout(() => navigator("/dashboard/home"), 5000);
-    } else {
-      (toast.current as any).show({
-        severity: "error",
-        summary: "Registration failed",
-        detail: "Request was unsuccessful",
-        life: 5000,
-      });
+    const newCompany = await createCompany({
+      name: payload.username,
+      admin_email: payload.email,
+      contact: payload.email,
+      sector: payload.domains,
+      language: "en",
+      capital: "",
+      category: "",
+      certification: "",
+      country: "",
+      function: "",
+      legal_status: "",
+      number_of_employees: 5,
+      address: payload.address,
+    });
+
+    if (newCompany) {
+      payload["org_id"] = newCompany.id;
+      const data = await register(payload);
+      console.log(data);
+      if (data) {
+        (toast.current as any).show({
+          severity: "success",
+          summary: "Signup success",
+          detail: "Account successfully created",
+          life: 5000,
+        });
+        LocalStore.set("user", data);
+        setTimeout(() => navigator("/dashboard/home"), 5000);
+      } else {
+        (toast.current as any).show({
+          severity: "error",
+          summary: "Registration failed",
+          detail: "Request was unsuccessful",
+          life: 5000,
+        });
+      }
     }
   };
 
@@ -111,11 +131,11 @@ function Register() {
       {/*form section*/}
       <div className="signup-section p-4 md:px-10 w-full md:w-4/12 flex items-start flex-col justify-center gap-1">
         <form className="w-full">
-          <h1 className="register-title text-2xl">Create an account</h1>
+          <h1 className="register-title text-2xl">Register your company</h1>
           <Divider />
           {/*username*/}
           <div className="w-full flex flex-col my-4">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Company name</label>
             <span className="p-input-icon-left">
               <i className="pi pi-user text-gray-400" />
               <InputText

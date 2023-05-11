@@ -14,7 +14,7 @@ import { Toast } from "primereact/toast";
 const languageOptions = [
   {
     label: "English",
-    value: "eng",
+    value: "en",
   },
   {
     label: "French",
@@ -189,7 +189,6 @@ function AddCompany() {
               placeholder="Enter company contact"
               onChange={(e) => getContact(e.target.value)}
             />
-            {/*<Input type="text" placeholder="Contact" onChange={getContact} />*/}
           </div>
 
           {/*company country*/}
@@ -207,8 +206,6 @@ function AddCompany() {
               itemTemplate={countryOptionTemplate}
               className="w-full md:w-14rem"
             />
-
-            {/*<Input type="text" placeholder="Country" onChange={getCountry} />*/}
           </div>
 
           {/*company address*/}
@@ -222,11 +219,6 @@ function AddCompany() {
               placeholder="Enter company's address"
               onChange={(e) => getAddress(e.target.value)}
             />
-            {/*<Input*/}
-            {/*  type="address"*/}
-            {/*  placeholder="Company address"*/}
-            {/*  onChange={getAddress}*/}
-            {/*/>*/}
           </div>
 
           {/*company legal status*/}
@@ -240,11 +232,6 @@ function AddCompany() {
               placeholder="Enter company's legal status"
               onChange={(e) => getLegalStatus(e.target.value)}
             />
-            {/*<Input*/}
-            {/*  type="text"*/}
-            {/*  placeholder="Legal Status"*/}
-            {/*  onChange={getLegalStatus}*/}
-            {/*/>*/}
           </div>
 
           {/*Category*/}
@@ -258,7 +245,6 @@ function AddCompany() {
               placeholder="Enter company's category"
               onChange={(e) => getCategory(e.target.value)}
             />
-            {/*<Input type="text" placeholder="Category" onChange={getCategory} />*/}
           </div>
 
           {/*certification*/}
@@ -272,11 +258,6 @@ function AddCompany() {
               placeholder="Enter company's certification"
               onChange={(e) => getCertification(e.target.value)}
             />
-            {/*<Input*/}
-            {/*  type="text"*/}
-            {/*  placeholder="Certification"*/}
-            {/*  onChange={getCertification}*/}
-            {/*/>*/}
           </div>
 
           {/*capital*/}
@@ -290,7 +271,6 @@ function AddCompany() {
               placeholder="Enter company's capital"
               onChange={(e) => getCapital(e.target.value)}
             />
-            {/*<Input type="text" placeholder="Capital" onChange={getCapital} />*/}
           </div>
 
           {/*number of employees*/}
@@ -302,11 +282,6 @@ function AddCompany() {
               placeholder="Number Of Employees"
               onValueChange={(e) => getNumOfEmpl(e.value as number)}
             />
-            {/*<Input*/}
-            {/*  type="number"*/}
-            {/*  placeholder="Number Of Employees"*/}
-            {/*  onChange={getNumOfEmpl}*/}
-            {/*/>*/}
           </div>
 
           {/*company function*/}
@@ -320,11 +295,6 @@ function AddCompany() {
               placeholder="Enter company's function"
               onChange={(e) => getComFunction(e.target.value)}
             />
-            {/*<Input*/}
-            {/*  type="text"*/}
-            {/*  placeholder="Function"*/}
-            {/*  onChange={getComFunction}*/}
-            {/*/>*/}
           </div>
         </div>
 
