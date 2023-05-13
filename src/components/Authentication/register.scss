@@ -25,9 +25,7 @@ section {
         form {
             div.form-control {
                 i {
-                    &.pi-lock, &.pi-lock-open, &.pi-building {
                         z-index: 1;
-                    }
                 }
                 div.p-password {
                     width: 100% !important;
@@ -36,7 +34,7 @@ section {
                         padding-left: 2.5rem;
                     }
                 }
-                .p-multiselect-label {
+                .p-multiselect-label, .p-dropdown-label, .p-inputnumber-input {
                     padding-left: 2.5rem !important;
                 }
             }
