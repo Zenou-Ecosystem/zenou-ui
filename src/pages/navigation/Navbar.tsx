@@ -1,17 +1,17 @@
-import { NavLink } from "react-router-dom";
-import Search from "../../components/filter/Search";
 import "./navigation.scss";
-import { can } from "../../utils/access-control.utils";
-import { AppUserActions } from "../../constants/user.constants";
 import { Menu } from "primereact/menu";
-import { Button } from "primereact/button";
 import React from "react";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import { Avatar } from "primereact/avatar";
+import {LocalStore} from "../../utils/storage.utils";
 
 const Navbar = () => {
   const menu = React.useRef<Menu | any>(null);
+  const [user, setUser] = React.useState<any>();
+  React.useEffect(()=> {
+    setUser(LocalStore.get('user'))
+  }, [])
   let items = [
     {
       template: (item: any, options: any) => {
@@ -20,13 +20,15 @@ const Navbar = () => {
             onClick={(e) => options.onClick(e)}
             className={classNames(
               options.className,
-              "w-full p-link flex align-items-center"
+              "w-full p-link flex align-items-center gap-2"
             )}
           >
-            <Avatar label="P" className="mr-2" size="normal" />
+            <div className="rounded-md bg-orange-300 w-10 h-10 flex items-center justify-center">
+              <i className="pi pi-user text-white"></i>
+            </div>
             <div className="flex flex-col align">
-              <span className="font-semibold text-sm">Amy Elsner</span>
-              <span className="text-sm text-gray-400">Agent</span>
+              <span className="font-semibold capitalize text-sm">{user?.username}</span>
+              <span className="text-sm capitalize text-gray-400">{user?.role?.toLowerCase()}</span>
             </div>
           </button>
         );
@@ -57,11 +59,11 @@ const Navbar = () => {
                 <i className="pi pi-user text-white"></i>
               </div>
               <span className="flex flex-col ml-2">
-                <span className="truncate w-20 font-semibold tracking-wide leading-none">
-                  John Doe
+                <span className="truncate capitalize w-20 font-semibold tracking-wide leading-none">
+                  {user?.username}
                 </span>
-                <span className="truncate w-20 text-gray-500 text-xs leading-none mt-1">
-                  Manager
+                <span className="truncate capitalize w-20 text-gray-500 text-xs leading-none mt-1">
+                  {user?.role?.toLowerCase()}
                 </span>
               </span>
             </a>

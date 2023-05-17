@@ -123,7 +123,7 @@ const initialFormState = {
     required: true,
   },
   applicability: {
-    value: "",
+    value: "non_applicable",
     error: true,
     error_message: "",
     required: true,
@@ -495,7 +495,7 @@ function AddLaw(props: { laws: ILaws[] }) {
           </div>
           {/*domains*/}
           <div>
-            <label htmlFor="domain">Domain of action</label>
+            <label htmlFor="domain">Domain of law</label>
             <MultiSelect
               filter
               id="domain"
@@ -612,7 +612,7 @@ function AddLaw(props: { laws: ILaws[] }) {
             {/*decree checkbox*/}
             <div
               className={`${
-                ["law", "decree"].includes(
+                ["law"].includes(
                   formValues["title"].value.toLowerCase()
                 )
                   ? "flex"
@@ -633,7 +633,7 @@ function AddLaw(props: { laws: ILaws[] }) {
             {/*order checkbox*/}
             <div
               className={`${
-                ["law", "decree", "order"].includes(
+                ["law", "decree"].includes(
                   formValues["title"].value.toLowerCase()
                 )
                   ? "flex"
@@ -654,7 +654,7 @@ function AddLaw(props: { laws: ILaws[] }) {
             {/*decisions checkbox*/}
             <div
               className={`${
-                ["law", "decisions"].includes(
+                ["law"].includes(
                   formValues["title"].value.toLowerCase()
                 )
                   ? "flex"
@@ -702,7 +702,7 @@ function AddLaw(props: { laws: ILaws[] }) {
                     name="selectedOptions"
                     value={dynamicFormOptions.selectedOptions.value}
                     onChange={handleChange(true)}
-                    options={laws.filter(
+                    options={laws?.filter(
                       (x) => x.title === optionPlaceholder.toLowerCase()
                     )}
                     optionLabel="title"
@@ -710,23 +710,23 @@ function AddLaw(props: { laws: ILaws[] }) {
                     className="w-full md:w-14rem"
                   />
                 </div>
+                {/* Add buttons */}
+                <Button
+                    onClick={addOptions}
+                    hidden={!(checkDecree || checkOrder || checkDecision)}
+                    disabled={
+                        dynamicFormOptions.title.error ||
+                        !dynamicFormOptions.title.value.trim() ||
+                        !dynamicFormOptions.selectedOptions.value
+                    }
+                    label={`Add ${optionPlaceholder}`}
+                    icon="pi pi-plus"
+                    size="small"
+                    className="add-new-btn"
+                />
               </>
             ) : null}
 
-            {/* Add buttons */}
-            <Button
-              onClick={addOptions}
-              hidden={!(checkDecree || checkOrder || checkDecision)}
-              disabled={
-                dynamicFormOptions.title.error ||
-                !dynamicFormOptions.title.value.trim() ||
-                !dynamicFormOptions.selectedOptions.value
-              }
-              label={`Add ${optionPlaceholder}`}
-              icon="pi pi-plus"
-              size="small"
-              className="add-new-btn"
-            />
           </div>
         </div>
 
