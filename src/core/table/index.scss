@@ -1,3 +1,18 @@
 .table-card {
     max-width: fit-content;
 }
+.header-frame{
+    background-image: linear-gradient(-45deg,  #537895, #09203f);
+    color: white;
+}
+.tab-menu {
+    .p-menuitem-link {
+        font-weight: 400 !important;
+        font-size: 14px;
+        &:not(.p-disabled){
+            &:focus {
+                box-shadow: none !important;
+            }
+        }
+    }
+}
