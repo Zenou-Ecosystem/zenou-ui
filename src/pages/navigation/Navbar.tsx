@@ -3,7 +3,6 @@ import { Menu } from "primereact/menu";
 import React from "react";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
-import { Avatar } from "primereact/avatar";
 import {LocalStore} from "../../utils/storage.utils";
 
 const Navbar = () => {

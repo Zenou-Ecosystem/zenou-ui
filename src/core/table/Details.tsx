@@ -8,6 +8,7 @@ export default function DataDetails() {
   const [props, setProps] = useState<any>();
   useEffect(() => {
     const data = LocalStore.get("VIEWED_DATA");
+    console.log(data)
     setProps(data ?? {});
   }, []);
 
