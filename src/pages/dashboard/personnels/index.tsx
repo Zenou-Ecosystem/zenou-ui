@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
@@ -16,6 +16,8 @@ import PersonnelContextProvider, {
   PersonnelContext,
 } from "../../../contexts/PersonnelContext";
 import { PersonnelActionTypes } from "../../../store/action-types/personnel.actions";
+import { Toast } from 'primereact/toast';
+import { FileUpload } from 'primereact/fileupload';
 
 function Personnel() {
   const [personnel, setPersonnel] = useState<IPersonnel[]>([]);
@@ -92,7 +94,6 @@ function Personnel() {
       placeholder: "Certification",
     },
   ];
-
   return (
     <PersonnelContextProvider>
       {/* <div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -104,18 +105,23 @@ function Personnel() {
 
       <div className="w-full px-4">
         <BasicCard
-          title=""
+          title="List of employees"
+          headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
-              <div className="my-4 w-full m-auto flex items-center">
-                <div className="filter w-10/12">
-                  <Filter fields={filterProps} title="Filter laws" />
+              <div className="filter my-8 w-full m-auto flex items-end">
+                <div className="filter w-6/12">
+                  <Filter fields={filterProps} title="Filter employees" />
                 </div>
                 {!can(AppUserActions.ADD_PERSONNEL) ? null : (
-                  <div className="add-btn">
+                  <div className="flex justify-end gap-2 w-6/12">
+                   <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
+                      <i className='pi pi-file-import'></i>
+                      Export
+                    </button>
                     <Button
                       title="New"
-                      styles="flex justify-around flex-row-reverse items-center rounded-full"
+                      styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
                       onClick={openAddPersonnelForm}
                       Icon={{
                         Name: HiPlus,
@@ -126,6 +132,25 @@ function Personnel() {
                   </div>
                 )}
               </div>
+              {/*<div className="my-4 w-full m-auto flex items-center">*/}
+              {/*  <div className="filter w-10/12">*/}
+              {/*    <Filter fields={filterProps} title="Filter laws" />*/}
+              {/*  </div>*/}
+              {/*  {!can(AppUserActions.ADD_PERSONNEL) ? null : (*/}
+              {/*    <div className="add-btn">*/}
+              {/*      <Button*/}
+              {/*        title="New"*/}
+              {/*        styles="flex justify-around flex-row-reverse items-center rounded-full"*/}
+              {/*        onClick={openAddPersonnelForm}*/}
+              {/*        Icon={{*/}
+              {/*          Name: HiPlus,*/}
+              {/*          classes: "",*/}
+              {/*          color: "white",*/}
+              {/*        }}*/}
+              {/*      />*/}
+              {/*    </div>*/}
+              {/*  )}*/}
+              {/*</div>*/}
 
               <div className="add-form my-10">
                 <Dialog
@@ -151,7 +176,7 @@ function Personnel() {
               />
             </>
           )}
-          styles="p-0"
+          styles="px-6"
         />
       </div>
     </PersonnelContextProvider>

@@ -23,7 +23,7 @@ function Button(prop: {
     <div className="relative">
       <button
         id={id ?? ""}
-        className={`btn-comp border-none flex gap-2 items-center rounded-md py-2 px-6 text-white font-medium ${
+        className={`btn-comp border-none flex gap-2 items-center rounded-md text-white font-medium ${
           styles ? styles : ""
         }`}
         onClick={handler}

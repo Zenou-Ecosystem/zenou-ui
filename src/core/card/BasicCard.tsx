@@ -20,7 +20,7 @@ function BasicCard(props: {
           {title}
         </h1>
       </div>
-      <div className="card-content my-4">
+      <div className="card-content">
         <div className="text-center card-body">
           {typeof content == "string" ? content : content()}
         </div>

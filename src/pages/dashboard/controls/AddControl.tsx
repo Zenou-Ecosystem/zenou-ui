@@ -193,15 +193,13 @@ function AddControl() {
           </div>
 
           {/*theme*/}
-          <div className="control-Theme">
-            {/*<Input type="text" placeholder="Theme" onChange={getTheme} />*/}
+          <div>
             <label htmlFor="theme">Theme</label>
-            <InputTextarea
-              autoResize
+            <InputText
               id="theme"
               onChange={(e) => getTheme(e.target.value)}
               name="theme"
-              placeholder="Enter theme/description for this control"
+              placeholder="Control theme"
               className="w-full"
             />
           </div>
@@ -253,7 +251,7 @@ function AddControl() {
         </div>
 
         {/*submit button*/}
-        <div className="add-form-submit-btn">
+        <div className="w-full my-4 py-2">
           <div className="">
             {loader ? (
               <ProgressSpinner style={{ width: "50px", height: "50px" }} />
@@ -261,7 +259,7 @@ function AddControl() {
               ""
             )}
           </div>
-          <Button title="Create" onClick={handleSubmission} />
+          <Button title="Create control" styles="flex-row-reverse float-right px-6 py-3 items-center rounded-md" onClick={handleSubmission} />
         </div>
       </form>
     );

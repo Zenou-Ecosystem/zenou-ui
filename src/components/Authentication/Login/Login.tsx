@@ -142,7 +142,7 @@ function Login() {
               Name: HiArrowSmRight,
               color: "white",
             }}
-            styles="w-full md:w-auto py-2.5 items-center justify-center"
+            styles="w-full md:w-auto py-2.5 px-5 items-center justify-center"
             onClick={signInHandler}
           />
         </form>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import './controls.scss'
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
@@ -15,6 +15,8 @@ import { IControl } from "../../../interfaces/controls.interface";
 import { fetchControls } from "../../../services/control.service";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
+import { FileUpload } from 'primereact/fileupload';
+import { Toast } from 'primereact/toast';
 
 function Controls() {
 
@@ -74,55 +76,74 @@ function Controls() {
     const filterProps = [{
         type: "text",
         onChange: handleNameFilter,
-        placeholder: "Name"
+        label: "Name"
     },
     {
         type: "text",
         onChange: handleCountryFilter,
-        placeholder: "Country"
+        label: "Country"
     }, {
         type: "text",
         onChange: handleCategoryFilter,
-        placeholder: "Category"
+        label: "Category"
     },
     {
         type: "text",
         onChange: handleCertificationFilter,
-        placeholder: "Certification"
+        label: "Certification"
     }
     ];
+
+    const toast = useRef<Toast>(null);
+    const onUpload = () => {
+        toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+        fetchControls().then(setControls);
+    };
+
 
     return (
         <ControlContextProvider>
 
-            <div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <BasicCard {...cardProps} />
-                <BasicCard {...cardProps} />
-                <BasicCard {...cardProps} />
-                <BasicCard {...cardProps} />
-            </div>
+            {/*<div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">*/}
+            {/*    <BasicCard {...cardProps} />*/}
+            {/*    <BasicCard {...cardProps} />*/}
+            {/*    <BasicCard {...cardProps} />*/}
+            {/*    <BasicCard {...cardProps} />*/}
+            {/*</div>*/}
 
             <div className="w-full px-4">
-                <BasicCard title=""
+                <Toast ref={toast}></Toast>
+                <BasicCard title="List of controls"
+                           headerStyles="font-medium text-3xl py-4"
                     content={() => (
                         <>
-                            <div className="filter my-4 w-11/12 m-auto flex items-center">
-                                {
-                                    !can(AppUserActions.ADD_CONTROL) ? null
-                                        :
-                                        <div className="add-btn w-2/12">
-                                            <Button title="New"
-                                                styles="flex justify-around flex-row-reverse items-center rounded-full"
-                                                onClick={openAddControlForm} Icon={{
-                                                    Name: HiPlus,
-                                                    classes: '',
-                                                    color: 'white'
-                                                }} />
-                                        </div>
-                                }
-                                <div className="filter w-10/12">
-                                    <Filter fields={filterProps} title='Filter Controls' />
+                            <div className="filter my-8 w-full m-auto flex items-end">
+                                <div className="filter w-6/12">
+                                    <Filter fields={filterProps} title="Filter controls" />
                                 </div>
+                                {!can(AppUserActions.ADD_CONTROL) ? null : (
+                                  <div className="flex justify-end gap-2 w-6/12">
+                                      {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-blue-500 rounded-md'>*/}
+                                      {/*  <i className='pi pi-file-excel'></i>*/}
+                                      {/*  Import*/}
+                                      {/*</button>*/}
+                                      <FileUpload mode="basic" name="file" url="http://localhost:3001/controls/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel="Import" />
+                                      <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
+                                          <i className='pi pi-file-import'></i>
+                                          Export
+                                      </button>
+                                      <Button
+                                        title="New"
+                                        styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
+                                        onClick={openAddControlForm}
+                                        Icon={{
+                                            Name: HiPlus,
+                                            classes: "",
+                                            color: "white",
+                                        }}
+                                      />
+                                  </div>
+                                )}
                             </div>
 
                             <div className="add-form my-10">
@@ -144,7 +165,7 @@ function Controls() {
                             />
                         </>
                     )}
-                    styles="p-0"
+                    styles="px-6"
                 />
             </div>
         </ControlContextProvider>

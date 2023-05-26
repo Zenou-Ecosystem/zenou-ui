@@ -122,7 +122,7 @@ function AddCompany() {
   const addForm = () => {
     return (
       <form className="w-full">
-        <div className="form-elements grid md:grid-cols-2 gap-4">
+        <div className="form-elements grid md:grid-cols-2 gap-6">
           {/*company name*/}
           <div className="company-name">
             <label htmlFor="name">Company name</label>
@@ -165,8 +165,21 @@ function AddCompany() {
             />
           </div>
 
+          {/*company legal status*/}
+          <div className="company-LegalStatus">
+            <label htmlFor="legalStatus">Legal status</label>
+            <InputText
+              type="text"
+              id="legalStatus"
+              name="legalStatus"
+              className="p-inputtext-md w-full"
+              placeholder="Enter company's legal status"
+              onChange={(e) => getLegalStatus(e.target.value)}
+            />
+          </div>
+
           {/*company admin email */}
-          <div className="company-admin_email">
+          <div className="company-admin_email col-span-2">
             <label htmlFor="admin_email">Admin email address</label>
             <InputText
               type="text"
@@ -221,19 +234,6 @@ function AddCompany() {
             />
           </div>
 
-          {/*company legal status*/}
-          <div className="company-LegalStatus">
-            <label htmlFor="legalStatus">Legal status</label>
-            <InputText
-              type="text"
-              id="legalStatus"
-              name="legalStatus"
-              className="p-inputtext-md w-full"
-              placeholder="Enter company's legal status"
-              onChange={(e) => getLegalStatus(e.target.value)}
-            />
-          </div>
-
           {/*Category*/}
           <div className="company-Category">
             <label htmlFor="category">Category</label>
@@ -274,12 +274,13 @@ function AddCompany() {
           </div>
 
           {/*number of employees*/}
-          <div className="company-NumOfEmpl">
+          <div className="number_of_employees">
             <label htmlFor="number_of_employees">Number of employees</label>
             <InputNumber
               id="number_of_employees"
               value={number_of_employees}
               placeholder="Number Of Employees"
+              className='w-full'
               onValueChange={(e) => getNumOfEmpl(e.value as number)}
             />
           </div>
@@ -299,7 +300,7 @@ function AddCompany() {
         </div>
 
         {/*button*/}
-        <div className="add-form-submit-btn">
+        <div className="w-full my-4 py-4">
           <div className="">
             {loader ? (
               <ProgressSpinner style={{ width: "50px", height: "50px" }} />
@@ -307,7 +308,7 @@ function AddCompany() {
               ""
             )}
           </div>
-          <Button title="Create" onClick={handleSubmission} />
+          <Button title="Create company" styles="flex-row-reverse float-right px-10 py-3 items-center rounded-md" onClick={handleSubmission} />
         </div>
       </form>
     );

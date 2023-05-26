@@ -61,8 +61,7 @@ function Datatable(props: {
 
   useEffect(() => {
     setTableData(data);
-    let columns = data && data.length > 1 ? Object.keys(data[0]) : [];
-    columns.push("Actions");
+    let columns = data && data.length >= 1 ? [...Object.keys(data[0]), 'Actions'] : [];
     setTableColumns(columns);
   }, [data]);
 
@@ -84,7 +83,8 @@ function Datatable(props: {
           // dispatch({ type: item, payload: data?.id ?? data });
           LocalStore.set("VIEWED_DATA", data);
           LocalStore.remove("action");
-          navigate("/dashboard/data/" + data?.id);
+          let context = actions[0].split('_',);
+          navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
         }
         break;
 
@@ -121,12 +121,14 @@ function Datatable(props: {
         paginator
         rows={5}
         stripedRows
+        showGridlines
         rowsPerPageOptions={[5, 10, 25, 50]}
         sortMode="multiple"
         onRowClick={(e) => rowClickedHandler(e)}
         style={{ cursor: "pointer" }}
+        className="border my-8 rounded-md overflow-y-hidden text-gray-500"
       >
-        {tableColumns.length > 1
+        {tableColumns.length >= 1
           ? tableColumns
               .filter((key) => {
                 return fields
@@ -167,9 +169,9 @@ function Datatable(props: {
                   <Column
                     key={index}
                     field={key}
-                    header={key.toUpperCase().replaceAll("_", " ")}
+                    header={key.toLowerCase().replaceAll("_", " ")}
                     sortable
-                    style={{ width: "5%" }}
+                    style={{ width: "5%", textTransform: "capitalize" }}
                   ></Column>
                 );
               })

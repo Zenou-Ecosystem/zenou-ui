@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import { fecthCompanies } from "../../../services/companies.service";
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
@@ -16,6 +16,8 @@ import useCompanyContext from "../../../hooks/useCompanyContext";
 import { CompanyActionTypes } from "../../../store/action-types/company.actions";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
+import { FileUpload } from 'primereact/fileupload';
+import { Toast } from 'primereact/toast';
 
 function CompaniesList() {
   const [companies, setCompanies] = useState<ICompany[]>([]);
@@ -70,45 +72,54 @@ function CompaniesList() {
     {
       type: "text",
       onChange: handleNameFilter,
-      placeholder: "Name",
+      label: "Name",
     },
     {
       type: "text",
       onChange: handleCountryFilter,
-      placeholder: "Country",
+      label: "Country",
     },
     {
       type: "text",
       onChange: handleCategoryFilter,
-      placeholder: "Category",
+      label: "Category",
     },
     {
       type: "text",
       onChange: handleCertificationFilter,
-      placeholder: "Certification",
+      label: "Certification",
     },
   ];
 
+
   return (
     <CompanyContextProvider>
-      <div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <BasicCard {...cardProps} />
-        <BasicCard {...cardProps} />
-        <BasicCard {...cardProps} />
-        <BasicCard {...cardProps} />
-      </div>
+      {/*<div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">*/}
+      {/*  <BasicCard {...cardProps} />*/}
+      {/*  <BasicCard {...cardProps} />*/}
+      {/*  <BasicCard {...cardProps} />*/}
+      {/*  <BasicCard {...cardProps} />*/}
+      {/*</div>*/}
 
       <div className="w-full px-4">
         <BasicCard
-          title=""
+          title="List of companies"
+          headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
-              <div className="filter my-4 w-11/12 m-auto flex">
+              <div className="filter my-8 w-full m-auto flex items-end">
+                <div className="filter w-6/12">
+                  <Filter fields={filterProps} title="Filter companies" />
+                </div>
                 {!can(AppUserActions.ADD_COMPANY) ? null : (
-                  <div className="add-btn w-2/12">
+                  <div className="flex justify-end gap-2 w-6/12">
+                    <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
+                      <i className='pi pi-file-import'></i>
+                      Export
+                    </button>
                     <Button
                       title="New"
-                      styles="flex justify-around flex-row-reverse items-center rounded-full"
+                      styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
                       onClick={openAddCompanyForm}
                       Icon={{
                         Name: HiPlus,
@@ -118,10 +129,26 @@ function CompaniesList() {
                     />
                   </div>
                 )}
-                <div className="filter w-10/12">
-                  <Filter fields={filterProps} title="Filter Companies" />
-                </div>
               </div>
+              {/*<div className="filter my-4 w-11/12 m-auto flex">*/}
+              {/*  {!can(AppUserActions.ADD_COMPANY) ? null : (*/}
+              {/*    <div className="add-btn w-2/12">*/}
+              {/*      <Button*/}
+              {/*        title="New"*/}
+              {/*        styles="flex justify-around flex-row-reverse items-center rounded-full"*/}
+              {/*        onClick={openAddCompanyForm}*/}
+              {/*        Icon={{*/}
+              {/*          Name: HiPlus,*/}
+              {/*          classes: "",*/}
+              {/*          color: "white",*/}
+              {/*        }}*/}
+              {/*      />*/}
+              {/*    </div>*/}
+              {/*  )}*/}
+              {/*  <div className="filter w-10/12">*/}
+              {/*    <Filter fields={filterProps} title="Filter Companies" />*/}
+              {/*  </div>*/}
+              {/*</div>*/}
 
               <div className="add-form my-10">
                 <Dialog
@@ -153,7 +180,7 @@ function CompaniesList() {
               />
             </>
           )}
-          styles="p-0"
+          styles="px-6"
         />
       </div>
     </CompanyContextProvider>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
@@ -15,6 +15,8 @@ import { fetchLaws } from "../../../services/laws.service";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
 import { LocalStore } from "../../../utils/storage.utils";
+import { FileUpload } from 'primereact/fileupload';
+import { Toast } from 'primereact/toast';
 
 function Laws() {
   const [laws, setLaws] = useState<ILaws[]>([]);
@@ -65,48 +67,56 @@ function Laws() {
   };
   const filterProps = [
     {
-      type: "text",
-      onChange: handleNameFilter,
-      placeholder: "Name",
+      command: handleNameFilter,
+      label: "Name",
     },
     {
-      type: "text",
       onChange: handleCountryFilter,
-      placeholder: "Country",
+      label: "Country",
     },
     {
-      type: "text",
       onChange: handleCategoryFilter,
-      placeholder: "Category",
+      label: "Category",
     },
     {
-      type: "text",
       onChange: handleCertificationFilter,
-      placeholder: "Certification",
+      label: "Certification",
     },
   ];
 
+  const toast = useRef<Toast>(null);
+  const onUpload = () => {
+    toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+   fetchLaws().then(setLaws);
+  };
+
   return (
     <LawContextProvider>
-      {/* <div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <BasicCard {...cardProps} />
-                <BasicCard {...cardProps} />
-                <BasicCard {...cardProps} />
-                <BasicCard {...cardProps} />
-            </div> */}
-
       <div className="w-full px-4">
         <BasicCard
           title="List of laws"
-          headerStyles="font-semibold text-3xl py-4"
+          headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
-              <div className="filter my-4 w-11/12 m-auto flex">
+              <Toast ref={toast}></Toast>
+              <div className="filter my-8 w-full m-auto flex items-end">
+                <div className="filter w-6/12">
+                  <Filter fields={filterProps} title="Filter laws" />
+                </div>
                 {!can(AppUserActions.ADD_LAW) ? null : (
-                  <div className="add-btn w-2/12">
+                  <div className="flex justify-end gap-2 w-6/12">
+                    {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-blue-500 rounded-md'>*/}
+                    {/*  <i className='pi pi-file-excel'></i>*/}
+                    {/*  Import*/}
+                    {/*</button>*/}
+                    <FileUpload mode="basic" name="file" url="http://localhost:3001/law/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel="Import" />
+                    <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
+                      <i className='pi pi-file-import'></i>
+                      Export
+                    </button>
                     <Button
                       title="New"
-                      styles="flex justify-around flex-row-reverse items-center rounded-full"
+                      styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
                       onClick={openAddLawForm}
                       Icon={{
                         Name: HiPlus,
@@ -116,22 +126,18 @@ function Laws() {
                     />
                   </div>
                 )}
-                <div className="filter w-10/12">
-                  <Filter fields={filterProps} title="Filter laws" />
-                </div>
               </div>
 
               <div className="add-form my-10">
                 <Dialog
                   header="Register new law"
                   visible={visible}
-                  style={{ width: "800px", maxWidth: "100%", height: "100vh" }}
+                  style={{ width: "1000px", maxWidth: "100%", height: "100vh" }}
                   onHide={() => setVisible(false)}
                 >
                   <AddLaw laws={laws} />
                 </Dialog>
               </div>
-
               <Datatable
                 data={laws}
                 fields={[

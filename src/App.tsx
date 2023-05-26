@@ -39,7 +39,7 @@ function App() {
           <Route path="controls" element={<Controls />}></Route>
           <Route path="actions" element={<Actions />}></Route>
           <Route path="Subscriptions" element={<Subscription />}></Route>
-          <Route path="data/:id" element={<DataDetails />}></Route>
+          <Route path=":context/:id" element={<DataDetails />}></Route>
         </Route>
         <Route path="user" element={<DashboardHome />}>
           <Route path="profile" element={<Profile />}></Route>

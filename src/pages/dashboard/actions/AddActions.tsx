@@ -87,7 +87,7 @@ function AddAction() {
   const addForm = () => {
     return (
       <form className="w-full">
-        <div className="form-elements grid md:grid-cols-2 gap-4">
+        <div className="form-elements grid md:grid-cols-2 gap-6">
           {/*type*/}
           <div className="control-type">
             <label htmlFor="controlType">Type</label>
@@ -167,14 +167,13 @@ function AddAction() {
           </div>
 
           {/*theme*/}
-          <div className="control-Theme">
-            <label htmlFor="theme">Theme</label>
-            <InputTextarea
-              autoResize
+          <div>
+            <label htmlFor="description">Theme</label>
+            <InputText
               id="theme"
               onChange={(e) => getTheme(e.target.value)}
               name="theme"
-              placeholder="Enter theme/description for this control"
+              placeholder="Action theme"
               className="w-full"
             />
           </div>
@@ -224,7 +223,7 @@ function AddAction() {
             />
           </div>
         </div>
-        <div className="add-form-submit-btn">
+        <div className="mt-6 py-4">
           <div className="">
             {loader ? (
               <ProgressSpinner style={{ width: "50px", height: "50px" }} />
@@ -232,7 +231,7 @@ function AddAction() {
               ""
             )}
           </div>
-          <Button title="Create" onClick={handleSubmission} />
+          <Button title="Create action" styles="flex-row-reverse float-right px-10 py-3 items-center rounded-md" onClick={handleSubmission} />
         </div>
       </form>
     );

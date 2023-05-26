@@ -111,7 +111,7 @@ function AddPersonnel() {
     return (
       <form className="w-full">
         <Toast ref={toast as any} />
-        <div className="form-elements grid md:grid-cols-2 gap-4">
+        <div className="form-elements grid md:grid-cols-2 gap-6">
           {/*first name*/}
           <div className="control-type">
             <label htmlFor="first_name">First name</label>
@@ -181,7 +181,7 @@ function AddPersonnel() {
         </div>
 
         {/*submit button*/}
-        <div className="add-form-submit-btn">
+        <div className="w-full my-4 py-4">
           <div className="">
             {loader ? (
               <ProgressSpinner style={{ width: "50px", height: "50px" }} />
@@ -189,7 +189,7 @@ function AddPersonnel() {
               ""
             )}
           </div>
-          <Button title="Create" onClick={handleSubmission} />
+          <Button title="Create employee" styles="flex-row-reverse float-right px-10 py-3 items-center rounded-md" onClick={handleSubmission} />
         </div>
       </form>
     );

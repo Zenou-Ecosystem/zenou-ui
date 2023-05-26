@@ -1,48 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { Panel, PanelHeaderTemplateOptions } from "primereact/panel";
-import { Ripple } from "primereact/ripple";
 import { LocalStore } from "../../utils/storage.utils";
-import { InputText } from "primereact/inputtext";
 import { TabMenu } from 'primereact/tabmenu';
 import './index.scss';
+import { useParams } from 'react-router-dom';
 
 export default function DataDetails() {
   const [props, setProps] = useState<any>();
+  const params = useParams()
+  const lawItems = [
+    {label: 'Action plan', icon: 'pi pi-sync'},
+    {label: 'Control plan', icon: 'pi pi-th-large'},
+    {label: 'Decrees', icon: 'pi pi-pencil'},
+    {label: 'Orders', icon: 'pi pi-briefcase'},
+    {label: 'Decisions', icon: 'pi pi-arrow-right-arrow-left'},
+    {label: 'Domain of action', icon: 'pi pi-book'}
+  ]
+  const controlPlanItems = lawItems.filter(({label}) => ['Action plan'].includes(label))
+  const actionPlanItems = lawItems.filter(({label}) => ['Control plan'].includes(label))
+  const primaryItems = [{label: 'Primary info', icon: 'pi pi-home'},]
+  const [items, setItems] = useState(primaryItems)
   useEffect(() => {
     const data = LocalStore.get("VIEWED_DATA");
-    console.log(data)
     setProps(data ?? {});
+    switch (true) {
+      case params?.context && params?.context === 'laws':
+        setItems([ ...primaryItems, ...lawItems])
+        break;
+      case params?.context && params?.context === 'actions':
+        setItems([ ...primaryItems, ...actionPlanItems])
+        break;
+      case params?.context && params?.context === 'controls':
+        setItems([ ...primaryItems, ...controlPlanItems])
+        break;
+    }
   }, []);
-
-  const template = (options: PanelHeaderTemplateOptions) => {
-    const toggleIcon = options.collapsed
-      ? "pi pi-chevron-down"
-      : "pi pi-chevron-up";
-    const className = `${options.className} justify-content-start`;
-    const titleClassName = `${options.titleClassName} ml-2 text-primary`;
-    const style = { fontSize: "1.25rem", fontWeight: "500" };
-
-    return (
-      <div className={className}>
-        <span className={titleClassName} style={style}>
-          Resource view
-        </span>
-        <button
-          className={options.togglerClassName}
-          onClick={options.onTogglerClick}
-        >
-          <span className={toggleIcon}></span>
-          <Ripple />
-        </button>
-      </div>
-    );
-  };
 
   const showPropDetail = (props: object) => {
     let elements: any = [];
     let detailElements: any = {};
     if(!props) {
-      console.log(props, 'no props')
      return { elements, detailElements };
     }
     for (let [key, value] of Object.entries(props)) {
@@ -54,7 +50,7 @@ export default function DataDetails() {
           detailElements[key] = value;
         }
       } else {
-        // Reformat key if neccessary
+        // Reformat key if necessary
         key = key?.replaceAll("_", " ").toLowerCase();
         if( ["text of law", "article"].includes(key)){
           elements.unshift(
@@ -84,7 +80,7 @@ export default function DataDetails() {
               >
                 <div className='py-2'>
                   <p className='border-b pb-2'>{key?.replaceAll('_', ' ')}:</p>
-                  <p className='py-2 text-gray-400 mt-2'>{value?.replaceAll('_', ' ')}</p>
+                  <p className='py-2 text-gray-400 mt-2'>{value?.toString()?.replaceAll('_', ' ') || 'N/A'}</p>
                   {key.startsWith("link") ? (
                       <a className="w-2/3 underline text-blue-700 " href={value}>
                         {" "}
@@ -101,31 +97,26 @@ export default function DataDetails() {
     return { elements, detailElements };
   };
 
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const items = [
-    {label: 'Basic info', icon: 'pi pi-home'},
-    {label: 'Action plan', icon: 'pi pi-sync'},
-    {label: 'Control plan', icon: 'pi pi-th-large'},
-    {label: 'Decrees', icon: 'pi pi-pencil'},
-    {label: 'Orders', icon: 'pi pi-briefcase'},
-    {label: 'Decisions', icon: 'pi pi-arrow-right-arrow-left'},
-    {label: 'Domain of action', icon: 'pi pi-book'}
-  ];
+  const [activeTab, setActiveTab] = useState<any>({value: primaryItems[0], index: 0});
+
 
   return (
     <section>
       <div className="header-frame h-48 items-center justify-center flex-col flex w-full">
-        <h1 className='font-semibold text-2xl md:text-4xl'>Law details</h1>
-        <p className="font-light text-gray-300 mt-1">Here are the details of this law.</p>
+        <h1 className='font-semibold text-2xl md:text-4xl'>{params?.context ? params?.context.slice(0, params.context.length - 1) : 'N/A'} details</h1>
+        <p className="font-light text-gray-300 mt-1">Here are the details of the selected {params?.context ? params?.context.slice(0, params.context.length - 1) : 'N/A'}.</p>
       </div>
       <div className="overflow-hidden mt-2">
-        <TabMenu className='tab-menu' model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} />
-        <div hidden={activeIndex !== 0} className='p-6'>
+        <TabMenu className='tab-menu' model={items} activeIndex={activeTab.index} onTabChange={(e) => {
+          console.log(e);
+          setActiveTab({ value: e.value, index: e.index });
+        }} />
+        <div hidden={activeTab.value?.label !== 'Primary info'} className='p-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {props ? showPropDetail(props).elements.map((prop:any) => prop) : ""}
           </div>
         </div>
-        <div hidden={activeIndex !== 1}>
+        <div hidden={activeTab.value?.label !== 'Action plan'}>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             { showPropDetail(props)?.detailElements?.action_plan &&
               showPropDetail(props)?.detailElements?.action_plan?.length > 0 ?
@@ -135,7 +126,7 @@ export default function DataDetails() {
             }
           </div>
         </div>
-        <div hidden={activeIndex !== 2}>
+        <div hidden={activeTab.value?.label !== 'Control plan'}>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             { showPropDetail(props)?.detailElements?.control_plan &&
               showPropDetail(props)?.detailElements?.control_plan?.length ?
@@ -144,7 +135,7 @@ export default function DataDetails() {
             }
           </div>
         </div>
-        <div hidden={activeIndex !== 3}>
+        <div hidden={activeTab.value?.label !== 'Decrees'}>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             { showPropDetail(props)?.detailElements?.decree &&
               showPropDetail(props)?.detailElements?.decree?.length?
@@ -153,7 +144,7 @@ export default function DataDetails() {
             }
           </div>
         </div>
-        <div hidden={activeIndex !== 4}>
+        <div hidden={activeTab.value?.label !== 'Orders'}>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             { showPropDetail(props)?.detailElements?.order &&
             showPropDetail(props)?.detailElements?.order?.length ?
@@ -162,7 +153,7 @@ export default function DataDetails() {
             }
           </div>
         </div>
-        <div hidden={activeIndex !== 5}>
+        <div hidden={activeTab.value?.label !== 'Decisions'}>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             { showPropDetail(props)?.detailElements?.decision &&
               showPropDetail(props)?.detailElements?.decision?.length ?
@@ -171,7 +162,7 @@ export default function DataDetails() {
             }
           </div>
         </div>
-        <div hidden={activeIndex !== 6}>
+        <div hidden={activeTab.value?.label !== 'Domain of action'}>
           <div className='p-6'>
             { showPropDetail(props)?.detailElements?.domains &&
               showPropDetail(props)?.detailElements?.domains?.length ?

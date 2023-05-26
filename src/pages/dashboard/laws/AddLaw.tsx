@@ -4,7 +4,6 @@ import useLawContext from "../../../hooks/useLawContext";
 import { MultiSelect } from "primereact/multiselect";
 import { Checkbox } from "primereact/checkbox";
 import { LawActionTypes } from "../../../store/action-types/laws.actions";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import "./law.scss";
 import { ILaws } from "../../../interfaces/laws.interface";
@@ -16,6 +15,7 @@ import { InputText } from "primereact/inputtext";
 import { Chip } from "primereact/chip";
 import { fetchLaws } from "../../../services/laws.service";
 import { fetchDepartments } from "../../../services/department.service";
+import { Editor } from 'primereact/editor';
 
 const titles = [
   { label: "Convention", value: "convention" },
@@ -211,6 +211,7 @@ function AddLaw(props: { laws: ILaws[] }) {
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialFormState);
 
+
   /**
    * description: handle change function. this function is used to handle on change events in an input field
    * @param {boolean} isDynamicForm this value is to instruct the form to update the dynamic form state not the
@@ -315,8 +316,6 @@ function AddLaw(props: { laws: ILaws[] }) {
   const [department, setDepartment] = useState<string[]>([]);
 
   const [order, setOrder] = useState("");
-
-  const [decreeTitle, setDecreeTitle] = useState("");
 
   const [decisions, setDecisions] = useState("");
 
@@ -551,6 +550,22 @@ function AddLaw(props: { laws: ILaws[] }) {
               placeholder="How severity id this law?"
             />
           </div>
+          {/*is applicable*/}
+          <div>
+            <label htmlFor="applicability">Is this law applicable?</label>
+            <Dropdown
+                id="severity"
+                name="applicability"
+                onChange={handleChange()}
+                value={formValues.applicability.value}
+                inputId="applicability"
+                optionLabel="label"
+                className="w-full md:w-14rem"
+                options={applicability}
+                placeholder="Select applicability"
+            />
+          </div>
+
           {/*theme*/}
           <div>
             <label htmlFor="description">Theme</label>
@@ -566,45 +581,41 @@ function AddLaw(props: { laws: ILaws[] }) {
           {/*article*/}
           <div>
             <label htmlFor="article">Article</label>
-            <InputTextarea
-              autoResize
-              value={formValues.article.value}
-              id="article"
-              onChange={handleChange()}
-              name="article"
-              placeholder="Enter and article for this law"
-              className="w-full"
-            />
-          </div>
-
-          {/*is applicable*/}
-          <div>
-            <label htmlFor="applicability">Is this law applicable?</label>
-            <Dropdown
-              id="severity"
-              name="applicability"
-              onChange={handleChange()}
-              value={formValues.applicability.value}
-              inputId="applicability"
-              optionLabel="label"
-              className="w-full md:w-14rem"
-              options={applicability}
-              placeholder="Select applicability"
-            />
+            <Editor value={formValues.article.value}
+                    name="article"
+                    placeholder="Enter and article for this law"
+                    className="w-full"
+                    id="article"
+                    onChange={handleChange()} style={{ height: '100px' }} />
+            {/*<InputTextarea*/}
+            {/*  autoResize*/}
+            {/*  value={formValues.article.value}*/}
+            {/*  id="article"*/}
+            {/*  onChange={handleChange()}*/}
+            {/*  name="article"*/}
+            {/*  placeholder="Enter and article for this law"*/}
+            {/*  className="w-full"*/}
+            {/*/>*/}
           </div>
 
           {/*text of law*/}
           <div>
             <label htmlFor="text_of_law">Text of law</label>
-            <InputTextarea
-              autoResize
-              value={formValues.text_of_law.value}
-              id="text_of_law"
-              onChange={handleChange()}
-              name="text_of_law"
-              placeholder="Enter the details this law"
-              className="w-full"
-            />
+            <Editor value={formValues.text_of_law.value}
+                    id="text_of_law"
+                    onChange={handleChange()}
+                    name="text_of_law"
+                    placeholder="Enter the details this law"
+                    className="w-full" style={{ height: '100px' }} />
+            {/*<InputTextarea*/}
+            {/*  autoResize*/}
+            {/*  value={formValues.text_of_law.value}*/}
+            {/*  id="text_of_law"*/}
+            {/*  onChange={handleChange()}*/}
+            {/*  name="text_of_law"*/}
+            {/*  placeholder="Enter the details this law"*/}
+            {/*  className="w-full"*/}
+            {/*/>*/}
           </div>
           {/*checkbox options*/}
           {/* show checkboxes if title matches various options in array according to the fields in question. */}
@@ -750,7 +761,7 @@ function AddLaw(props: { laws: ILaws[] }) {
         </div>
 
         {/*submit btn*/}
-        <div className="add-form-submit-btn">
+        <div className="w-full">
           <div className="">
             {loader ? (
               <ProgressSpinner style={{ width: "50px", height: "50px" }} />
@@ -758,7 +769,7 @@ function AddLaw(props: { laws: ILaws[] }) {
               ""
             )}
           </div>
-          <Button label="Create" onClick={(e) => handleSubmission(e)} />
+          <Button label="Create law" size='small' className="flex float-right w-full md:w-44 py-3 items-center rounded-md" onClick={(e) => handleSubmission(e)} />
         </div>
       </form>
     );
@@ -766,7 +777,6 @@ function AddLaw(props: { laws: ILaws[] }) {
 
   return (
     <section>
-      {/* <BasicCard {...cardProps} /> */}
       {addForm()}
     </section>
   );
