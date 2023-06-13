@@ -3,6 +3,7 @@ import { LocalStore } from "../../utils/storage.utils";
 import { TabMenu } from 'primereact/tabmenu';
 import './index.scss';
 import { useParams } from 'react-router-dom';
+import { singularize } from '../../utils/singularize.util';
 
 export default function DataDetails() {
   const [props, setProps] = useState<any>();
@@ -99,12 +100,11 @@ export default function DataDetails() {
 
   const [activeTab, setActiveTab] = useState<any>({value: primaryItems[0], index: 0});
 
-
   return (
     <section>
       <div className="header-frame h-48 items-center justify-center flex-col flex w-full">
-        <h1 className='font-semibold text-2xl md:text-4xl'>{params?.context ? params?.context.slice(0, params.context.length - 1) : 'N/A'} details</h1>
-        <p className="font-light text-gray-300 mt-1">Here are the details of the selected {params?.context ? params?.context.slice(0, params.context.length - 1) : 'N/A'}.</p>
+        <h1 className='font-semibold text-2xl md:text-4xl capitalize'>{params?.context ? singularize(params?.context) : 'N/A'} details</h1>
+        <p className="font-light text-gray-300 mt-1">Here are the details of the selected {params?.context ? singularize(params?.context) : 'N/A'}.</p>
       </div>
       <div className="overflow-hidden mt-2">
         <TabMenu className='tab-menu' model={items} activeIndex={activeTab.index} onTabChange={(e) => {

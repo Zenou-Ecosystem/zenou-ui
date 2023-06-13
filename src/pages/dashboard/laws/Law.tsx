@@ -94,7 +94,7 @@ function Laws() {
     <LawContextProvider>
       <div className="w-full px-4">
         <BasicCard
-          title="List of laws"
+          title="List of Laws"
           headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>

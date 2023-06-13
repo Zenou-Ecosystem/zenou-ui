@@ -15,6 +15,7 @@ function Datatable(props: {
   actionTypes: React.ReducerAction<any>;
   accessControls: { EDIT: string; VIEW: string; DELETE: string };
   context: React.Context<any>;
+  noPagination?: Boolean;
 }) {
   const { data, fields, actionTypes, context, accessControls } = props;
   const [tableColumns, setTableColumns] = useState<string[]>([]);
@@ -118,7 +119,7 @@ function Datatable(props: {
       <ConfirmDialog />
       <DataTable
         value={tableData}
-        paginator
+        paginator={!props.noPagination}
         rows={5}
         stripedRows
         showGridlines

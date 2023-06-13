@@ -10,6 +10,7 @@ export const controlReducer = async (state: any, action: ControlActions) => {
 
     if (action.type == "DELETE_CONTROL") {
         const response = await deleteControl(action.payload as any);
+        console.log(response, state);
         const newState = state?.data.filter((data: any) => data.id !== action.payload);
         return { ...newState };
     }

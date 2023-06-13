@@ -10,7 +10,8 @@ export const lawReducer = async (state: any, action: LawActions) => {
             return { ...state, data, hasCreated: true };
         case "DELETE_LAW":
             const response = await deleteLaw(action.payload as any);
-            const newState = state?.data.filter((data: any) => data.id !== action.payload);
+            console.log(response);
+            const newState = (await state)?.data.filter((data: any) => data.id !== action.payload);
             return { ...newState };
         default:
         //    console.log('Do nothing');
