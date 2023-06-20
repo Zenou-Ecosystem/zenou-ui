@@ -23,6 +23,21 @@ section {
             -webkit-text-fill-color: transparent;
         }
         form {
+            label{
+                padding-bottom: 0.35rem !important;
+                font-size: 15px;
+                color: #4f4e4e !important;
+            }
+            .p-inputtext{
+                &::placeholder{
+                    font-size: 14px !important;
+                    color: #9f9d9d !important;
+                }
+            }
+            .p-placeholder{
+                font-size: 14px !important;
+                color: #9f9d9d !important;
+            }
             div.form-control {
                 i {
                         z-index: 1;

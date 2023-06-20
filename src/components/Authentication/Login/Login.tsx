@@ -1,8 +1,7 @@
 import React, { useRef, useState } from "react";
-import { HiUser, HiLockClosed, HiMail, HiArrowSmRight } from "react-icons/hi";
+import { HiArrowSmRight } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../../core/Button/Button";
-import Input from "../../../core/Input/Input";
 import { login } from "../../../services/auth.service";
 import "../register.scss";
 import { Toast } from "primereact/toast";
@@ -10,7 +9,8 @@ import { LocalStore } from "../../../utils/storage.utils";
 import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import { UserTypes } from "../../../constants/user.constants";
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import Locale from '../../locale';
 
 const initialState = {
   email: {
@@ -26,8 +26,14 @@ function Login() {
 
   const toast = useRef({});
 
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialState);
+
+  React.useEffect(() => {
+    currentLanguageValue.subscribe(setCurrentLanguage);
+  }, [currentLanguage]);
 
   const handleState = (e: any) => {
     const { name, value } = e.target;
@@ -68,30 +74,32 @@ function Login() {
   };
 
   return (
-    <section className="block md:flex h-screen">
+    <section className="block md:flex relative h-screen">
       <Toast ref={toast as any} />
+      <div className='absolute right-5 top-5'>
+        <Locale />
+      </div>
 
-      <div className="welcome-container w-full md:w-8/12 md:px-20 p-6 md:flex flex-col justify-center items-center">
+      <div className="welcome-container w-full md:w-7/12 md:px-20 p-6 md:flex flex-col justify-center items-center">
         <h1 className="welcome-main-text hidden md:block md:w-3/5">
-          The best compliance management and ISO standardization software
+          {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.TITLE')}
         </h1>
         <br />
         <p className="text-gray-200 hidden md:block w-3/5">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente sit,
-          suscipit reprehenderit voluptate, tenetur error enim iure esse iusto
-          rem, quasi provident quas aliquid asperiores necessitatibus?
+          {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.SUBTITLE')}
         </p>
       </div>
 
       {/*form section*/}
-      <div className="signup-section p-4 md:px-10 w-full md:w-4/12 flex items-center flex-col justify-center gap-1">
+      <div className="signup-section p-4 md:px-16 w-full md:w-5/12 flex items-center flex-col justify-center gap-1">
         <form className="w-full">
-          <h1 className="register-title text-2xl">Log in to your account</h1>
+          <h1 className="register-title text-2xl">{translationService(currentLanguage,'LOGIN.TITLE')}
+          </h1>
           <Divider />
 
           {/*email*/}
           <div className="w-full flex flex-col my-4">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.EMAIL')}</label>
             <span className="p-input-icon-left">
               <i className="pi pi-envelope text-gray-400" />
               <InputText
@@ -99,7 +107,7 @@ function Login() {
                 type="email"
                 name="email"
                 value={formValues.email.value}
-                placeholder="Email address"
+                placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.EMAIL')}
                 className="w-full"
                 onChange={handleState}
               />
@@ -108,11 +116,11 @@ function Login() {
 
           {/*password*/}
           <div className="w-full flex flex-col my-4 form-control">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.PASSWORD')}</label>
             <span className="p-input-icon-left">
               <i className="pi pi-lock text-gray-400" />
               <Password
-                placeholder="Enter password"
+                placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.PASSWORD')}
                 name="password"
                 id="password"
                 value={formValues.password.value}
@@ -125,18 +133,19 @@ function Login() {
 
           <div className="w-full flex flex-col items-end my-4 form-control">
             <p className="text-gray-500 text-sm font-light">
-              Don't have an account?{" "}
+              {translationService(currentLanguage,'LOGIN.FORM.DONT_HAVE_AN_ACCOUNT')}
+              {" "}
               <Link
                 className="text-orange-500 underline hover:text-orange-700 font-medium"
                 to="/register"
               >
-                Create one
+                {translationService(currentLanguage,'LOGIN.FORM.CREATE_ACCOUNT')}
               </Link>
             </p>
           </div>
 
           <Button
-            title="Submit"
+            title={translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')}
             Icon={{
               classes: "",
               Name: HiArrowSmRight,

@@ -4,6 +4,9 @@ import React from "react";
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import {LocalStore} from "../../utils/storage.utils";
+import { AppUserActions } from '../../constants/user.constants';
+import { can } from '../../utils/access-control.utils';
+import Locale from '../../components/locale';
 
 const Navbar = () => {
   const menu = React.useRef<Menu | any>(null);
@@ -34,12 +37,14 @@ const Navbar = () => {
       },
     },
     { separator: true },
-    { label: "Companies", icon: "pi pi-building" },
     { label: "Profile", icon: "pi pi-fw pi-user" },
     { label: "Settings", icon: "pi pi-fw pi-cog" },
     { separator: true },
     { label: "Logout", icon: "pi pi-sign-out" },
   ];
+  if(can(AppUserActions.VIEW_COMPANY)){
+    items.splice(2, 0, { label: "Companies", icon: "pi pi-building" })
+  }
   return (
     <>
       <header className="header bg-white shadow py-4 px-8">
@@ -49,6 +54,7 @@ const Navbar = () => {
             <InputText placeholder="Search" className="p-inputtext-sm" />
           </span>
           <div className="flex ml-auto">
+            <Locale /> &nbsp; &nbsp; &nbsp;
             <a
               onClick={(e) => menu.current.toggle(e)}
               className="flex cursor-pointer flex-row items-center"

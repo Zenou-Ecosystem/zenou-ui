@@ -8,11 +8,13 @@ import { fetchLaws } from '../../../services/laws.service';
 import useAppContext from '../../../hooks/useAppContext.hooks';
 import useLawContext from '../../../hooks/useLawContext';
 import { NavLink } from 'react-router-dom';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
 function Dashboard() {
   const [laws, setLaws] = useState<ILaws[]>([]);
   const { state } = useAppContext();
   const { state: LawState } = useLawContext();
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
   useEffect(() => {
     (async () => {
@@ -31,7 +33,8 @@ function Dashboard() {
         // setVisible(false);
       }
     })();
-  }, [state, LawState]);
+    currentLanguageValue.subscribe(setCurrentLanguage);
+  }, [state, LawState, currentLanguage]);
 
     return (
       <div>
@@ -134,7 +137,7 @@ function Dashboard() {
                 </h1>
                 <p className="text-gray-500 font-light">This is an overview of the laws exisitng in the system</p>
                 <Datatable
-                  data={laws.slice(1, 7)}
+                  data={laws?.slice(1, 7)}
                   noPagination
                   fields={[
                     "title",

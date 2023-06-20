@@ -9,15 +9,16 @@ import { LocalStore } from "../../../utils/storage.utils";
 import { UserTypes } from "../../../constants/user.constants";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import { Divider } from "primereact/divider";
 import { MultiSelect } from "primereact/multiselect";
 import { createCompany } from "../../../services/companies.service";
-import { MenuItem } from "primereact/menuitem";
 import { Dropdown } from "primereact/dropdown";
 import { countryConstants } from "../../../constants/country.constants";
 import { InputNumber } from "primereact/inputnumber";
 import useCompanyContext from "../../../hooks/useCompanyContext";
-import { CompanyActionTypes } from "../../../store/action-types/company.actions";
+import { TabMenu } from 'primereact/tabmenu';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import Locale from '../../locale';
+import CountryList from 'country-list-with-dial-code-and-flag';
 
 const domainsList = [
   {
@@ -99,11 +100,11 @@ const initialState = {
 function Register() {
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialState);
-  const [nextPage, setNextPage] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
   const navigator = useNavigate();
 
-  const { state, dispatch } = useCompanyContext();
+  const { state } = useCompanyContext();
 
   const toast = useRef({});
 
@@ -113,7 +114,8 @@ function Register() {
       if (resolvedState.hasCreated) {
       }
     })();
-  }, [state]);
+    currentLanguageValue.subscribe(setCurrentLanguage);
+  }, [state, currentLanguage]);
 
   const handleState = (e: any) => {
     const { name, value } = e.target;
@@ -126,6 +128,14 @@ function Register() {
       },
     });
   };
+
+  const items = [
+    {label: translationService(currentLanguage,'REGISTRATION.TAB.COMPANY_INFORMATION.PRIMARY'), icon: 'pi pi-eraser'},
+    {label: translationService(currentLanguage,'REGISTRATION.TAB.COMPANY_INFORMATION.SECONDARY'), icon: 'pi pi-file-edit'},
+    {label: translationService(currentLanguage,'REGISTRATION.TAB.ADMINISTRATORS_INFORMATION.PRIMARY'), icon: 'pi pi-user-plus'}
+  ];
+
+  const [activeTab, setActiveTab] = useState<any>(0);
 
   const signInHandler = async () => {
     let payload: any = {
@@ -180,33 +190,37 @@ function Register() {
   };
 
   return (
-    <section className="block md:flex h-screen">
+    <section className="block md:flex relative h-screen">
       <Toast ref={toast as any} />
+      <div className='absolute right-5 top-5'>
+       <Locale />
+      </div>
 
-      <div className="welcome-container w-full md:w-4/12 md:px-20 p-6 md:flex flex-col justify-center items-center">
+      <div className="welcome-container w-full md:w-5/12 md:px-20 p-6 md:flex flex-col justify-center items-center">
         <h1 className="welcome-main-text hidden md:block md:w-full">
-          The best compliance management and ISO standardization software
+          {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.TITLE')}
         </h1>
         <br />
         <p className="text-gray-200 hidden md:block w-full">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente sit,
-          suscipit reprehenderit voluptate, tenetur error enim iure esse iusto
-          rem, quasi provident quas aliquid asperiores necessitatibus?
+          {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.SUBTITLE')}
         </p>
       </div>
 
       {/*form section*/}
-      <div className="signup-section p-4 md:px-10 w-full md:w-8/12 flex items-center flex-col justify-center gap-1">
+      <div className="signup-section p-4 md:px-10 w-full md:w-7/12 flex items-center flex-col justify-center gap-1">
         <form className="w-9/12">
-          <div hidden={nextPage}>
-            <h1 className="register-title text-2xl pb-6 border-b">
-              Company's information
-            </h1>
-            <div className="grid gird-cols-1 mt-6 md:grid-cols-2 gap-4">
-              {/*company name*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="company_name">Company name</label>
-                <span className="p-input-icon-left">
+
+          <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
+           setActiveTab(e.index);
+          }} />
+
+          {/*primary information*/}
+          <div hidden={activeTab !== 0}>
+            <br/>
+            {/*company name*/}
+            <div className="w-full flex my-4 flex-col form-control">
+              <label htmlFor="company_name">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.NAME')}</label>
+              <span className="p-input-icon-left">
                   <i className="pi pi-user text-gray-400" />
                   <InputText
                     type="text"
@@ -214,17 +228,169 @@ function Register() {
                     name="company_name"
                     value={formValues?.company_name?.value}
                     className="w-full"
-                    placeholder="Enter company's name"
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.NAME')}
                     onChange={handleState}
                   />
                 </span>
+            </div>
+
+            {/*legal status / certification*/}
+            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
+                {/*company legal status*/}
+                <div className="w-full flex flex-col form-control">
+                  <label htmlFor="legal_status">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.LEGAL_STATUS')}</label>
+                  <span className="p-input-icon-left">
+                      <i className="pi pi-check-circle text-gray-400" />
+                      <InputText
+                        id="legal_status"
+                        type="text"
+                        name="legal_status"
+                        value={formValues.legal_status.value}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.LEGAL_STATUS')}
+                        className="w-full"
+                        onChange={handleState}
+                      />
+                    </span>
+                </div>
+
+                {/*certification*/}
+                <div className="w-full flex flex-col form-control">
+                  <label htmlFor="certification">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CERTIFICATION')}</label>
+                  <span className="p-input-icon-left">
+                      <i className="pi pi-file-pdf text-gray-400" />
+                      <InputText
+                        id="certification"
+                        type="text"
+                        name="certification"
+                        value={formValues.certification.value}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CERTIFICATION')}
+                        className="w-full"
+                        onChange={handleState}
+                      />
+                    </span>
+                </div>
+            </div>
+
+            {/*company country*/}
+            <div className="w-full flex flex-col my-4 form-control">
+              <label htmlFor="country">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.COUNTRY')}</label>
+              <span className="p-input-icon-left">
+                  <i className="pi pi-globe text-gray-400" />
+                  <Dropdown
+                    value={formValues.country.value}
+                    onChange={handleState}
+                    name="country"
+                    options={CountryList.getAll()}
+                    optionLabel="name"
+                    id="country"
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.COUNTRY')}
+                    filter
+                    valueTemplate={selectedCountryTemplate}
+                    itemTemplate={countryOptionTemplate}
+                    className="w-full md:w-14rem"
+                  />
+                </span>
+            </div>
+
+            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
+              {/*number of employees*/}
+              <div className="w-full flex flex-col form-control">
+                <label htmlFor="number_of_employees">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.NUMBER_OF_EMPLOYEES')}</label>
+                <span className="p-input-icon-left">
+                    <i className="pi pi-hashtag text-gray-400" />
+                    <InputNumber
+                      id="number_of_employees"
+                      type="text"
+                      name="number_of_employees"
+                      value={formValues.number_of_employees.value}
+                      placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.NUMBER_OF_EMPLOYEES')}
+                      className="w-full"
+                      onValueChange={handleState}
+                    />
+                  </span>
               </div>
 
-              {/*language*/}
+              {/*company function*/}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="language">Language</label>
+                <label htmlFor="function">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.FUNCTION')}</label>
                 <span className="p-input-icon-left">
-                  <i className="pi pi-user text-gray-400" />
+                    <i className="pi pi-wrench text-gray-400" />
+                    <InputText
+                      id="function"
+                      type="text"
+                      name="function"
+                      value={formValues.function.value}
+                      placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.FUNCTION')}
+                      className="w-full"
+                      onChange={handleState}
+                    />
+                  </span>
+              </div>
+            </div>
+          </div>
+
+          {/*secondary information*/}
+          <div hidden={activeTab !== 1}>
+            <br/>
+            {/*capital*/}
+            <div className="w-full flex flex-col my-4 form-control">
+              <label htmlFor="capital">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CAPITAL')}</label>
+              <span className="p-input-icon-left">
+                  <i className="pi pi-flag text-gray-400" />
+                  <InputText
+                    id="capital"
+                    type="text"
+                    name="capital"
+                    value={formValues.capital.value}
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CAPITAL')}
+                    className="w-full"
+                    onChange={handleState}
+                  />
+                </span>
+            </div>
+
+            {/*contact / address*/}
+            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
+              {/*company contact*/}
+              <div className="w-full flex flex-col form-control">
+                <label htmlFor="contact">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CONTACT')}</label>
+                <span className="p-input-icon-left">
+                      <i className="pi pi-phone text-gray-400" />
+                      <InputText
+                        type="text"
+                        id="contact"
+                        name="contact"
+                        className="w-full"
+                        value={formValues.contact.value}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CONTACT')}
+                        onChange={handleState}
+                      />
+                    </span>
+              </div>
+
+              {/*address*/}
+              <div className="w-full flex flex-col form-control">
+                <label htmlFor="address">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.ADDRESS')}</label>
+                <span className="p-input-icon-left">
+                      <i className="pi pi-map-marker text-gray-400" />
+                      <InputText
+                        id="address"
+                        type="text"
+                        name="address"
+                        value={formValues.address.value}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.ADDRESS')}
+                        className="w-full"
+                        onChange={handleState}
+                      />
+                    </span>
+              </div>
+            </div>
+
+            {/*language*/}
+            <div className="w-full flex flex-col my-4 form-control">
+              <label htmlFor="language">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.LANGUAGE')}</label>
+              <span className="p-input-icon-left">
+                  <i className="pi pi-language text-gray-400" />
                   <Dropdown
                     id="language"
                     name="language"
@@ -232,17 +398,19 @@ function Register() {
                     onChange={handleState}
                     options={languageOptions}
                     optionLabel="label"
-                    placeholder="Choose a language"
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.LANGUAGE')}
                     className="w-full"
                   />
                 </span>
-              </div>
+            </div>
 
+            {/*domain / category*/}
+            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
               {/*domain */}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="domains">Domains of action</label>
+                <label htmlFor="domains">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.DOMAIN_OF_ACTION')}</label>
                 <span className="p-input-icon-left">
-                  <i className="pi pi-building text-gray-400" />
+                  <i className="pi pi-chart-pie text-gray-400" />
                   <MultiSelect
                     id="domains"
                     name="domains"
@@ -252,161 +420,23 @@ function Register() {
                     onChange={handleState}
                     className="w-full"
                     options={domainsList}
-                    placeholder="Select the domains of action"
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.DOMAIN_OF_ACTION')}
                   />
                 </span>
               </div>
 
-              {/*company contact*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="contact">Company's contact</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-user text-gray-400" />
-                  <InputText
-                    type="text"
-                    id="contact"
-                    name="contact"
-                    className="w-full"
-                    value={formValues.contact.value}
-                    placeholder="Enter company's contact"
-                    onChange={handleState}
-                  />
-                </span>
-              </div>
-
-              {/*company country*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="country">Company country</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-building text-gray-400" />
-                  <Dropdown
-                    value={formValues.country.value}
-                    onChange={handleState}
-                    options={countryConstants}
-                    optionLabel="name"
-                    id="country"
-                    placeholder="Select a country"
-                    filter
-                    valueTemplate={selectedCountryTemplate}
-                    itemTemplate={countryOptionTemplate}
-                    className="w-full md:w-14rem"
-                  />
-                </span>
-              </div>
-
-              {/*address*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="address">Address</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-map-marker text-gray-400" />
-                  <InputText
-                    id="address"
-                    type="text"
-                    name="address"
-                    value={formValues.address.value}
-                    placeholder="Enter address"
-                    className="w-full"
-                    onChange={handleState}
-                  />
-                </span>
-              </div>
-
-              {/*company legal status*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="legal_status">Legal status</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-pencil text-gray-400" />
-                  <InputText
-                    id="legal_status"
-                    type="text"
-                    name="legal_status"
-                    value={formValues.legal_status.value}
-                    placeholder="Enter company's legal status"
-                    className="w-full"
-                    onChange={handleState}
-                  />
-                </span>
-              </div>
 
               {/*Category*/}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="category">Category</label>
+                <label htmlFor="category">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CATEGORY')}</label>
                 <span className="p-input-icon-left">
-                  <i className="pi pi-pencil text-gray-400" />
+                  <i className="pi pi-stop-circle text-gray-400" />
                   <InputText
                     id="category"
                     type="text"
                     name="category"
                     value={formValues.category.value}
-                    placeholder="Enter company's category"
-                    className="w-full"
-                    onChange={handleState}
-                  />
-                </span>
-              </div>
-
-              {/*certification*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="certification">Certification</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-pencil text-gray-400" />
-                  <InputText
-                    id="certification"
-                    type="text"
-                    name="certification"
-                    value={formValues.certification.value}
-                    placeholder="Enter company's category"
-                    className="w-full"
-                    onChange={handleState}
-                  />
-                </span>
-              </div>
-
-              {/*capital*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="capital">Company capital</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-pencil text-gray-400" />
-                  <InputText
-                    id="capital"
-                    type="text"
-                    name="capital"
-                    value={formValues.capital.value}
-                    placeholder="Enter company's capital"
-                    className="w-full"
-                    onChange={handleState}
-                  />
-                </span>
-              </div>
-
-              {/*number of employees*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="number_of_employees">Number of employees</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-pencil text-gray-400" />
-                  <InputNumber
-                    id="number_of_employees"
-                    type="text"
-                    name="number_of_employees"
-                    value={formValues.number_of_employees.value}
-                    placeholder="Number of employees"
-                    className="w-full"
-                    onValueChange={handleState}
-                  />
-                </span>
-              </div>
-
-              {/*company function*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="function">Function</label>
-                <span className="p-input-icon-left">
-                  <i className="pi pi-pencil text-gray-400" />
-                  <InputText
-                    id="function"
-                    type="text"
-                    name="function"
-                    value={formValues.function.value}
-                    placeholder="Enter company's function"
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CATEGORY')}
                     className="w-full"
                     onChange={handleState}
                   />
@@ -415,20 +445,19 @@ function Register() {
             </div>
           </div>
 
-          <div hidden={!nextPage}>
-            <h1 className="register-title text-2xl pb-6 border-b">
-              Administrator's information
-            </h1>
+
+          <div hidden={activeTab !== 2}>
+            <br/>
             {/*username*/}
             <div className="w-full flex flex-col my-4">
-              <label htmlFor="username">Administrator's name</label>
+              <label htmlFor="username">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.NAME')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-user text-gray-400" />
                 <InputText
                   id="username"
                   name="username"
                   value={formValues.username.value}
-                  placeholder="Enter username"
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.NAME')}
                   type="text"
                   className="w-full"
                   onChange={handleState}
@@ -438,7 +467,7 @@ function Register() {
 
             {/*email*/}
             <div className="w-full flex flex-col my-4">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.EMAIL')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-envelope text-gray-400" />
                 <InputText
@@ -446,7 +475,7 @@ function Register() {
                   type="email"
                   name="email"
                   value={formValues.email.value}
-                  placeholder="Email address"
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.EMAIL')}
                   className="w-full"
                   onChange={handleState}
                 />
@@ -455,11 +484,11 @@ function Register() {
 
             {/*password*/}
             <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.PASSWORD')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-lock text-gray-400" />
                 <Password
-                  placeholder="Enter password"
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.PASSWORD')}
                   name="password"
                   id="password"
                   value={formValues.password.value}
@@ -472,11 +501,11 @@ function Register() {
 
             {/*confirm password*/}
             <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="cPassword">Confirm password</label>
+              <label htmlFor="cPassword">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.CONFIRM_PASSWORD')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-lock-open text-gray-400" />
                 <Password
-                  placeholder="Re-enter password"
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.CONFIRM_PASSWORD')}
                   className="password"
                   name="cPassword"
                   id="password"
@@ -490,12 +519,12 @@ function Register() {
 
           <div className="w-full flex flex-col items-end my-4 form-control">
             <p className="text-gray-500 text-sm font-light">
-              Already have an account?{" "}
+              {translationService(currentLanguage, 'REGISTRATION.FORM.ALREADY_HAVE_AN_ACCOUNT')}{" "}
               <Link
                 className="text-orange-500 underline hover:text-orange-700 font-medium"
                 to="/login"
               >
-                Log in
+                {translationService(currentLanguage, 'REGISTRATION.FORM.LOGIN')}
               </Link>
             </p>
           </div>
@@ -504,26 +533,26 @@ function Register() {
             <button
               id="return"
               className={`py-2 ${
-                !nextPage ? "hidden" : "flex"
+                activeTab === 0 ? "hidden" : "flex"
               } items-center gap-4 text-red-500 rounded-md  w-auto px-4 border border-red-500`}
               onClick={(e: any) => {
                 e.preventDefault();
-                setNextPage(false);
+                setActiveTab((prev:number) => prev - 1);
               }}
             >
               <i className="pi pi-arrow-left"></i>
-              Back
+              {translationService(currentLanguage,'REGISTRATION.BUTTON.BACK')}
             </button>
             <Button
-              title={!nextPage ? "Next page" : "Submit"}
+              title={activeTab !== 2 ? translationService(currentLanguage,'REGISTRATION.BUTTON.NEXT') : translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')}
               Icon={{
                 classes: "",
                 Name: HiArrowSmRight,
                 color: "white",
               }}
-              styles="w-full md:w-auto py-2.5 items-center justify-center"
+              styles="w-full md:w-auto py-2.5 px-4 items-center justify-center"
               onClick={(e: any) => {
-                setNextPage(true);
+                setActiveTab((prev:number) => prev +1);
               }}
             />
           </div>
@@ -538,14 +567,8 @@ export default Register;
 const selectedCountryTemplate = (option: any, props: any) => {
   if (option) {
     return (
-      <div className="flex align-items-center">
-        <img
-          alt={option.name}
-          src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png"
-          className={`mr-2 flag flag-${option.code.toLowerCase()}`}
-          style={{ width: "18px" }}
-        />
-        <div>{option.name}</div>
+      <div className="flex items-center">
+        <div>{option?.flag}&nbsp;{option?.name}</div>
       </div>
     );
   }
@@ -555,14 +578,9 @@ const selectedCountryTemplate = (option: any, props: any) => {
 
 const countryOptionTemplate = (option: any) => {
   return (
-    <div className="flex align-items-center">
-      <img
-        alt={option.name}
-        src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png"
-        className={`mr-2 flag flag-${option.code.toLowerCase()}`}
-        style={{ width: "18px" }}
-      />
-      <div>{option.name}</div>
+    <div className="flex items-center">
+      <span className='text-3xl'>{option?.flag}</span>
+      <div>&nbsp;{option?.name}</div>
     </div>
   );
 };
