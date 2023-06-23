@@ -1,188 +1,150 @@
-import { useEffect, useState } from "react";
+import React, { useRef, useState } from 'react';
 import { ProgressSpinner } from "primereact/progressspinner";
 import useLawContext from "../../../hooks/useLawContext";
 import { MultiSelect } from "primereact/multiselect";
-import { Checkbox } from "primereact/checkbox";
-import { LawActionTypes } from "../../../store/action-types/laws.actions";
 import { Button } from "primereact/button";
 import "./law.scss";
 import { ILaws } from "../../../interfaces/laws.interface";
-import { fetchActions } from "../../../services/actions.service";
-import { fetchControls } from "../../../services/control.service";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
-import { Chip } from "primereact/chip";
-import { fetchLaws } from "../../../services/laws.service";
-import { fetchDepartments } from "../../../services/department.service";
 import { Editor } from 'primereact/editor';
-
-const titles = [
-  { label: "Convention", value: "convention" },
-  { label: "Law", value: "law" },
-  { label: "Decree", value: "decree" },
-  { label: "Order", value: "order" },
-  { label: "Decisions", value: "decisions" },
-  { label: "Notes", value: "notes" },
-  { label: "Guidance", value: "guidance" },
-  { label: "Direction", value: "direction" },
-];
-
-const locations = [
-  { label: "International", value: "international" },
-  { label: "Continental", value: "continental" },
-  { label: "National", value: "national" },
-];
-
-const complianceObject = [
-  { label: "Compliant", value: "complaint" },
-  { label: "Non compliant", value: "non_compliant" },
-  { label: "In progress", value: "in_progress" },
-];
-
-const decisionsObject = [
-  { label: "Informative", value: "informative" },
-  { label: "Administrative", value: "administrative" },
-  { label: "Financial", value: "financial" },
-];
-
-const domainsOptions = [
-  {
-    label: "Air",
-    value: "air",
-  },
-  { label: "Land", value: "land" },
-  { label: "Water", value: "water" },
-  { label: "Environment", value: "environment" },
-  { label: "Business", value: "business" },
-  { label: "Education", value: "education" },
-  { label: "Transport", value: "transport" },
-  { label: "Health", value: "health" },
-  { label: "Agriculture", value: "agriculture" },
-];
-
-const applicability = [
-  {
-    label: "Applicable",
-    value: "applicable",
-  },
-  {
-    label: "Non Applicable",
-    value: "non_applicable",
-  },
-  {
-    label: "Informative",
-    value: "informative",
-  },
-];
-
-const severity = [
-  {
-    label: "Low",
-    value: "low",
-  },
-  {
-    label: "Medium",
-    value: "medium",
-  },
-  {
-    label: "High",
-    value: "high",
-  },
-];
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import { Dialog } from 'primereact/dialog';
+import TextAnalysis from './TextAnalysis';
+import { LocalStore } from '../../../utils/storage.utils';
+import { useNavigate, useNavigation } from 'react-router-dom';
+import { LawActionTypes } from '../../../store/action-types/laws.actions';
+import { createLaw } from '../../../services/laws.service';
+import { Toast } from 'primereact/toast';
+//
+// const titles = [
+//   { label: "Convention", value: "convention" },
+//   { label: "Law", value: "law" },
+//   { label: "Decree", value: "decree" },
+//   { label: "Order", value: "order" },
+//   { label: "Decisions", value: "decisions" }
+// ];
+//
+// const locations = [
+//   { label: "International", value: "international" },
+//   { label: "Continental", value: "continental" },
+//   { label: "National", value: "national" },
+// ];
+//
+// const complianceObject = [
+//   { label: "Compliant", value: "complaint" },
+//   { label: "Non compliant", value: "non_compliant" },
+//   { label: "In progress", value: "in_progress" },
+// ];
+//
+// const decisionsObject = [
+//   { label: "Informative", value: "informative" },
+//   { label: "Administrative", value: "administrative" },
+//   { label: "Financial", value: "financial" },
+// ];
+//
+// const domainsOptions = [
+//   {
+//     label: "Air",
+//     value: "air",
+//   },
+//   { label: "Land", value: "land" },
+//   { label: "Water", value: "water" },
+//   { label: "Environment", value: "environment" },
+//   { label: "Business", value: "business" },
+//   { label: "Education", value: "education" },
+//   { label: "Transport", value: "transport" },
+//   { label: "Health", value: "health" },
+//   { label: "Agriculture", value: "agriculture" },
+// ];
+//
+// const applicability = [
+//   {
+//     label: "Applicable",
+//     value: "applicable",
+//   },
+//   {
+//     label: "Non Applicable",
+//     value: "non_applicable",
+//   },
+//   {
+//     label: "Informative",
+//     value: "informative",
+//   },
+// ];
+//
+// const severity = [
+//   {
+//     label: "Low",
+//     value: "low",
+//   },
+//   {
+//     label: "Medium",
+//     value: "medium",
+//   },
+//   {
+//     label: "High",
+//     value: "high",
+//   },
+// ];
 
 const initialFormState = {
-  title: {
+  title_of_text: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  location: {
+  type_of_text: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  ratification: {
+  date_of_issue: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  department: {
+  origin_of_text: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  domains: {
+  source_of_text: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  applicability: {
-    value: "non_applicable",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  theme: {
+  nature_of_text: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  item_number: {
+  parent_of_text: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  paragraph_number: {
+  sectors_of_activity: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  decision: {
+  products_or_services_concerned: {
     value: "",
     error: true,
     error_message: "",
     required: true,
   },
-  compliance: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  text_of_law: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  control_plan: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  action_plan: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  article: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  severity: {
+  purpose_and_scope_of_text: {
     value: "",
     error: true,
     error_message: "",
@@ -190,42 +152,31 @@ const initialFormState = {
   },
 };
 
-const selectOptions = {
-  title: {
-    value: "",
-    error: false,
-    required: true,
-    errorMessage: "This field is required",
-  },
-  selectedOptions: {
-    value: "",
-    error: false,
-    errorMessage: "This field is required",
-  },
-};
-
-function AddLaw(props: { laws: ILaws[] }) {
-  const [dynamicFormOptions, setDynamicFormOptions] =
-    useState<Record<string, any>>(selectOptions);
-
+function AddLaw(props: { close: Function }) {
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialFormState);
 
+  const navigate = useNavigate();
+
+  const { dispatch } = useLawContext();
+
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+  const [loader, setLoader] = useState(false);
+
+  const toast = useRef<Toast>(null);
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   /**
    * description: handle change function. this function is used to handle on change events in an input field
-   * @param {boolean} isDynamicForm this value is to instruct the form to update the dynamic form state not the
    * default form state
    * @returns { void }
    * **/
-  const handleChange = (isDynamicForm?: boolean) => (e: any) => {
-    let { name, value, type }: Record<any, string> = e.target;
+  const handleChange = (e: any) => {
+    let { name, value }: Record<any, string> = e.target;
 
-    type === "checkbox" && (value = e.checked);
-
-    const targetProperty = isDynamicForm
-      ? dynamicFormOptions[name]
-      : formValues[name];
+    const targetProperty = formValues[name];
 
     let error = targetProperty?.validator
       ? !targetProperty.validator.test(String(value))
@@ -238,16 +189,6 @@ function AddLaw(props: { laws: ILaws[] }) {
     )
       error = true;
 
-    if (isDynamicForm) {
-      setDynamicFormOptions({
-        ...dynamicFormOptions,
-        [name]: {
-          ...dynamicFormOptions[name],
-          value,
-          error,
-        },
-      });
-    } else {
       setFormValues({
         ...formValues,
         [name]: {
@@ -256,125 +197,48 @@ function AddLaw(props: { laws: ILaws[] }) {
           error,
         },
       });
-    }
+
   };
 
-  /**
-   * description: this function handles addition of  dynamic content to its list.
-   * @param {React.MouseEventHandler<HTMLButtonElement>} e this value is the event from the execution context
-   * @returns { void }
-   * **/
-  const addOptions = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setTypedOptions((prev: any[]) => {
-      if (prev) {
-        prev.push({
-          title: dynamicFormOptions.title.value,
-          description: dynamicFormOptions.selectedOptions.value,
-          id: typedOptions.length + 1,
-        });
-      } else {
-        prev = [
-          {
-            title: dynamicFormOptions.title.value,
-            description: dynamicFormOptions.selectedOptions.value,
-            id: 1,
-          },
-        ];
+  const handleEditor = (name: string) => (e:any) => {
+    setFormValues((prevState)=>{
+      return {
+        ...prevState,
+        [name]: {
+          ...formValues[name],
+          value: e?.htmlValue
+        },
       }
-
-      return prev;
     });
-    setDynamicFormOptions(selectOptions);
-  };
+  }
 
-  /**
-   * description: this function handles removal of  dynamic content from the list.
-   * @param {number} id the id of the content
-   * @returns { void }
-   * **/
-  const removeOptions = (id: number) => (e: any) => {
+  let formData: any = React.useMemo(() => {
+    let formData: Record<string, any>={};
+    Object.entries(formValues).forEach(([key, value]) => {
+      formData[key] =
+        key === "date_of_issue"
+          ? new Date(String(value.value)).toLocaleDateString()
+          : value?.value;
+    });
+    return formData;
+  }, [formValues])
+
+  const handleAnalysis = (e:any) => {
     e.preventDefault();
     e.stopPropagation();
 
-    setTypedOptions(
-      (prevState: { title: string; option: string; id: number }[]) => {
-        return prevState.filter((x) => x.id !== id);
-      }
-    );
-  };
+    const draftData = LocalStore.get("LAW_DRAFT");
 
-  const [laws, setLaws] = useState<ILaws[]>(props?.laws);
-  const [actions, setActions] = useState<any[]>([]);
-  const [controls, setControls] = useState<any[]>([]);
-  const [typedOptions, setTypedOptions] = useState<any>([]);
-  const [checkDecree, setCheckedDecree] = useState(false);
-  const [checkOrder, setCheckedOrder] = useState(false);
-  const [checkDecision, setCheckedDecision] = useState(false);
-  const [optionPlaceholder, setOptionPlaceholder] = useState("");
-  const [department, setDepartment] = useState<string[]>([]);
+    if(!draftData){
+      formData["id"]=1;
+      LocalStore.set("LAW_DRAFT", [formData]);
+    } else {
+      formData["id"]=draftData.length;
+      LocalStore.set("LAW_DRAFT", [...draftData, formData]);
+    }
 
-  const [order, setOrder] = useState("");
-
-  const [decisions, setDecisions] = useState("");
-
-  const [loader, setLoader] = useState(false);
-  const { state, dispatch } = useLawContext();
-
-  useEffect(() => {
-    (async () => {
-      const resolvedState = await state;
-      if (resolvedState.hasCreated) {
-        setLoader(false);
-      }
-
-      // Fetch Actions,departments and Controls
-      const data = await fetchActions();
-      setActions(data);
-
-      let departments = await fetchDepartments();
-      if (departments) {
-        setDepartment(departments.map((dept) => dept.name));
-      }
-
-      const allControls = await fetchControls();
-      setControls(allControls);
-
-      setLaws(await fetchLaws());
-    })();
-  }, [state]);
-
-  const handleCheckDecree = (e: any) => {
-    setCheckedDecree(e.checked);
-    setOptionPlaceholder("Decree");
-
-    setOrder("");
-    setDecisions("");
-    setCheckedOrder(false);
-    setCheckedDecision(false);
-    setTypedOptions([]);
-  };
-
-  const handleCheckOrder = (e: any) => {
-    setCheckedOrder(e.checked);
-    setOptionPlaceholder("Order");
-
-    setDecisions("");
-    setCheckedDecree(false);
-    setCheckedDecision(false);
-    setTypedOptions([]);
-  };
-
-  const handleCheckDecision = (e: any) => {
-    setCheckedDecision(e.checked);
-    setOptionPlaceholder("Decision");
-
-    setOrder("");
-    setCheckedDecree(false);
-    setCheckedOrder(false);
-    setTypedOptions([]);
-  };
+    navigate(`/dashboard/laws/analysis/${formData.id}`);
+  }
 
   const handleSubmission = (e: any) => {
     e.preventDefault();
@@ -382,394 +246,182 @@ function AddLaw(props: { laws: ILaws[] }) {
 
     setLoader(true);
 
-    const finalDataObject: Record<
-      string,
-      string | any[] | number | Record<string, any>
-    > = {
-      options: {
-        decree:
-          optionPlaceholder.toLowerCase() === "decree" ? typedOptions : [],
-        order: optionPlaceholder.toLowerCase() === "order" ? typedOptions : [],
-        decision:
-          optionPlaceholder.toLowerCase() === "decision" ? typedOptions : [],
-      },
-    };
+    createLaw(formData).then(res => {
+      if(res){
+        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
+        props.close();
+      }
+    })
 
-    Object.entries(formValues).forEach(([key, value]) => {
-      finalDataObject[key] =
-        key === "ratification"
-          ? new Date(String(value.value)).toLocaleDateString()
-          : value?.value;
-    });
-
-    dispatch({
-      type: LawActionTypes.ADD_LAW,
-      payload: finalDataObject,
-    });
   };
 
   // Construct add form
   const addForm = () => {
     return (
       <form className="w-full">
+        <Toast ref={toast}></Toast>
         <div className="form-elements grid md:grid-cols-2 gap-6">
-          {/*law title*/}
+          {/*title_of_text*/}
           <div>
-            <label htmlFor="law_title">Title</label>
-            <Dropdown
-              name="title"
-              id="law_title"
-              value={formValues.title.value}
-              onChange={handleChange()}
-              options={titles}
-              placeholder="Title of this Law"
-              className="w-full md:w-14rem"
-            />
-          </div>
-          {/*location*/}
-          <div>
-            <label htmlFor="location">Location</label>
-            <Dropdown
-              id="location"
-              name="location"
-              value={formValues.location.value}
-              onChange={handleChange()}
-              options={locations}
-              placeholder="Location"
-              className="w-full md:w-14rem"
-            />
-          </div>
-          {/*ratification*/}
-          <div>
-            <label htmlFor="ratification">Ratification</label> <br />
-            {/*<Input type='date' placeholder='Ratification' onChange={getRatification} />*/}
-            <Calendar
-              id="ratification"
+            <label htmlFor="title_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.TITLE_OF_TEXT')}</label>
+            <InputText
+              value={formValues.title_of_text.value}
+              id="title_of_text"
+              onChange={handleChange}
+              name="title_of_text"
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.TITLE_OF_TEXT')}
               className="w-full"
-              name="ratification"
+            />
+          </div>
+
+          {/*type_of_text*/}
+          <div>
+            <label htmlFor="type_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.TYPE_OF_TEXT')}</label>
+            <Dropdown
+              name="type_of_text"
+              id="type_of_text"
+              value={formValues.type_of_text.value}
+              onChange={handleChange}
+              options={
+                [
+                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.CONVENTION'), value: "convention" },
+                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.LAW'), value: "law" },
+                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.DECREE'), value: "decree" },
+                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.ORDER'), value: "order" },
+                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.DECISION'), value: "decisions" }
+                ]
+              }
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.TYPE_OF_TEXT')}
+              className="w-full md:w-14rem"
+            />
+          </div>
+
+          {/*date_of_issue*/}
+          <div>
+            <label htmlFor="date_of_issue">{translationService(currentLanguage,'LAW.ADD.FORM.DATE_OF_ISSUE')}</label> <br />
+            <Calendar
+              id="date_of_issue"
+              className="w-full"
+              name="date_of_issue"
               showIcon
-              value={formValues.ratification.value}
-              placeholder="Ratification"
-              onChange={handleChange()}
+              value={formValues.date_of_issue.value}
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.DATE_OF_ISSUE')}
+              onChange={handleChange}
             />
           </div>
-          {/*decision*/}
+
+          {/*origin_of_text*/}
           <div>
-            <label htmlFor="decision">Decisions</label>
-            <Dropdown
-              id="decision"
-              name="decision"
-              value={formValues.decision.value}
-              onChange={handleChange()}
-              options={decisionsObject}
-              placeholder="Select a decision for this law"
-              className="w-full md:w-14rem"
+            <label htmlFor="origin_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.ORIGIN_OF_TEXT')}</label>
+            <InputText
+              value={formValues.origin_of_text.value}
+              id="origin_of_text"
+              onChange={handleChange}
+              name="origin_of_text"
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.ORIGIN_OF_TEXT')}
+              className="w-full"
             />
           </div>
-          {/*compliance*/}
+
+          {/*source_of_text*/}
           <div>
-            <label htmlFor="compliance">Compliance</label>
-            <Dropdown
-              id="compliance"
-              name="compliance"
-              value={formValues.compliance.value}
-              onChange={handleChange()}
-              className="w-full md:w-14rem"
-              options={complianceObject}
-              placeholder="Compliance of this Law"
+            <label htmlFor="source_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.SOURCE_OF_TEXT')}</label>
+            <InputText
+              value={formValues.source_of_text.value}
+              id="source_of_text"
+              onChange={handleChange}
+              name="source_of_text"
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.SOURCE_OF_TEXT')}
+              className="w-full"
             />
           </div>
-          {/*department*/}
+
+          {/*nature_of_text*/}
           <div>
-            <label htmlFor="department">Department</label>
-            <Dropdown
-              id="department"
-              name="department"
-              value={formValues.department.value}
-              onChange={handleChange()}
-              className="w-full md:w-14rem"
-              options={department}
-              placeholder="Department of action of this Law"
+            <label htmlFor="nature_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.NATURE_OF_TEXT')}</label>
+            <InputText
+              value={formValues.nature_of_text.value}
+              id="nature_of_text"
+              onChange={handleChange}
+              name="nature_of_text"
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.NATURE_OF_TEXT')}
+              className="w-full"
             />
           </div>
-          {/*domains*/}
+
+          {/*parent_of_text*/}
           <div>
-            <label htmlFor="domain">Domain of law</label>
+            <label htmlFor="parent_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.PARENT_OF_TEXT')}</label>
+            <InputText
+              value={formValues.parent_of_text.value}
+              id="parent_of_text"
+              onChange={handleChange}
+              name="parent_of_text"
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PARENT_OF_TEXT')}
+              className="w-full"
+            />
+          </div>
+
+          {/*sectors_of_activity*/}
+          <div>
+            <label htmlFor="sectors_of_activity">{translationService(currentLanguage,'LAW.ADD.FORM.SECTORS_OF_ACTIVITY')}</label>
             <MultiSelect
               filter
-              id="domain"
-              name="domains"
-              value={formValues.domains.value}
-              onChange={handleChange()}
+              id="sectors_of_activity"
+              name="sectors_of_activity"
+              value={formValues.sectors_of_activity.value}
+              onChange={handleChange}
               className="w-full md:w-14rem"
-              options={domainsOptions}
-              placeholder="Select the domain of law"
-            />
-          </div>
-          {/*action plan*/}
-          <div>
-            <label htmlFor="action_plan">Action plan</label>
-            <MultiSelect
-              value={formValues.action_plan.value}
-              onChange={handleChange()}
-              options={actions}
-              id="action_plan"
-              name="action_plan"
-              optionLabel="theme"
-              placeholder="Select action plan"
-              maxSelectedLabels={3}
-              className="w-full md:w-20rem"
-            />
-          </div>
-          {/*control plan*/}
-          <div>
-            <label htmlFor="control_plan">Control plan</label>
-            <MultiSelect
-              value={formValues.control_plan.value}
-              onChange={handleChange()}
-              options={controls}
-              optionLabel="theme"
-              name="control_plan"
-              id="control_plan"
-              placeholder="Select control plan"
-              maxSelectedLabels={3}
-              className="w-full md:w-20rem"
-            />
-          </div>
-          {/*severity */}
-          <div>
-            <label htmlFor="severity">Severity</label>
-            <Dropdown
-              id="severity"
-              name="severity"
-              value={formValues.severity.value}
-              onChange={handleChange()}
-              className="w-full md:w-14rem"
-              options={severity}
-              optionLabel={"label"}
-              placeholder="How severity id this law?"
-            />
-          </div>
-          {/*is applicable*/}
-          <div>
-            <label htmlFor="applicability">Is this law applicable?</label>
-            <Dropdown
-                id="severity"
-                name="applicability"
-                onChange={handleChange()}
-                value={formValues.applicability.value}
-                inputId="applicability"
-                optionLabel="label"
-                className="w-full md:w-14rem"
-                options={applicability}
-                placeholder="Select applicability"
+              options={
+                [
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.AIR'), value: "air"},
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.LAND'), value: "land" },
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.WATER'), value: "water" },
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.ENVIRONMENT'), value: "environment" },
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.BUSINESS'), value: "business" },
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.EDUCATION'), value: "education" },
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.TRANSPORT'), value: "transport" },
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.HEALTH'), value: "health" },
+                  { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.AGRICULTURE'), value: "agriculture" },
+                ]
+              }
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.SECTORS_OF_ACTIVITY')}
             />
           </div>
 
-          {/*theme*/}
-          <div>
-            <label htmlFor="description">Theme</label>
-            <InputText
-              value={formValues.theme.value}
-              id="theme"
-              onChange={handleChange()}
-              name="theme"
-              placeholder="Theme of the law"
-              className="w-full"
-            />
-          </div>
-          {/*article*/}
-          <div>
-            <label htmlFor="article">Article</label>
-            <Editor value={formValues.article.value}
-                    name="article"
-                    placeholder="Enter and article for this law"
+          {/*products_or_services_concerned*/}
+          <div className="col-span-2">
+            <label htmlFor="products_or_services_concerned">{translationService(currentLanguage,'LAW.ADD.FORM.PRODUCTS_OR_SERVICES_CONCERNED')}</label>
+            <Editor value={formValues.products_or_services_concerned.value}
+                    name="products_or_services_concerned"
+                    placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PRODUCTS_OR_SERVICES_CONCERNED')}
                     className="w-full"
-                    id="article"
-                    onChange={handleChange()} style={{ height: '100px' }} />
-            {/*<InputTextarea*/}
-            {/*  autoResize*/}
-            {/*  value={formValues.article.value}*/}
-            {/*  id="article"*/}
-            {/*  onChange={handleChange()}*/}
-            {/*  name="article"*/}
-            {/*  placeholder="Enter and article for this law"*/}
-            {/*  className="w-full"*/}
-            {/*/>*/}
+                    id="products_or_services_concerned"
+                    onTextChange={handleEditor("products_or_services_concerned")} style={{ height: '100px' }} />
           </div>
 
-          {/*text of law*/}
-          <div>
-            <label htmlFor="text_of_law">Text of law</label>
-            <Editor value={formValues.text_of_law.value}
-                    id="text_of_law"
-                    onChange={handleChange()}
-                    name="text_of_law"
-                    placeholder="Enter the details this law"
-                    className="w-full" style={{ height: '100px' }} />
-            {/*<InputTextarea*/}
-            {/*  autoResize*/}
-            {/*  value={formValues.text_of_law.value}*/}
-            {/*  id="text_of_law"*/}
-            {/*  onChange={handleChange()}*/}
-            {/*  name="text_of_law"*/}
-            {/*  placeholder="Enter the details this law"*/}
-            {/*  className="w-full"*/}
-            {/*/>*/}
+          {/*purpose_and_scope_of_text*/}
+          <div className="col-span-2">
+            <label htmlFor="purpose_and_scope_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.PURPOSE_AND_SCOPE_OF_TEXT')}</label>
+            <Editor value={formValues.purpose_and_scope_of_text.value}
+                    name="purpose_and_scope_of_text"
+                    placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PURPOSE_AND_SCOPE_OF_TEXT')}
+                    className="w-full"
+                    id="purpose_and_scope_of_text"
+                    onTextChange={handleEditor("purpose_and_scope_of_text")} style={{ height: '100px' }} />
           </div>
-          {/*checkbox options*/}
-          {/* show checkboxes if title matches various options in array according to the fields in question. */}
-          <div>
-            {/*decree checkbox*/}
-            <div
-              className={`${
-                ["law"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
-                        justify-content-center mb-2`}
-            >
-              <Checkbox
-                onChange={handleCheckDecree}
-                inputId="decrees"
-                checked={checkDecree}
-              ></Checkbox>
-              <label htmlFor="decrees" className="ml-2">
-                Has Decree(s)?
-              </label>
-            </div>
 
-            {/*order checkbox*/}
-            <div
-              className={`${
-                ["law", "decree"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
-                        justify-content-center mb-2`}
-            >
-              <Checkbox
-                onChange={handleCheckOrder}
-                inputId="orders"
-                checked={checkOrder}
-              ></Checkbox>
-              <label htmlFor="orders" className="ml-2">
-                Has Order(s)?
-              </label>
-            </div>
-
-            {/*decisions checkbox*/}
-            <div
-              className={`${
-                ["law"].includes(
-                  formValues["title"].value.toLowerCase()
-                )
-                  ? "flex"
-                  : "hidden"
-              } 
-                        justify-content-center mb-2`}
-            >
-              <Checkbox
-                onChange={handleCheckDecision}
-                inputId="decision"
-                checked={checkDecision}
-              ></Checkbox>
-              <label htmlFor="decision" className="ml-2">
-                Has Decision(s)?
-              </label>
-            </div>
-          </div>
-          {/* This is to add support for laws that have decrees, orders or decisions */}
-          <div className="flex justify-content-center flex-col gap-4">
-            {/* If law has decrees, register them */}
-
-            {(checkDecree || checkOrder || checkDecision) &&
-            ["law", "decree", "order"].includes(
-              formValues["title"].value.toLowerCase()
-            ) ? (
-              <>
-                <div>
-                  <label htmlFor="title">Enter {optionPlaceholder} title</label>
-                  <InputText
-                    type="text"
-                    name="title"
-                    className="p-inputtext-md w-full"
-                    placeholder={`Enter ${optionPlaceholder} title`}
-                    value={dynamicFormOptions.title.value}
-                    onChange={handleChange(true)}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor={`${optionPlaceholder}_list`}>
-                    This {optionPlaceholder} depends on?
-                  </label>
-                  <Dropdown
-                    id={`${optionPlaceholder}_list`}
-                    name="selectedOptions"
-                    value={dynamicFormOptions.selectedOptions.value}
-                    onChange={handleChange(true)}
-                    options={laws?.filter(
-                      (x) => x.title === optionPlaceholder.toLowerCase()
-                    )}
-                    optionLabel="title"
-                    placeholder={`This ${optionPlaceholder} depends on ?`}
-                    className="w-full md:w-14rem"
-                  />
-                </div>
-                {/* Add buttons */}
-                <Button
-                    onClick={addOptions}
-                    hidden={!(checkDecree || checkOrder || checkDecision)}
-                    disabled={
-                        dynamicFormOptions.title.error ||
-                        !dynamicFormOptions.title.value.trim() ||
-                        !dynamicFormOptions.selectedOptions.value
-                    }
-                    label={`Add ${optionPlaceholder}`}
-                    icon="pi pi-plus"
-                    size="small"
-                    className="add-new-btn"
-                />
-              </>
-            ) : null}
-
-          </div>
         </div>
 
-        {/*chips*/}
-        <div>
-          {typedOptions?.length
-            ? typedOptions?.map((x: any) => {
-                return (
-                  <Chip
-                    removable
-                    label={x?.title}
-                    key={x.id}
-                    onRemove={(e) => {
-                      e.preventDefault();
-                      removeOptions(x.id);
-                    }}
-                  />
-                );
-              })
-            : null}
-        </div>
-
+        <br/>
         {/*submit btn*/}
-        <div className="w-full">
-          <div className="">
-            {loader ? (
-              <ProgressSpinner style={{ width: "50px", height: "50px" }} />
-            ) : (
-              ""
-            )}
-          </div>
-          <Button label="Create law" size='small' className="flex float-right w-full md:w-44 py-3 items-center rounded-md" onClick={(e) => handleSubmission(e)} />
+        <div className="w-full flex items-center justify-between">
+          <Button disabled={loader} size='small' severity='warning' icon={`pi ${loader ? 'pi-spin pi-spinner': 'pi-check'}`} label={translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')} className={`px-6 py-4 text-center rounded-md ${loader?'submit':''}`} onClick={handleSubmission} />
+          <Button icon='pi pi-wrench' size='small' label={translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT')}  className='py-4 px-6 text-center rounded-md' onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAnalysis(e);
+          }} />
         </div>
       </form>
     );

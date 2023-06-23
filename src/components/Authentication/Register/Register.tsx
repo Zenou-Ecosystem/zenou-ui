@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { HiArrowSmRight } from "react-icons/hi";
+import { HiArrowSmRight, HiCheck, HiOutlineThumbUp } from 'react-icons/hi';
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../../core/Button/Button";
 import { register } from "../../../services/auth.service";
@@ -19,32 +19,6 @@ import { TabMenu } from 'primereact/tabmenu';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import Locale from '../../locale';
 import CountryList from 'country-list-with-dial-code-and-flag';
-
-const domainsList = [
-  {
-    label: "Air",
-    value: "air",
-  },
-  { label: "Land", value: "land" },
-  { label: "Water", value: "water" },
-  { label: "Environment", value: "environment" },
-  { label: "Business", value: "business" },
-  { label: "Education", value: "education" },
-  { label: "Transport", value: "transport" },
-  { label: "Health", value: "health" },
-  { label: "Agriculture", value: "agriculture" },
-];
-
-const languageOptions = [
-  {
-    label: "English",
-    value: "en",
-  },
-  {
-    label: "French",
-    value: "fr",
-  },
-];
 
 const initialState = {
   company_name: {
@@ -138,6 +112,7 @@ function Register() {
   const [activeTab, setActiveTab] = useState<any>(0);
 
   const signInHandler = async () => {
+
     let payload: any = {
       role: UserTypes.COMPANY_OWNER,
     };
@@ -168,16 +143,16 @@ function Register() {
         password: payload.password,
         company_id: newCompany.id,
       });
-      console.log(data);
+
       if (data) {
         (toast.current as any).show({
           severity: "success",
           summary: "Signup success",
           detail: "Account successfully created",
-          life: 5000,
+          life: 3000,
         });
         LocalStore.set("user", data);
-        setTimeout(() => navigator("/dashboard/home"), 5000);
+        navigator("/dashboard/home");
       } else {
         (toast.current as any).show({
           severity: "error",
@@ -396,7 +371,16 @@ function Register() {
                     name="language"
                     value={formValues.language.value}
                     onChange={handleState}
-                    options={languageOptions}
+                    options={
+                     [ {
+                        label: translationService(currentLanguage,'OPTIONS.LANGUAGE.ENGLISH'),
+                        value: "en",
+                      },
+                    {
+                      label: translationService(currentLanguage,'OPTIONS.LANGUAGE.FRENCH'),
+                      value: "fr",
+                    }]
+                    }
                     optionLabel="label"
                     placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.LANGUAGE')}
                     className="w-full"
@@ -419,7 +403,19 @@ function Register() {
                     value={formValues.domains.value}
                     onChange={handleState}
                     className="w-full"
-                    options={domainsList}
+                    options={
+                      [
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.AIR'), value: "air"},
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.LAND'), value: "land" },
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.WATER'), value: "water" },
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.ENVIRONMENT'), value: "environment" },
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.BUSINESS'), value: "business" },
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.EDUCATION'), value: "education" },
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.TRANSPORT'), value: "transport" },
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.HEALTH'), value: "health" },
+                        { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.AGRICULTURE'), value: "agriculture" },
+                      ]
+                    }
                     placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.DOMAIN_OF_ACTION')}
                   />
                 </span>
@@ -529,7 +525,7 @@ function Register() {
             </p>
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center justify-between">
             <button
               id="return"
               className={`py-2 ${
@@ -547,12 +543,12 @@ function Register() {
               title={activeTab !== 2 ? translationService(currentLanguage,'REGISTRATION.BUTTON.NEXT') : translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')}
               Icon={{
                 classes: "",
-                Name: HiArrowSmRight,
+                Name: activeTab !== 2 ? HiArrowSmRight : HiCheck,
                 color: "white",
               }}
-              styles="w-full md:w-auto py-2.5 px-4 items-center justify-center"
-              onClick={(e: any) => {
-                setActiveTab((prev:number) => prev +1);
+              styles={`w-full md:w-auto py-2.5 px-4 items-center justify-center ${activeTab !== 2?'':'flex-row-reverse'}`}
+              onClick={() => {
+                activeTab !== 2 ? setActiveTab((prev:number) => prev +1) : signInHandler().then(console.log);
               }}
             />
           </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { fecthCompanies } from "./services/companies.service";
 import "./App.scss";
 import Login from "./components/Authentication/Login/Login";
@@ -16,6 +16,8 @@ import Logout from "./pages/user/Logout";
 import Profile from "./pages/user/Profile";
 import DataDetails from "./core/table/Details";
 import Personnel from "./pages/dashboard/personnels";
+import ReviewLaw from './pages/dashboard/laws/ReviewLaw';
+import TextAnalysis from './pages/dashboard/laws/TextAnalysis';
 // import Documentation from './pages/api-docs/Documentation';
 
 function App() {
@@ -34,7 +36,11 @@ function App() {
             loader={fecthCompanies}
             element={<CompaniesList />}
           ></Route>
-          <Route path="laws" element={<Law />}></Route>
+          <Route path="laws" element={<Outlet />}>
+            <Route index path="" element={<Law />}></Route>
+            <Route path="analysis/:id/review" element={<ReviewLaw />}></Route>
+            <Route path="analysis/:id" element={<TextAnalysis />}></Route>
+          </Route>
           <Route path="personnel" element={<Personnel />}></Route>
           <Route path="controls" element={<Controls />}></Route>
           <Route path="actions" element={<Actions />}></Route>

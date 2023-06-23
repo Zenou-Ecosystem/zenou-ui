@@ -7,6 +7,7 @@ import { Toast } from "primereact/toast";
 import { LocalStore } from "../../utils/storage.utils";
 import { useNavigate } from "react-router-dom";
 import { can } from "../../utils/access-control.utils";
+import { currentLanguageValue, translationService } from '../../services/translation.service';
 // import "./index.scss";
 
 function Datatable(props: {
@@ -24,6 +25,10 @@ function Datatable(props: {
   const [tableData, setTableData] = useState([{}] as any);
   const toast = useRef({});
   const navigate = useNavigate();
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+
 
   const acceptDeletion = (action: string, payload: any) => {
     dispatch({ type: action, payload: payload?.id });
@@ -119,6 +124,7 @@ function Datatable(props: {
       <ConfirmDialog />
       <DataTable
         value={tableData}
+        emptyMessage={translationService(currentLanguage,'TABLE.NO_RESULT_FOUND')}
         paginator={!props.noPagination}
         rows={5}
         stripedRows
@@ -126,7 +132,7 @@ function Datatable(props: {
         rowsPerPageOptions={[5, 10, 25, 50]}
         sortMode="multiple"
         onRowClick={(e) => rowClickedHandler(e)}
-        style={{ cursor: "pointer" }}
+        // style={{ cursor: "pointer" }}
         className="border my-8 rounded-md overflow-y-hidden text-gray-500"
       >
         {tableColumns.length >= 1
@@ -143,7 +149,7 @@ function Datatable(props: {
                       header={key}
                       key={index}
                       body={
-                        <span className="flex justify-around items-center gap-2 text-xl">
+                        <span className="flex justify-end items-center gap-2 text-xl">
                           {!can(accessControls.VIEW) ? null : (
                             <span onClick={(e) => actionHandler(e, "view")}>
                               <HiEye className="text-yellow-600" />

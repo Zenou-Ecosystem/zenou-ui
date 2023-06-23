@@ -1,19 +1,21 @@
 import "./navigation.scss";
 import { Menu } from "primereact/menu";
-import React from "react";
+import React, { useState } from 'react';
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
 import {LocalStore} from "../../utils/storage.utils";
 import { AppUserActions } from '../../constants/user.constants';
 import { can } from '../../utils/access-control.utils';
 import Locale from '../../components/locale';
+import { currentLanguageValue, translationService } from '../../services/translation.service';
 
 const Navbar = () => {
   const menu = React.useRef<Menu | any>(null);
-  const [user, setUser] = React.useState<any>();
-  React.useEffect(()=> {
-    setUser(LocalStore.get('user'))
-  }, [])
+  const [user, setUser] = React.useState<any>(LocalStore.get('user'));
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+
   let items = [
     {
       template: (item: any, options: any) => {
@@ -37,13 +39,13 @@ const Navbar = () => {
       },
     },
     { separator: true },
-    { label: "Profile", icon: "pi pi-fw pi-user" },
-    { label: "Settings", icon: "pi pi-fw pi-cog" },
+    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.PROFILE'), icon: "pi pi-fw pi-user" },
+    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS'), icon: "pi pi-fw pi-cog" },
     { separator: true },
-    { label: "Logout", icon: "pi pi-sign-out" },
+    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.LOGOUT'), icon: "pi pi-sign-out" },
   ];
   if(can(AppUserActions.VIEW_COMPANY)){
-    items.splice(2, 0, { label: "Companies", icon: "pi pi-building" })
+    items.splice(2, 0, { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.COMPANIES'), icon: "pi pi-building" })
   }
   return (
     <>
@@ -51,7 +53,7 @@ const Navbar = () => {
         <div className="header-content flex items-center flex-row">
           <span className="p-input-icon-left">
             <i className="pi pi-search" />
-            <InputText placeholder="Search" className="p-inputtext-sm" />
+            <InputText placeholder={translationService(currentLanguage,'INPUT.SEARCH')} className="p-inputtext-sm" />
           </span>
           <div className="flex ml-auto">
             <Locale /> &nbsp; &nbsp; &nbsp;
@@ -75,25 +77,6 @@ const Navbar = () => {
           </div>
         </div>
       </header>
-      {/*<nav className="navbar text-grayColor w-full pt-2 font-bold capitalize">*/}
-      {/*    <ul className="flex justify-around items-center gap-3">*/}
-      {/*        <li className="p-2 w-1/2">*/}
-      {/*            <Search />*/}
-      {/*        </li>*/}
-      {/*        {*/}
-      {/*            !can(AppUserActions.VIEW_COMPANY) ? null :*/}
-      {/*                <li>*/}
-      {/*                    <NavLink end to="/dashboard/companies">Companies</NavLink>*/}
-      {/*                </li>*/}
-      {/*        }*/}
-      {/*        <li>*/}
-      {/*            <NavLink end to="/user/profile">profile</NavLink>*/}
-      {/*        </li>*/}
-      {/*        <li>*/}
-      {/*            <NavLink end to="/user/logout">Log out</NavLink>*/}
-      {/*        </li>*/}
-      {/*    </ul>*/}
-      {/*</nav>*/}
     </>
   );
 };

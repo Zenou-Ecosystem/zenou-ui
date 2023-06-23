@@ -4,3 +4,39 @@
 li.p-dropdown-item{
     text-transform: capitalize;
 }
+form{
+    label{
+        padding-bottom: 0.35rem !important;
+        font-size: 15px;
+        color: #4f4e4e !important;
+    }
+    .p-inputtext{
+        &::placeholder{
+            font-size: 14px !important;
+            color: #9f9d9d !important;
+        }
+    }
+    .p-placeholder{
+        font-size: 14px !important;
+        color: #9f9d9d !important;
+    }
+}
+.submit{
+    cursor: not-allowed !important;
+    background: #8f8f8f !important;
+    border: none !important;
+}
+.conformity{
+    background: green !important;
+    border: none !important;
+    &:focus{
+        box-shadow: none !important;
+    }
+}
+.not-conformed{
+    background: #9d0d0d !important;
+    border: none !important;
+    &:focus{
+        box-shadow: none !important;
+    }
+}

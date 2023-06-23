@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
 import { Dialog } from "primereact/dialog";
 import AddLaw from "./AddLaw";
-import { HiPlus } from "react-icons/hi";
+import { HiFolderAdd, HiPlus } from 'react-icons/hi';
 import useAppContext from "../../../hooks/useAppContext.hooks";
 import LawContextProvider, { LawContext } from "../../../contexts/LawContext";
 import useLawContext from "../../../hooks/useLawContext";
@@ -17,12 +17,16 @@ import { AppUserActions } from "../../../constants/user.constants";
 import { LocalStore } from "../../../utils/storage.utils";
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
 function Laws() {
   const [laws, setLaws] = useState<ILaws[]>([]);
   const [visible, setVisible] = useState(false);
   const { state } = useAppContext();
   const { state: LawState } = useLawContext();
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   const openAddLawForm = () => {
     setVisible(true);
@@ -65,22 +69,27 @@ function Laws() {
   const handleCertificationFilter = (query: string) => {
     console.log("The certificate typed is ", query);
   };
+
   const filterProps = [
     {
-      command: handleNameFilter,
-      label: "Name",
+      command: () => {},
+      label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE_OF_TEXT'),
     },
     {
-      onChange: handleCountryFilter,
-      label: "Country",
+      onChange: () => {},
+      label: translationService(currentLanguage,'LAW.ADD.FORM.TYPE_OF_TEXT'),
     },
     {
-      onChange: handleCategoryFilter,
-      label: "Category",
+      onChange: () => {},
+      label: translationService(currentLanguage,'LAW.ADD.FORM.DATE_OF_ISSUE'),
     },
     {
-      onChange: handleCertificationFilter,
-      label: "Certification",
+      onChange: () => {},
+      label: translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.COMPLIANT'),
+    },
+    {
+      onChange: () => {},
+      label: translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.IMPACT'),
     },
   ];
 
@@ -94,14 +103,14 @@ function Laws() {
     <LawContextProvider>
       <div className="w-full px-4">
         <BasicCard
-          title="List of Laws"
+          title={translationService(currentLanguage,'LAW.LIST.TITLE')}
           headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
               <Toast ref={toast}></Toast>
               <div className="filter my-8 w-full m-auto flex items-end">
                 <div className="filter w-6/12">
-                  <Filter fields={filterProps} title="Filter laws" />
+                  <Filter fields={filterProps} title={translationService(currentLanguage,'LAWS.FILTER')} />
                 </div>
                 {!can(AppUserActions.ADD_LAW) ? null : (
                   <div className="flex justify-end gap-2 w-6/12">
@@ -109,17 +118,17 @@ function Laws() {
                     {/*  <i className='pi pi-file-excel'></i>*/}
                     {/*  Import*/}
                     {/*</button>*/}
-                    <FileUpload mode="basic" name="file" url="http://localhost:3001/law/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel="Import" />
-                    <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
-                      <i className='pi pi-file-import'></i>
-                      Export
-                    </button>
+                    <FileUpload mode="basic" name="file" url="http://localhost:3001/law/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel={translationService(currentLanguage,'BUTTON.IMPORT')} />
+                    {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
+                    {/*  <i className='pi pi-file-import'></i>*/}
+                    {/*  Export*/}
+                    {/*</button>*/}
                     <Button
-                      title="New"
-                      styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
+                      title={translationService(currentLanguage,'BUTTON.NEW')}
+                      styles="flex-row-reverse px-6 py-3.5 text-sm items-center rounded-full"
                       onClick={openAddLawForm}
                       Icon={{
-                        Name: HiPlus,
+                        Name: HiFolderAdd,
                         classes: "",
                         color: "white",
                       }}
@@ -130,24 +139,25 @@ function Laws() {
 
               <div className="add-form my-10">
                 <Dialog
-                  header="Register new law"
+                  header={translationService(currentLanguage,'LAW.ADD.FORM.TITLE')}
                   visible={visible}
-                  style={{ width: "1000px", maxWidth: "100%", height: "100vh" }}
+                  style={{ width: "800px", maxWidth: "100%" }}
                   onHide={() => setVisible(false)}
                 >
-                  <AddLaw laws={laws} />
+                  <AddLaw close={() => setVisible(false)} />
                 </Dialog>
               </div>
               <Datatable
                 data={laws}
                 fields={[
-                  "title",
+                  "title_of_text",
+                  "type_of_text",
+                  "date_of_issue",
                   "applicability",
-                  "ratification",
-                  "compliance",
-                  "severity",
-                  "decision",
-                  "Actions",
+                  "compliant",
+                  "impact",
+                  "nature_of_impact",
+                  "actions",
                 ]}
                 actionTypes={LawActionTypes}
                 context={LawContext}

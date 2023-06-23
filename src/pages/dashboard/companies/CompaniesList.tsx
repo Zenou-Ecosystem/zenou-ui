@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { fecthCompanies } from "../../../services/companies.service";
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
@@ -18,6 +18,7 @@ import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
 function CompaniesList() {
   const [companies, setCompanies] = useState<ICompany[]>([]);
@@ -26,6 +27,11 @@ function CompaniesList() {
 
   const { state: companyState, dispatch: companyDispatch } =
     useCompanyContext();
+
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+
 
   const openAddCompanyForm = () => {
     setVisible(true);
@@ -103,22 +109,22 @@ function CompaniesList() {
 
       <div className="w-full px-4">
         <BasicCard
-          title="List of companies"
+          title={translationService(currentLanguage,'COMPANIES.LIST.TITLE')}
           headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
               <div className="filter my-8 w-full m-auto flex items-end">
                 <div className="filter w-6/12">
-                  <Filter fields={filterProps} title="Filter companies" />
+                  <Filter fields={filterProps} title={translationService(currentLanguage,'COMPANIES.FILTER')} />
                 </div>
                 {!can(AppUserActions.ADD_COMPANY) ? null : (
                   <div className="flex justify-end gap-2 w-6/12">
-                    <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
-                      <i className='pi pi-file-import'></i>
-                      Export
-                    </button>
+                    {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
+                    {/*  <i className='pi pi-file-import'></i>*/}
+                    {/*  Export*/}
+                    {/*</button>*/}
                     <Button
-                      title="New"
+                      title={translationService(currentLanguage,'BUTTON.NEW')}
                       styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
                       onClick={openAddCompanyForm}
                       Icon={{
@@ -152,7 +158,7 @@ function CompaniesList() {
 
               <div className="add-form my-10">
                 <Dialog
-                  header="Register New Company"
+                  header={translationService(currentLanguage,'BUTTON.NEW')}
                   visible={visible}
                   style={{ width: "50vw" }}
                   onHide={() => setVisible(false)}

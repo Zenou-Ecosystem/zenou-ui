@@ -31,9 +31,7 @@ function Login() {
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialState);
 
-  React.useEffect(() => {
-    currentLanguageValue.subscribe(setCurrentLanguage);
-  }, [currentLanguage]);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   const handleState = (e: any) => {
     const { name, value } = e.target;

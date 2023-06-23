@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
@@ -18,6 +18,7 @@ import PersonnelContextProvider, {
 import { PersonnelActionTypes } from "../../../store/action-types/personnel.actions";
 import { Toast } from 'primereact/toast';
 import { FileUpload } from 'primereact/fileupload';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
 function Personnel() {
   const [personnel, setPersonnel] = useState<IPersonnel[]>([]);
@@ -25,6 +26,9 @@ function Personnel() {
   const { state } = useAppContext();
 
   const { state: PersonnelState } = usePersonnelContext();
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   const openAddPersonnelForm = () => {
     setVisible(true);
@@ -105,22 +109,22 @@ function Personnel() {
 
       <div className="w-full px-4">
         <BasicCard
-          title="List of employees"
+          title={translationService(currentLanguage,'PERSONNEL.LIST.TITLE')}
           headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
               <div className="filter my-8 w-full m-auto flex items-end">
                 <div className="filter w-6/12">
-                  <Filter fields={filterProps} title="Filter employees" />
+                  <Filter fields={[]} title={translationService(currentLanguage,'PERSONNEL.FILTER')} />
                 </div>
                 {!can(AppUserActions.ADD_PERSONNEL) ? null : (
                   <div className="flex justify-end gap-2 w-6/12">
-                   <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
-                      <i className='pi pi-file-import'></i>
-                      Export
-                    </button>
+                   {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
+                   {/*   <i className='pi pi-file-import'></i>*/}
+                   {/*   Export*/}
+                   {/* </button>*/}
                     <Button
-                      title="New"
+                      title={translationService(currentLanguage,'BUTTON.NEW')}
                       styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
                       onClick={openAddPersonnelForm}
                       Icon={{
@@ -154,7 +158,7 @@ function Personnel() {
 
               <div className="add-form my-10">
                 <Dialog
-                  header="Create new employee"
+                  header={translationService(currentLanguage,'BUTTON.NEW')}
                   visible={visible}
                   style={{ width: "770px", maxWidth: "100%" }}
                   onHide={() => setVisible(false)}

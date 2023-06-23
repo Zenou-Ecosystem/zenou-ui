@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './controls.scss'
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
@@ -17,6 +17,7 @@ import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
 function Controls() {
 
@@ -25,6 +26,11 @@ function Controls() {
     const { state, dispatch } = useAppContext();
 
     const { state: ControlState, dispatch: ControlDispatch } = useControlContext();
+
+    const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+    React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+
 
     const openAddControlForm = () => {
         setVisible(true);
@@ -103,23 +109,15 @@ function Controls() {
 
     return (
         <ControlContextProvider>
-
-            {/*<div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">*/}
-            {/*    <BasicCard {...cardProps} />*/}
-            {/*    <BasicCard {...cardProps} />*/}
-            {/*    <BasicCard {...cardProps} />*/}
-            {/*    <BasicCard {...cardProps} />*/}
-            {/*</div>*/}
-
             <div className="w-full px-4">
                 <Toast ref={toast}></Toast>
-                <BasicCard title="List of controls"
+                <BasicCard title={translationService(currentLanguage,'CONTROLS.LIST.TITLE')}
                            headerStyles="font-medium text-3xl py-4"
                     content={() => (
                         <>
                             <div className="filter my-8 w-full m-auto flex items-end">
                                 <div className="filter w-6/12">
-                                    <Filter fields={filterProps} title="Filter controls" />
+                                    <Filter fields={filterProps} title={translationService(currentLanguage,'CONTROLS.FILTER')}/>
                                 </div>
                                 {!can(AppUserActions.ADD_CONTROL) ? null : (
                                   <div className="flex justify-end gap-2 w-6/12">
@@ -127,13 +125,13 @@ function Controls() {
                                       {/*  <i className='pi pi-file-excel'></i>*/}
                                       {/*  Import*/}
                                       {/*</button>*/}
-                                      <FileUpload mode="basic" name="file" url="http://localhost:3001/controls/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel="Import" />
-                                      <button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>
-                                          <i className='pi pi-file-import'></i>
-                                          Export
-                                      </button>
+                                      <FileUpload mode="basic" name="file" url="http://localhost:3001/controls/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel={translationService(currentLanguage,'BUTTON.IMPORT')} />
+                                      {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
+                                      {/*    <i className='pi pi-file-import'></i>*/}
+                                      {/*    Export*/}
+                                      {/*</button>*/}
                                       <Button
-                                        title="New"
+                                        title={translationService(currentLanguage,'BUTTON.NEW')}
                                         styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
                                         onClick={openAddControlForm}
                                         Icon={{
@@ -147,7 +145,7 @@ function Controls() {
                             </div>
 
                             <div className="add-form my-10">
-                                <Dialog header="Register New Control" visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
+                                <Dialog header={translationService(currentLanguage,'BUTTON.NEW')} visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
                                     <AddControl />
                                 </Dialog>
                             </div>

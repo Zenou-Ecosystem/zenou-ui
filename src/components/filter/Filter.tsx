@@ -1,11 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import BasicCard from "../../core/card/BasicCard";
-import Input from "../../core/Input/Input";
 import { InputText } from 'primereact/inputtext';
 import { Menu } from 'primereact/menu';
+import { currentLanguageValue, translationService } from '../../services/translation.service';
 
 function Filter(props: { fields: any[]; title: string }) {
   const { fields, title } = props;
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+
 
   // Icon={{
   //     classes: 'absolute top-3 left-3',
@@ -15,7 +18,7 @@ function Filter(props: { fields: any[]; title: string }) {
   const constructFilter = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const menu =  useRef<Menu>(null);
-    const items = fields;
+
     return (
       <form className="w-full">
         <div className="w-full flex flex-col items-start justify-end">
@@ -26,17 +29,17 @@ function Filter(props: { fields: any[]; title: string }) {
                 id="search"
                 type="text"
                 name="search"
-                placeholder="Search "
+                placeholder={translationService(currentLanguage,'INPUT.SEARCH')}
                 className="w-full"
               />
             <button onClick={(event) => {
               event.preventDefault()
               menu?.current?.toggle(event)
-            }} className='text-sm border border-gray-400 text-gray-500 rounded absolute right-2 top-2.5 px-2 gap-2 py-1 flex items-center'>
+            }} className='text-sm border border-orange-400 text-orange-500 bg-orange-100 rounded absolute right-2 top-2.5 px-2 gap-2 py-1 flex items-center'>
               <i className='pi pi-filter'></i>
-              Filter by
+              {translationService(currentLanguage,'INPUT.FILTER_BY')}
             </button>
-            <Menu model={items} popup ref={menu} id="popup_menu" />
+            <Menu model={fields} popup ref={menu} id="popup_menu" />
             </span>
         </div>
         {/*{fields.map((element: any, index: number) => {*/}

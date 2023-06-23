@@ -1,8 +1,6 @@
 import { createLaw, deleteLaw } from "../../services/laws.service";
 import { LawActions } from "../action-types/laws.actions";
 
-
-
 export const lawReducer = async (state: any, action: LawActions) => {
     switch (action.type) {
         case "ADD_LAW":

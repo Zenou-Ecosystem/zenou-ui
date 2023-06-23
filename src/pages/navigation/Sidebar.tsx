@@ -7,10 +7,7 @@ import { currentLanguageValue, translationService } from '../../services/transla
 
 function SidebarComponent() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
-
-  React.useEffect(() => {
-    currentLanguageValue.subscribe(setCurrentLanguage);
-  }, [currentLanguage]);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage])
 
   return (
     <aside className="w-2/12 md:shadow transform -translate-x-full md:translate-x-0 transition-transform relative duration-150 ease-in">
