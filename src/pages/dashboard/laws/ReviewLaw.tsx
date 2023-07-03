@@ -36,8 +36,7 @@ export default function ReviewLaw(){
     {label: translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT'), icon: 'pi pi-wrench'}
   ];
 
-  const submitLaw = (e:any) => {
-    e.preventDefault();
+  const submitLaw = () => {
     let law = {
       ...draftInfo().others,
       ...draftInfo().text_analysis,
@@ -45,9 +44,9 @@ export default function ReviewLaw(){
     }
     createLaw(law).then(res => {
       if(res){
-        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
         let newDraftData = draftItems.filter((x:any) => x.id !== Number(id));
         LocalStore.set("LAW_DRAFT", newDraftData);
+        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
         navigate(`/dashboard/laws`);
       }
     })
@@ -96,11 +95,11 @@ export default function ReviewLaw(){
         <div hidden={activeIndex !==1} className='p-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {Object.entries(draftInfo().text_analysis).map(([key, value]) => {
-
+              const textAreaInputs = ['requirements', 'expertise'].includes(key);
               if(key === "compliant"){
                 return (
                   <div key={key} className='flex items-center gap-2'>
-                    <p className=''>{translationService(currentLanguage,`LAW.ANALYSE_TEXT.FORM.${key.toUpperCase()}`)}</p>
+                    <p className=''>{translationService(currentLanguage,`LAW.ADD.FORM.${key.toUpperCase()}`)}</p>
                     <div
                       className={`flex justify-center items-center m-1 gap-1 font-medium py-1 px-2 rounded-full border ${!value ? 'bg-red-100 border-red-500 text-red-500' : 'bg-green-100 text-green-500 border-green-500'}`}>
                       <i className={`pi pi-${value?'check':'times'}`}></i>
@@ -108,13 +107,13 @@ export default function ReviewLaw(){
                   </div>
                 )
               }
-              if(key==="impact"){
+              if(key==="impact" || key === "applicability" || key === "nature_of_impact"){
                 return (
                   <div key={key}>
-                    <div className='border-b pb-2'>{translationService(currentLanguage,`LAW.ANALYSE_TEXT.FORM.${key.toUpperCase()}`)}</div>
+                    <div className='border-b pb-2'>{translationService(currentLanguage,`LAW.ADD.FORM.${key.toUpperCase()}`)}</div>
                     <div  className='py-2 text-gray-400 mt-2 flex'>
                       <div
-                        className={`flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full border ${value === 'weak'? 'bg-red-100 border-red-500 text-red-500' : value === 'medium'? 'bg-orange-100 text-orange-500 border-orange-500': value === 'major'? 'bg-blue-500 text-white':'bg-red-500 text-white' }`}>
+                        className={`flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full border ${value === 'weak'? 'bg-red-100 border-red-500 text-red-500' : value === 'medium'? 'bg-orange-100 text-orange-500 border-orange-500': value === 'major'? 'bg-blue-500 text-white': value === 'yes'? 'bg-green-100 text-green-500 border-green-500' : 'bg-red-500 text-white' }`}>
                         <div className="text-xs font-normal leading-none max-w-full flex-initial">
                           {translationService(currentLanguage,`OPTIONS.${(value as any).toUpperCase()}`)}
                         </div>
@@ -123,10 +122,11 @@ export default function ReviewLaw(){
                   </div>
                 )
               }
+              
               // if(key==="process_management"){
               //   return (
               //     <div key={key}>
-              //       <div className='border-b pb-2'>{translationService(currentLanguage,`LAW.ANALYSE_TEXT.FORM.${key.toUpperCase()}`)}</div>
+              //       <div className='border-b pb-2'>{translationService(currentLanguage,`LAW.ADD.FORM.${key.toUpperCase()}`)}</div>
               //       <div  className='py-2 text-gray-400 mt-2 flex'>
               //         <div
               //           className={`flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full border ${value === 'weak'? 'bg-red-100 border-red-500 text-red-500' : value === 'medium'? 'bg-orange-100 text-orange-500 border-orange-500': value === 'major'? 'bg-blue-500 text-white':'bg-red-500 text-white' }`}>
@@ -139,11 +139,12 @@ export default function ReviewLaw(){
               //   )
               // }
               return (
-                <div key={key}>
-                  <div className='border-b pb-2'>{translationService(currentLanguage,`LAW.ANALYSE_TEXT.FORM.${key.toUpperCase()}`)}</div>
+                <div key={key} className={`${textAreaInputs?'col-span-2':''}`}>
+                  <div className='border-b pb-2'>{translationService(currentLanguage,`LAW.ADD.FORM.${key.toUpperCase()}`)}</div>
                   <div  className='py-2 text-gray-400 mt-2'>{
                     typeof value === "object" && Array.isArray(value) ?
-                    (<ul className="list-disc ml-6 grid grid-cols-2">{value.map((item:any, index:any) => <li className="capitalize" key={index}>{translationService(currentLanguage,`OPTIONS.SECTORS_OF_ACTIVITIES.${(item as any).toUpperCase()}`)}</li>)}</ul>):
+                    (<ul className="list-disc ml-6 grid grid-cols-2">{value.map((item:any, index:any) => <li className="capitalize" key={index}>{translationService(currentLanguage,`OPTIONS.SECTORS_OF_ACTIVITIES.${(item as any).toUpperCase()}`)}</li>)}</ul>)
+                    : textAreaInputs ? <div dangerouslySetInnerHTML={{ __html :value as any }}></div> :
                     value as any}</div>
                 </div>
               )
@@ -174,7 +175,7 @@ export default function ReviewLaw(){
             }}
             styles={`w-full md:w-auto py-2.5 px-4 items-center justify-center ${activeIndex !== 1?'':'flex-row-reverse'}`}
             onClick={(e:any) => {
-              activeIndex !== 1 ? setActiveIndex((prev:number) => prev +1) : submitLaw(e);
+              activeIndex !== 1 ? setActiveIndex((prev:number) => prev +1) : submitLaw();
             }}
           />
         </div>

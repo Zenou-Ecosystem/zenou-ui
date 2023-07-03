@@ -233,10 +233,9 @@ function AddLaw(props: { close: Function }) {
       formData["id"]=1;
       LocalStore.set("LAW_DRAFT", [formData]);
     } else {
-      formData["id"]=draftData.length;
+      formData["id"]=draftData.length+1;
       LocalStore.set("LAW_DRAFT", [...draftData, formData]);
     }
-
     navigate(`/dashboard/laws/analysis/${formData.id}`);
   }
 
@@ -247,10 +246,13 @@ function AddLaw(props: { close: Function }) {
     setLoader(true);
 
     createLaw(formData).then(res => {
+      console.log(res);
       if(res){
         toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
         props.close();
       }
+    }).catch(e => {
+      toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
     })
 
   };
@@ -417,7 +419,7 @@ function AddLaw(props: { close: Function }) {
         {/*submit btn*/}
         <div className="w-full flex items-center justify-between">
           <Button disabled={loader} size='small' severity='warning' icon={`pi ${loader ? 'pi-spin pi-spinner': 'pi-check'}`} label={translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')} className={`px-6 py-4 text-center rounded-md ${loader?'submit':''}`} onClick={handleSubmission} />
-          <Button icon='pi pi-wrench' size='small' label={translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT')}  className='py-4 px-6 text-center rounded-md' onClick={(e) => {
+          <Button icon='pi pi-wrench' size='small' label={translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT')}  className='py-4 px-6 p-button-primary text-center rounded-md' onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             handleAnalysis(e);

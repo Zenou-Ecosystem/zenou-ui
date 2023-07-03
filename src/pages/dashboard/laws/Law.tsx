@@ -161,6 +161,7 @@ function Laws() {
                 ]}
                 actionTypes={LawActionTypes}
                 context={LawContext}
+                translationKey={'LAW.ADD.FORM'}
                 accessControls={{
                   EDIT: AppUserActions.EDIT_LAW,
                   DELETE: AppUserActions.DELETE_LAW,

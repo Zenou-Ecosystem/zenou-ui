@@ -10,7 +10,7 @@ function BasicCard(props: {
   const { title, content, styles, headerStyles } = props;
 
   return (
-    <div className={`container rounded border ${styles ? styles : ""}`}>
+    <div className={`container rounded ${styles ? styles : ""}`}>
       <div className="card-header">
         <h1
           className={`font-bold text-primary ${

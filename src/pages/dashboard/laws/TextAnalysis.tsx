@@ -183,10 +183,10 @@ export default function TextAnalysis() {
 
           {/*requirements*/}
           <div className="col-span-2">
-            <label htmlFor="requirements">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.REQUIREMENTS')}</label>
+            <label htmlFor="requirements">{translationService(currentLanguage,'LAW.ADD.FORM.REQUIREMENTS')}</label>
             <Editor value={formValues.requirements.value}
                     name="requirements"
-                    placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.REQUIREMENTS')}
+                    placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.REQUIREMENTS')}
                     className="w-full"
                     id="requirements"
                     onTextChange={handleEditor("requirements")} style={{ height: '100px' }} />
@@ -194,7 +194,7 @@ export default function TextAnalysis() {
 
           {/*applicability*/}
           <div>
-            <label htmlFor="applicability">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.APPLICABILITY')}</label>
+            <label htmlFor="applicability">{translationService(currentLanguage,'LAW.ADD.FORM.APPLICABILITY')}</label>
             <Dropdown
               name="applicability"
               id="applicability"
@@ -207,14 +207,14 @@ export default function TextAnalysis() {
                   { label: translationService(currentLanguage,'OPTIONS.INFORMATION'), value: "information" }
                 ]
               }
-              placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.APPLICABILITY')}
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.APPLICABILITY')}
               className="w-full md:w-14rem"
             />
           </div>
 
           {/*process_management*/}
           <div>
-            <label htmlFor="process_management">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PROCESS_MANAGEMENT')}</label>
+            <label htmlFor="process_management">{translationService(currentLanguage,'LAW.ADD.FORM.PROCESS_MANAGEMENT')}</label>
             <MultiSelect
               filter
               id="process_management"
@@ -235,13 +235,13 @@ export default function TextAnalysis() {
                   { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.AGRICULTURE'), value: "agriculture" },
                 ]
               }
-              placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.PROCESS_MANAGEMENT')}
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PROCESS_MANAGEMENT')}
             />
           </div>
 
           {/*impact*/}
           <div>
-            <label htmlFor="impact">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.IMPACT')}</label>
+            <label htmlFor="impact">{translationService(currentLanguage,'LAW.ADD.FORM.IMPACT')}</label>
             <Dropdown
               name="impact"
               id="impact"
@@ -255,14 +255,14 @@ export default function TextAnalysis() {
                   { label: translationService(currentLanguage,'OPTIONS.CRITICAL'), value: "critical" }
                 ]
               }
-              placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.IMPACT')}
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.IMPACT')}
               className="w-full md:w-14rem"
             />
           </div>
 
           {/*nature_of_impact*/}
           <div>
-            <label htmlFor="nature_of_impact">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.NATURE_OF_IMPACT')}</label>
+            <label htmlFor="nature_of_impact">{translationService(currentLanguage,'LAW.ADD.FORM.NATURE_OF_IMPACT')}</label>
             <Dropdown
               name="nature_of_impact"
               id="nature_of_impact"
@@ -276,17 +276,17 @@ export default function TextAnalysis() {
                   { label: translationService(currentLanguage,'OPTIONS.CRITICAL'), value: "critical" }
                 ]
               }
-              placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.NATURE_OF_IMPACT')}
+              placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.NATURE_OF_IMPACT')}
               className="w-full md:w-14rem"
             />
           </div>
 
           {/*expertise*/}
           <div className="col-span-2">
-            <label htmlFor="expertise">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.EXPERTISE')}</label>
+            <label htmlFor="expertise">{translationService(currentLanguage,'LAW.ADD.FORM.EXPERTISE')}</label>
             <Editor value={formValues.expertise.value}
                     name="expertise"
-                    placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.EXPERTISE')}
+                    placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.EXPERTISE')}
                     className="w-full"
                     id="expertise"
                     onTextChange={handleEditor("expertise")} style={{ height: '100px' }} />
@@ -294,14 +294,14 @@ export default function TextAnalysis() {
 
           {/*compliant*/}
           <div className="col-span-2 flex items-center flex-col justify-start">
-            <label htmlFor="compliant">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.COMPLIANT')}</label>
+            <label htmlFor="compliant">{translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.COMPLIANT')}</label>
             <InputSwitch name='compliant' id='compliant' checked={formValues.compliant.value} onChange={handleChange} />
           </div>
 
           <div hidden={formValues.compliant.value} className='p-4 rounded-md space-y-4 col-span-2 border border-red-500 bg-red-50'>
             {/*action plan section*/}
             <div>
-              <label htmlFor="actionPlan">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.ACTION_PLANS')}</label>
+              <label htmlFor="actionPlan">{translationService(currentLanguage,'LAW.ADD.FORM.ACTION_PLANS')}</label>
               <MultiSelect
                 value={formValues.action_plans.value}
                 onChange={handleChange}
@@ -309,7 +309,7 @@ export default function TextAnalysis() {
                 id="action_plans"
                 name="action_plans"
                 optionLabel="theme"
-                placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.ACTION_PLANS')}
+                placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.ACTION_PLANS')}
                 maxSelectedLabels={3}
                 className="w-full md:w-20rem"
               />
@@ -317,13 +317,13 @@ export default function TextAnalysis() {
 
             {/*conformity_cost*/}
             <div className="w-full flex flex-col form-control">
-              <label htmlFor="conformity_cost">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.CONFORMITY_COST')}</label>
+              <label htmlFor="conformity_cost">{translationService(currentLanguage,'LAW.ADD.FORM.CONFORMITY_COST')}</label>
                  <InputNumber
                         id="conformity_cost"
                         type="text"
                         name="conformity_cost"
                         value={formValues.conformity_cost.value}
-                        placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.CONFORMITY_COST')}
+                        placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.CONFORMITY_COST')}
                         className="w-full"
                         onValueChange={handleChange}
                  />
@@ -331,13 +331,13 @@ export default function TextAnalysis() {
 
             {/*conformity_deadline*/}
             <div>
-              <label htmlFor="conformity_deadline">{translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.CONFORMITY_DEADLINE')}</label>
+              <label htmlFor="conformity_deadline">{translationService(currentLanguage,'LAW.ADD.FORM.CONFORMITY_DEADLINE')}</label>
               <InputText
                 value={formValues.conformity_deadline.value}
                 id="conformity_deadline"
                 onChange={handleChange}
                 name="conformity_deadline"
-                placeholder={translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.PLACEHOLDER.CONFORMITY_DEADLINE')}
+                placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.CONFORMITY_DEADLINE')}
                 className="w-full"
               />
             </div>
@@ -349,7 +349,7 @@ export default function TextAnalysis() {
         {/*submit btn*/}
         <div className="w-full flex items-center justify-between">
           {/*<Button disabled={loader} size='small' severity='warning' icon={`pi ${loader ? 'pi-spin pi-spinner': 'pi-check'}`} label={translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')} className={`px-6 py-4 text-center rounded-md ${loader?'submit':''}`} onClick={()=>{}} />*/}
-          <Button icon={`pi pi-${formValues.compliant.value?'check':'times'}`} size='small' label={translationService(currentLanguage,'LAW.ANALYSE_TEXT.REVIEW')} className={`py-4 w-full px-6 text-center rounded-md ${formValues.compliant.value?'conformity':'not-conformed'}`} onClick={(e)=>{
+          <Button icon={`pi pi-${formValues.compliant.value?'check':'times'}`} size='small' label={translationService(currentLanguage,'LAW.ADD.REVIEW')} className={`py-4 w-full px-6 text-center rounded-md ${formValues.compliant.value?'conformity':'not-conformed'}`} onClick={(e)=>{
             e.preventDefault()
             handleSubmission(e);
           }} />

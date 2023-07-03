@@ -240,7 +240,7 @@ function AddControl() {
             <Dropdown
               value={text_of_the_law}
               onChange={(e) => getTextOfLaw(e.value)}
-              options={laws.filter((x) => (x.title as string) === "law")}
+              options={laws?.filter((x) => (x.title as string) === "law")||[]}
               id="textOfLaw"
               name="textOfLaw"
               optionLabel="title"

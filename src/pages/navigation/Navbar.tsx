@@ -49,7 +49,7 @@ const Navbar = () => {
   }
   return (
     <>
-      <header className="header bg-white shadow py-4 px-8">
+      <header className="header bg-white shadow-sm sticky top-0 z-50 border-b py-4 px-8">
         <div className="header-content flex items-center flex-row">
           <span className="p-input-icon-left">
             <i className="pi pi-search" />
@@ -61,7 +61,7 @@ const Navbar = () => {
               onClick={(e) => menu.current.toggle(e)}
               className="flex cursor-pointer flex-row items-center"
             >
-              <Menu model={items} popup ref={menu} />
+              <Menu model={items} popup ref={menu} id="dropdown" />
               <div className="rounded-md bg-orange-300 w-10 h-10 flex items-center justify-center">
                 <i className="pi pi-user text-white"></i>
               </div>

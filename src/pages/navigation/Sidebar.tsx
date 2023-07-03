@@ -10,7 +10,7 @@ function SidebarComponent() {
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage])
 
   return (
-    <aside className="w-2/12 md:shadow transform -translate-x-full md:translate-x-0 transition-transform relative duration-150 ease-in">
+    <aside className=" md:shadow transform -translate-x-full md:translate-x-0 transition-transform fixed h-screen top-0 w-2/12 z-50 duration-150 ease-in">
       <h2 className="text-3xl pt-5 px-8 mb-6 pb-5 border-b border-gray-500 font-semibold">
         Zeunou.
       </h2>

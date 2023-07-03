@@ -8,9 +8,10 @@
   box-sizing: border-box;
 }
 
-p, h1, h2, h3, h4, h5, h6, button, {
+p, h1, h2, h3, h4, h5, h6, button {
   font-family: 'Poppins', sans-serif;
 }
+
 .p-dialog-header {
   //border-bottom: 1px solid #ccc !important;
 }
@@ -19,4 +20,7 @@ p, h1, h2, h3, h4, h5, h6, button, {
 }
 .bg-primary{
   background: linear-gradient(-45deg,  #537895, #09203f);
+}
+.p-paginator{
+  border: none !important;
 }

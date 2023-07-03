@@ -3,10 +3,14 @@ aside {
   color: white;
 }
 
-.p-menuitem{
+#dropdown{
+  .p-menuitem{
+    font-size: 15px !important;
   &:last-child{
     .p-menuitem-text, .p-menuitem-icon{
       color: red !important;
     }
   }
 }
+}
+

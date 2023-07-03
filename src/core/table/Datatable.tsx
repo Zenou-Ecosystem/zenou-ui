@@ -17,6 +17,7 @@ function Datatable(props: {
   accessControls: { EDIT: string; VIEW: string; DELETE: string };
   context: React.Context<any>;
   noPagination?: Boolean;
+  translationKey?: string;
 }) {
   const { data, fields, actionTypes, context, accessControls } = props;
   const [tableColumns, setTableColumns] = useState<string[]>([]);
@@ -28,7 +29,6 @@ function Datatable(props: {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
-
 
   const acceptDeletion = (action: string, payload: any) => {
     dispatch({ type: action, payload: payload?.id });
@@ -135,11 +135,13 @@ function Datatable(props: {
         // style={{ cursor: "pointer" }}
         className="border my-8 rounded-md overflow-y-hidden text-gray-500"
       >
-        {tableColumns.length >= 1
+        {tableColumns.length
           ? tableColumns
               .filter((key) => {
                 return fields
-                  .map((field) => field.toLowerCase())
+                  .map((field) => {
+                    return field.toLowerCase();
+                  })
                   .includes(key.toLowerCase());
               })
               .map((key: string, index: number) => {
@@ -176,7 +178,7 @@ function Datatable(props: {
                   <Column
                     key={index}
                     field={key}
-                    header={key.toLowerCase().replaceAll("_", " ")}
+                    header={props.translationKey ? translationService(currentLanguage,`${props.translationKey}.${key.toUpperCase()}`): key}
                     sortable
                     style={{ width: "5%", textTransform: "capitalize" }}
                   ></Column>

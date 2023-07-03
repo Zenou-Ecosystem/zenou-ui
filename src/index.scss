@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-$primary: #052F5F;
+$primary: #09203f;
 $secondary: #F1A208;
 
 body {
@@ -29,3 +29,12 @@ code {
 .add-form-submit-btn {
   @apply flex flex-col justify-center items-center mt-4;
 }
+
+.p-inputtext:enabled:focus, .p-dropdown:not(.p-disabled).p-focus, .p-multiselect:not(.p-disabled).p-focus {
+  box-shadow: 0 0 0 1px #537895 !important;
+  border-color: $primary !important;
+  }
+  .p-dropdown-panel, .p-password-panel, .p-multiselect-panel, .p-menu.p-menu-overlay {
+    border: 1px solid #bebebe !important;
+    border-radius: 0.35rem !important;
+   }

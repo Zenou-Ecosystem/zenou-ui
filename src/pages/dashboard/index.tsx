@@ -20,7 +20,7 @@ function DashboardHome() {
   return (
     <div className="flex flex-row min-h-screen">
       <SidebarComponent />
-      <main className="w-10/12 flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
+      <main className="w-10/12 flex flex-col flex-grow ml-0 md:ml-64  transition-all duration-150 ease-in">
         <Navbar />
         <div className="flex flex-col flex-grow p-8">
           <Outlet />
