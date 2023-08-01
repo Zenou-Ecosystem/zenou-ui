@@ -5,15 +5,24 @@ import './index.scss';
 import { useParams } from 'react-router-dom';
 import { singularize } from '../../utils/singularize.util';
 import { currentLanguageValue, translationService } from '../../services/translation.service';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { Tag } from 'primereact/tag';
+import { LawActionTypes } from '../../store/action-types/laws.actions';
+import { LawContext } from '../../contexts/LawContext';
+import { AppUserActions } from '../../constants/user.constants';
+import Datatable from './Datatable';
 
 export default function DataDetails() {
   const [props, setProps] = useState<any>();
   const params = useParams();
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   const lawItems = [
-    {label: translationService(currentLanguage,'LAW.ADD.FORM.ACTION_PLANS'), icon: 'pi pi-sync'},
+    {label: translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT'), icon: 'pi pi-sync'},
+    // {label: translationService(currentLanguage,'LAW.ADD.FORM.PARENT_OF_TEXT'), icon: 'pi pi-book'},
     {label: translationService(currentLanguage,'LAW.ADD.FORM.SECTORS_OF_ACTIVITY'), icon: 'pi pi-book'}
   ];
 
@@ -36,16 +45,19 @@ export default function DataDetails() {
         setItems([ ...primaryItems, ...controlPlanItems])
         break;
     }
-  }, []);
+  }, [actionPlanItems, controlPlanItems, lawItems, params?.context, primaryItems]);
 
   const showPropDetail = (props: object) => {
     let elements: any = [];
     let detailElements: any = {};
+
     if(!props) {
      return { elements, detailElements };
     }
     for (let [key, value] of Object.entries(props)) {
       key = key === "id" ? "Signature" : key;
+      // @ts-ignore
+      key === 'password' && delete props[key];
       if (typeof value === "object" || ["action_plans"].includes(key)) {
         if (!Array.isArray(value)) {
           detailElements = { ...detailElements, ...value };
@@ -54,7 +66,7 @@ export default function DataDetails() {
         }
       } else {
         // Reformat key if necessary
-        const optionsTranslation = ['yes', 'no', 'information', 'weak', 'medium', 'major', 'critical', 'true', 'false']
+        const optionsTranslation = ['yes', 'no', 'information', 'weak', 'medium', 'major', 'critical', 'true', 'false', 'convention']
         const textArray = ["products_or_services_concerned", "expertise", "purpose_and_scope_of_text", "requirements"]
         // key = key?.replaceAll("_", " ").toLowerCase();
         if( textArray.includes(key)){
@@ -84,16 +96,16 @@ export default function DataDetails() {
                   }`}
               >
                 <div className='py-2'>
-                  <p className='border-b pb-2'>{ params.context ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.ADD.FORM.${key.toUpperCase()}`): key}:</p>
+                  <p className='border-b pb-2'>{ params.context && translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.ADD.FORM.${key.toUpperCase()}`) !== 'no such key' ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.ADD.FORM.${key.toUpperCase()}`): key}:</p>
                   <p className='py-2 text-gray-400 mt-2'>{
                     optionsTranslation.includes(value?.toString().toLowerCase())? translationService(currentLanguage,`OPTIONS.${value?.toString().toUpperCase()}`) :
                     value?.toString()?.replaceAll('_', ' ') || 'N/A'}</p>
-                  {key.startsWith("link") ? (
-                      <a className="w-2/3 underline text-blue-700 " href={value}>
-                        {" "}
-                        Click to view file details
-                      </a>): ''
-                  }
+                    {key.startsWith("link") ? (
+                        <a className="w-2/3 underline text-blue-700 " href={value}>
+                          {" "}
+                          Click to view file details
+                        </a>): ''
+                    }
                 </div>
               </div>
           );
@@ -101,27 +113,55 @@ export default function DataDetails() {
         }
       }
     }
+    console.log(detailElements);
     return { elements, detailElements };
   };
 
   const [activeTab, setActiveTab] = useState<any>({value: primaryItems[0], index: 0});
 
+
+  const applicableBodyTemplate = (key:string) => (rowData:any) => {
+    return <Tag value={translationService(currentLanguage,`OPTIONS.${rowData[key].toString().toUpperCase()}`)} severity={['yes', 'true'].includes(rowData[key].toString()) ? 'success' : ['no', 'critical', 'weak', 'false'].includes(rowData[key].toString()) ? 'danger': ['medium'].includes(rowData[key].toString())? 'warning': 'info'} />;
+  };
+
+  const expertiseTemplate = (rowData: any) => {
+    return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData.expertise }}></div>
+  }
+
+  const actionPlanTemplate = (rowData: any) => {
+    return !rowData.action_plans ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData.action_plans}</div>
+  }
+
+  const proofBodyTemplate = (rowData: any) => {
+    return <ol className='list-disc'>
+      {
+        rowData?.proof_of_conformity ? rowData.proof_of_conformity.map(({ data }: any, idx:number) => {
+          return <li key={idx} className='truncate w-32'>
+            <a href={data?.img_url} className='underline text-blue-500'>{data?.name}</a>
+          </li>
+        } ): <i className='pi pi-times-circle text-red-500'></i>
+      }
+    </ol>
+  }
+  const servicesBodyTemplate = (rowData:any) => {
+    return <ul>
+      {
+        rowData.process_management.map((item: string) => {
+          return <li key={item}>{translationService(currentLanguage, `OPTIONS.SECTORS_OF_ACTIVITIES.${item.toUpperCase()}`)}</li>
+        } )
+      }
+    </ul>
+  }
   return (
     <section>
       <div className="header-frame h-48 items-center justify-center flex-col flex w-full">
-        <h1 className='font-semibold text-2xl md:text-4xl'>{ params?.context  ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.TITLE`): 'N?A'}</h1>
-        <p className="font-light text-gray-300 mt-1">{ params?.context  ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.DESCRIPTION`): 'N?A'}</p>
+        <h1 className='font-semibold text-2xl md:text-4xl'>{ params?.context && translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.DESCRIPTION`) !== 'no such key'  ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.TITLE`): 'Section des détails'}</h1>
+        <p className="font-light text-gray-300 mt-1">{ params?.context && translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.DESCRIPTION`) !== 'no such key'  ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.DESCRIPTION`): 'Quelques descriptifs de détails'}</p>
 
         <div
           className={`justify-center items-center mt-2 gap-1 font-medium py-1 px-2 ${params?.context === 'laws' ? 'flex': 'hidden' } rounded-full border ${!props?.is_analysed ? 'bg-red-100 border-red-500 text-red-500' : 'bg-green-100 text-green-500 border-green-500'}`}>
           <small className="font-light">{translationService(currentLanguage,'LAW.ADD.FORM.IS_ANALYSED')}:</small>
           <i className={`pi pi-${props?.is_analysed?'check':'times'}`}></i>
-        </div>
-
-        <div
-          className={`justify-center items-center mt-2 gap-1 font-medium py-1 px-2 ${params?.context === 'laws' && props?.is_analysed  ? 'flex': 'hidden' } rounded-full border ${!props?.compliant ? 'bg-red-100 border-red-500 text-red-500' : 'bg-green-100 text-green-500 border-green-500'}`}>
-          <small className="font-light">{translationService(currentLanguage,'ANALYSIS_STATUS')}:</small>
-          <i className={`pi pi-${props?.compliant?'check':'times'}`}></i>
         </div>
 
       </div>
@@ -134,15 +174,23 @@ export default function DataDetails() {
             {props ? showPropDetail(props).elements.map((prop:any) => prop) : ""}
           </div>
         </div>
-        <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.ADD.FORM.ACTION_PLANS')}>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            { showPropDetail(props)?.detailElements?.action_plan &&
-              showPropDetail(props)?.detailElements?.action_plan?.length > 0 ?
-              showPropDetail(props)?.detailElements.action_plan?.map((data: string) =>
-                  <div key={data}>{data}</div>
-              ) : <div className='col-span-2 flex items-center h-48 w-full justify-center'>{translationService(currentLanguage,`TABLE.NO_RESULT_FOUND`)}</div>
+        <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT')}>
+          <br/>
+          <DataTable size="small" tableStyle={{ width: '100%' }} value={showPropDetail(props)?.detailElements?.text_analysis} showGridlines>
+            {
+              ["requirements", "applicability", "process_management", "impact", "nature_of_impact", "expertise",
+              "action_plans", "proof_of_conformity", "compliant", "conformity_cost", "conformity_deadline"].map((item:any, index:number) =>
+                <Column style={{ width: '20px' }} key={index} field={item}
+                        body={
+                          ['applicability', 'impact', 'nature_of_impact', 'compliant'].includes(item)
+                            ? applicableBodyTemplate(item): ['expertise'].includes(item)
+                              ? expertiseTemplate :
+                              ['action_plans', 'conformity_cost', 'conformity_deadline'].includes(item)
+                                ? actionPlanTemplate :
+                                ['process_management'].includes(item) ? servicesBodyTemplate : ['proof_of_conformity'].includes(item)? proofBodyTemplate :'' }
+                        header={translationService(currentLanguage,`LAW.ADD.FORM.${item.toString().toUpperCase()}`)}/>)
             }
-          </div>
+          </DataTable>
         </div>
         <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.ADD.FORM.CONTROL_PLANS')}>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -153,6 +201,7 @@ export default function DataDetails() {
             }
           </div>
         </div>
+
         {/*<div hidden={activeTab.value?.label !== 'Decrees'}>*/}
         {/*  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>*/}
         {/*    { showPropDetail(props)?.detailElements?.decree &&*/}
@@ -180,6 +229,8 @@ export default function DataDetails() {
         {/*    }*/}
         {/*  </div>*/}
         {/*</div>*/}
+
+        {/*sector of activity*/}
         <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.ADD.FORM.SECTORS_OF_ACTIVITY')}>
           <div className='p-6'>
             { showPropDetail(props)?.detailElements?.sectors_of_activity &&

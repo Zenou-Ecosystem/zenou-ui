@@ -18,6 +18,31 @@ p, h1, h2, h3, h4, h5, h6, button {
 .p-dialog-content {
   //padding: 1.5rem 1.5rem !important;
 }
+.p-dialog .p-dialog-header {
+  padding: 1rem !important;
+  border: none !important;
+}
+.p-confirm-dialog .p-dialog-content {
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+.p-dialog .p-dialog-footer {
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 1.5rem 1rem !important;
+  border: none !important;
+  button {
+    margin: 0 0.5rem 0 0 !important;
+    width: 50% !important;
+    padding: .55rem 0 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    &.p-confirm-dialog-reject{
+      border: 1px solid #052F5F !important;
+      color: #052F5F !important;
+    }
+  }
+}
 .bg-primary{
   background: linear-gradient(-45deg,  #537895, #09203f);
 }

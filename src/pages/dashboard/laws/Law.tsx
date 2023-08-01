@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
@@ -14,8 +14,7 @@ import { LawActionTypes } from "../../../store/action-types/laws.actions";
 import { fetchLaws } from "../../../services/laws.service";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
-import { LocalStore } from "../../../utils/storage.utils";
-import { FileUpload } from 'primereact/fileupload';
+import * as xlsx from 'xlsx';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
@@ -25,6 +24,7 @@ function Laws() {
   const { state } = useAppContext();
   const { state: LawState } = useLawContext();
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const toast = useRef<Toast>(null);
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
@@ -51,25 +51,6 @@ function Laws() {
     })();
   }, [state, LawState]);
 
-  const cardProps = {
-    content: `Statistics for the month of February. This is really making
-        sense in all areas`,
-    title: "Law Statistics",
-  };
-  const handleNameFilter = (query: string) => {
-    console.log("The name typed is ", query);
-  };
-  const handleCountryFilter = (query: string) => {
-    console.log("The country typed is ", query);
-  };
-  const handleCategoryFilter = (query: string) => {
-    console.log("The category typed is ", query);
-  };
-
-  const handleCertificationFilter = (query: string) => {
-    console.log("The certificate typed is ", query);
-  };
-
   const filterProps = [
     {
       command: () => {},
@@ -93,10 +74,65 @@ function Laws() {
     },
   ];
 
-  const toast = useRef<Toast>(null);
-  const onUpload = () => {
-    toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
-   fetchLaws().then(setLaws);
+  const onUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    if(!e.target.files) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      const workbook = xlsx.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = xlsx.utils.sheet_to_json(worksheet);
+
+      let formattedData:any[] = json.map((value:any) => {
+        return Object.keys(value).reduce((acc, key) => {
+
+          // @ts-ignore
+          if(key === 'TYPE_DE_TEXTE'){
+            // @ts-ignore
+            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = translationService(currentLanguage, `OPTIONS.${value[key].toUpperCase()}`);
+          }
+          else if(key === 'SECTEURS_ACTIVITE'){
+            let newValue = value[key].split(',');
+            newValue = newValue.map((i: string) => translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`));
+
+            // @ts-ignore
+            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = newValue;
+          }
+          else {
+            // @ts-ignore
+            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = value[key];
+          }
+
+          return acc;
+        }, {})
+      });
+
+      console.log(replaceParentsWithObjects(formattedData));
+
+    };
+
+    reader.readAsArrayBuffer(e.target.files[0]);
+
+    const replaceParentsWithObjects = (array:any[]) => {
+      // First, create a lookup table for all the objects in the array
+      const lookup:any = {};
+      array.forEach(obj => {
+        lookup[obj.number] = obj;
+      });
+
+      // Then, iterate through the array and replace "parent_of_text" values with the corresponding objects
+      array.forEach(obj => {
+        if (obj.parent_of_text !== undefined && lookup[obj.parent_of_text] !== undefined) {
+          obj.parent_of_text = lookup[obj.parent_of_text];
+        }
+      });
+
+      return array;
+    }
+   //  toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+   // fetchLaws().then(setLaws);
   };
 
   return (
@@ -118,19 +154,20 @@ function Laws() {
                     {/*  <i className='pi pi-file-excel'></i>*/}
                     {/*  Import*/}
                     {/*</button>*/}
-                    <FileUpload mode="basic" name="file" url="http://localhost:3001/law/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel={translationService(currentLanguage,'BUTTON.IMPORT')} />
-                    {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
-                    {/*  <i className='pi pi-file-import'></i>*/}
-                    {/*  Export*/}
-                    {/*</button>*/}
+                    <div className='file-container'>
+                      <label htmlFor='file-input'>
+                        <i className='pi pi-upload'></i> &nbsp;
+                        {translationService(currentLanguage,'BUTTON.IMPORT')}
+                      </label>
+                      <input type="file" onChange={onUpload} id="file-input" accept=".xlsx" />
+                    </div>
+
                     <Button
                       title={translationService(currentLanguage,'BUTTON.NEW')}
                       styles="flex-row-reverse px-6 py-3.5 text-sm items-center rounded-full"
                       onClick={openAddLawForm}
                       Icon={{
-                        Name: HiFolderAdd,
-                        classes: "",
-                        color: "white",
+                        Name: () => (<i className='pi pi-plus text-white' />),
                       }}
                     />
                   </div>
@@ -144,7 +181,10 @@ function Laws() {
                   style={{ width: "800px", maxWidth: "100%" }}
                   onHide={() => setVisible(false)}
                 >
-                  <AddLaw close={() => setVisible(false)} />
+                  <AddLaw setNewLaw={() => {
+                    fetchLaws().then(setLaws);
+                    toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SAVE_LAW_SUCCESS') });
+                  } } close={() => setVisible(false)} />
                 </Dialog>
               </div>
               <Datatable
@@ -155,8 +195,8 @@ function Laws() {
                   "date_of_issue",
                   "applicability",
                   "compliant",
-                  "impact",
-                  "nature_of_impact",
+                  // "impact",
+                  // "nature_of_impact",
                   "actions",
                 ]}
                 actionTypes={LawActionTypes}

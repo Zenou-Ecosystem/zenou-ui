@@ -8,7 +8,7 @@ import { LocalStore } from "../../utils/storage.utils";
 import { useNavigate } from "react-router-dom";
 import { can } from "../../utils/access-control.utils";
 import { currentLanguageValue, translationService } from '../../services/translation.service';
-// import "./index.scss";
+import "./index.scss";
 
 function Datatable(props: {
   data: any[];
@@ -66,7 +66,16 @@ function Datatable(props: {
   };
 
   useEffect(() => {
-    setTableData(data);
+    console.log(data);
+    setTableData(data?.map((item) => {
+      item?.type_of_text && (item["type_of_text"] = translationService(currentLanguage,`OPTIONS.${item.type_of_text.toUpperCase()}`))
+      item?.applicability && (item["applicability"] = translationService(currentLanguage,`OPTIONS.${item?.applicability.toString().toUpperCase()}`));
+      item?.impact && (item["impact"] = translationService(currentLanguage,`OPTIONS.${item.impact?.toString().toUpperCase()}`));
+      item?.nature_of_impact && (item["impact"] = translationService(currentLanguage,`OPTIONS.${item.impact?.toString().toUpperCase()}`));
+      item?.compliant && (item["compliant"] = translationService(currentLanguage,`OPTIONS.${item.compliant?.toString().toUpperCase()}`));
+
+      return item;
+    })||data);
     let columns = data && data.length >= 1 ? [...Object.keys(data[0]), 'Actions'] : [];
     setTableColumns(columns);
   }, [data]);
@@ -118,6 +127,17 @@ function Datatable(props: {
     }
   };
 
+  const simpleArrayBodyTemplate = (key:string) => (rowData:any) => {
+    return <ul>
+      {
+        rowData[key].map((item: string) => {
+          return <li key={item}>{translationService(currentLanguage, `OPTIONS.SECTORS_OF_ACTIVITIES.${item.toUpperCase()}`)}</li>
+        } )
+      }
+    </ul>
+  }
+
+
   return (
     <div className="">
       <Toast ref={toast as any} />
@@ -133,7 +153,7 @@ function Datatable(props: {
         sortMode="multiple"
         onRowClick={(e) => rowClickedHandler(e)}
         // style={{ cursor: "pointer" }}
-        className="border my-8 rounded-md overflow-y-hidden text-gray-500"
+        className="border my-8 text-center rounded-md overflow-y-hidden text-gray-500"
       >
         {tableColumns.length
           ? tableColumns
@@ -174,12 +194,16 @@ function Datatable(props: {
                   );
                 }
 
+
                 return (
                   <Column
                     key={index}
                     field={key}
                     header={props.translationKey ? translationService(currentLanguage,`${props.translationKey}.${key.toUpperCase()}`): key}
                     sortable
+                    body={
+                    ['department', 'sector_of_activity'].includes(key) ? simpleArrayBodyTemplate('department' || 'sector_of_activity') : ''
+                    }
                     style={{ width: "5%", textTransform: "capitalize" }}
                   ></Column>
                 );

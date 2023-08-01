@@ -22,6 +22,7 @@
     "react-icons": "^4.7.1",
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
+    "recharts": "^2.7.2",
     "rxjs": "^7.8.1",
     "swagger-ui": "^4.15.5",
     "swagger-ui-react": "^4.16.0-alpha.1",

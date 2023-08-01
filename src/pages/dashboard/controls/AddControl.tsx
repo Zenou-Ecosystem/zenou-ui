@@ -43,7 +43,7 @@ function AddControl() {
   const { state, dispatch } = useControlContext();
 
   const [actions, setActions] = useState<any[]>([]);
-  const [laws, setLaws] = useState<ILaws[]>([]);
+  const [laws, setLaws] = useState<any[]>([]);
 
   const handleSubmission = () => {
     setLoader(true);
@@ -240,7 +240,7 @@ function AddControl() {
             <Dropdown
               value={text_of_the_law}
               onChange={(e) => getTextOfLaw(e.value)}
-              options={laws?.filter((x) => (x.title as string) === "law")||[]}
+              options={laws?.filter((x) => (x.type_of_text as string) === "law")||[]}
               id="textOfLaw"
               name="textOfLaw"
               optionLabel="title"

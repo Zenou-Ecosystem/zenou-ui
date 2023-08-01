@@ -171,10 +171,11 @@ function CompaniesList() {
                 data={companies}
                 fields={[
                   "name",
-                  "category",
-                  "country",
-                  "certification",
-                  "Actions",
+                  "admin_email",
+                  "function",
+                  "contact",
+                  "capital",
+                  "actions",
                 ]}
                 actionTypes={CompanyActionTypes}
                 context={CompanyContext}

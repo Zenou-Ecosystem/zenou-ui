@@ -47,9 +47,11 @@ function Login() {
 
   const signInHandler = async () => {
     let payload: any = {};
+
     Object.entries(formValues).forEach(([key, value]) => {
       key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
     });
+
     const data = await login(payload);
     if (data && data?.access_token) {
       (toast.current as any).show({
@@ -78,18 +80,21 @@ function Login() {
         <Locale />
       </div>
 
-      <div className="welcome-container w-full md:w-7/12 md:px-20 p-6 md:flex flex-col justify-center items-center">
-        <h1 className="welcome-main-text hidden md:block md:w-3/5">
-          {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.TITLE')}
-        </h1>
-        <br />
-        <p className="text-gray-200 hidden md:block w-3/5">
-          {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.SUBTITLE')}
-        </p>
+      <div className="welcome-container w-full md:w-8/12  md:flex flex-col justify-center items-center">
+        <div className='welcome-image'></div>
+        <div className='welcome-text'>
+          <h1 className="welcome-main-text hidden md:block">
+            {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.TITLE')}
+          </h1>
+          <br />
+          <p className="text-gray-200 hidden md:block">
+            {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.SUBTITLE')}
+          </p>
+        </div>
       </div>
 
       {/*form section*/}
-      <div className="signup-section p-4 md:px-16 w-full md:w-5/12 flex items-center flex-col justify-center gap-1">
+      <div className="signup-section p-4 md:px-16 w-full md:w-4/12 flex items-center flex-col justify-center gap-1">
         <form className="w-full">
           <h1 className="register-title text-2xl">{translationService(currentLanguage,'LOGIN.TITLE')}
           </h1>

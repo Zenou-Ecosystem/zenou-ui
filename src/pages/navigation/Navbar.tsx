@@ -8,11 +8,14 @@ import { AppUserActions } from '../../constants/user.constants';
 import { can } from '../../utils/access-control.utils';
 import Locale from '../../components/locale';
 import { currentLanguageValue, translationService } from '../../services/translation.service';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const menu = React.useRef<Menu | any>(null);
   const [user, setUser] = React.useState<any>(LocalStore.get('user'));
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
+  const navigate = useNavigate();
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
@@ -32,20 +35,20 @@ const Navbar = () => {
             </div>
             <div className="flex flex-col align">
               <span className="font-semibold capitalize text-sm">{user?.username}</span>
-              <span className="text-sm capitalize text-gray-400">{user?.role?.toLowerCase()}</span>
+              <span className="text-sm capitalize text-gray-400">{user?.role?.toLowerCase().replaceAll('_', ' ')}</span>
             </div>
           </button>
         );
       },
     },
     { separator: true },
-    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.PROFILE'), icon: "pi pi-fw pi-user" },
-    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS'), icon: "pi pi-fw pi-cog" },
+    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.PROFILE'), icon: "pi pi-fw pi-user", command:() => navigate('/user/profile')  },
+    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS'), icon: "pi pi-fw pi-cog",  command:() => navigate('/user/profile')  },
     { separator: true },
-    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.LOGOUT'), icon: "pi pi-sign-out" },
+    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.LOGOUT'), icon: "pi pi-sign-out",  command:() => navigate('/')  },
   ];
   if(can(AppUserActions.VIEW_COMPANY)){
-    items.splice(2, 0, { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.COMPANIES'), icon: "pi pi-building" })
+    items.splice(2, 0, { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.COMPANIES'), icon: "pi pi-building",  command:() => navigate('/dashboard/company')  })
   }
   return (
     <>
@@ -70,7 +73,7 @@ const Navbar = () => {
                   {user?.username}
                 </span>
                 <span className="truncate capitalize w-20 text-gray-500 text-xs leading-none mt-1">
-                  {user?.role?.toLowerCase()}
+                  {user?.role?.toLowerCase().replaceAll('_', ' ')}
                 </span>
               </span>
             </a>

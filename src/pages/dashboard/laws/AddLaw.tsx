@@ -1,93 +1,17 @@
 import React, { useRef, useState } from 'react';
-import { ProgressSpinner } from "primereact/progressspinner";
-import useLawContext from "../../../hooks/useLawContext";
 import { MultiSelect } from "primereact/multiselect";
 import { Button } from "primereact/button";
 import "./law.scss";
-import { ILaws } from "../../../interfaces/laws.interface";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Editor } from 'primereact/editor';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
-import { Dialog } from 'primereact/dialog';
-import TextAnalysis from './TextAnalysis';
 import { LocalStore } from '../../../utils/storage.utils';
-import { useNavigate, useNavigation } from 'react-router-dom';
-import { LawActionTypes } from '../../../store/action-types/laws.actions';
-import { createLaw } from '../../../services/laws.service';
+import { useNavigate } from 'react-router-dom';
+import { createLaw, fetchLaws } from '../../../services/laws.service';
 import { Toast } from 'primereact/toast';
-//
-// const titles = [
-//   { label: "Convention", value: "convention" },
-//   { label: "Law", value: "law" },
-//   { label: "Decree", value: "decree" },
-//   { label: "Order", value: "order" },
-//   { label: "Decisions", value: "decisions" }
-// ];
-//
-// const locations = [
-//   { label: "International", value: "international" },
-//   { label: "Continental", value: "continental" },
-//   { label: "National", value: "national" },
-// ];
-//
-// const complianceObject = [
-//   { label: "Compliant", value: "complaint" },
-//   { label: "Non compliant", value: "non_compliant" },
-//   { label: "In progress", value: "in_progress" },
-// ];
-//
-// const decisionsObject = [
-//   { label: "Informative", value: "informative" },
-//   { label: "Administrative", value: "administrative" },
-//   { label: "Financial", value: "financial" },
-// ];
-//
-// const domainsOptions = [
-//   {
-//     label: "Air",
-//     value: "air",
-//   },
-//   { label: "Land", value: "land" },
-//   { label: "Water", value: "water" },
-//   { label: "Environment", value: "environment" },
-//   { label: "Business", value: "business" },
-//   { label: "Education", value: "education" },
-//   { label: "Transport", value: "transport" },
-//   { label: "Health", value: "health" },
-//   { label: "Agriculture", value: "agriculture" },
-// ];
-//
-// const applicability = [
-//   {
-//     label: "Applicable",
-//     value: "applicable",
-//   },
-//   {
-//     label: "Non Applicable",
-//     value: "non_applicable",
-//   },
-//   {
-//     label: "Informative",
-//     value: "informative",
-//   },
-// ];
-//
-// const severity = [
-//   {
-//     label: "Low",
-//     value: "low",
-//   },
-//   {
-//     label: "Medium",
-//     value: "medium",
-//   },
-//   {
-//     label: "High",
-//     value: "high",
-//   },
-// ];
+import { Chips } from 'primereact/chips';
 
 const initialFormState = {
   title_of_text: {
@@ -127,7 +51,7 @@ const initialFormState = {
     required: true,
   },
   parent_of_text: {
-    value: "",
+    value: {},
     error: true,
     error_message: "",
     required: true,
@@ -152,13 +76,13 @@ const initialFormState = {
   },
 };
 
-function AddLaw(props: { close: Function }) {
+function AddLaw(props: { close: Function, setNewLaw: Function }) {
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialFormState);
 
   const navigate = useNavigate();
-
-  const { dispatch } = useLawContext();
+  //
+  // const { dispatch } = useLawContext();
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
@@ -166,7 +90,9 @@ function AddLaw(props: { close: Function }) {
 
   const toast = useRef<Toast>(null);
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  const [laws, setLaws] = React.useState<any[]>([]);
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   /**
    * description: handle change function. this function is used to handle on change events in an input field
@@ -223,6 +149,12 @@ function AddLaw(props: { close: Function }) {
     return formData;
   }, [formValues])
 
+  React.useEffect(() => {
+    (async () => {
+      setLaws(await fetchLaws());
+    })()
+  }, [])
+
   const handleAnalysis = (e:any) => {
     e.preventDefault();
     e.stopPropagation();
@@ -245,15 +177,17 @@ function AddLaw(props: { close: Function }) {
 
     setLoader(true);
 
-    createLaw(formData).then(res => {
-      console.log(res);
-      if(res){
-        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
-        props.close();
-      }
-    }).catch(e => {
-      toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-    })
+    console.log(formData);
+
+    // createLaw(formData).then(res => {
+    //   console.log(res);
+    //   if(res){
+    //     props.setNewLaw();
+    //     props.close();
+    //   }
+    // }).catch(() => {
+    //   toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+    // })
 
   };
 
@@ -286,11 +220,11 @@ function AddLaw(props: { close: Function }) {
               onChange={handleChange}
               options={
                 [
-                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.CONVENTION'), value: "convention" },
-                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.LAW'), value: "law" },
-                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.DECREE'), value: "decree" },
-                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.ORDER'), value: "order" },
-                  { label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE.DECISION'), value: "decisions" }
+                  { label: translationService(currentLanguage,'OPTIONS.LAW'), value: "law" },
+                  { label: translationService(currentLanguage,'OPTIONS.CONVENTION'), value: "convention" },
+                  { label: translationService(currentLanguage,'OPTIONS.DECREE'), value: "decree" },
+                  { label: translationService(currentLanguage,'OPTIONS.ORDER'), value: "order" },
+                  { label: translationService(currentLanguage,'OPTIONS.DECISION'), value: "decision" }
                 ]
               }
               placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.TYPE_OF_TEXT')}
@@ -354,14 +288,17 @@ function AddLaw(props: { close: Function }) {
           {/*parent_of_text*/}
           <div>
             <label htmlFor="parent_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.PARENT_OF_TEXT')}</label>
-            <InputText
+            <Dropdown
+              filter
               value={formValues.parent_of_text.value}
               id="parent_of_text"
               onChange={handleChange}
               name="parent_of_text"
+              optionLabel='title_of_text'
               placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PARENT_OF_TEXT')}
-              className="w-full"
-            />
+              className="w-full md:w-14rem"
+              options={laws || []}
+              />
           </div>
 
           {/*sectors_of_activity*/}
@@ -394,12 +331,18 @@ function AddLaw(props: { close: Function }) {
           {/*products_or_services_concerned*/}
           <div className="col-span-2">
             <label htmlFor="products_or_services_concerned">{translationService(currentLanguage,'LAW.ADD.FORM.PRODUCTS_OR_SERVICES_CONCERNED')}</label>
-            <Editor value={formValues.products_or_services_concerned.value}
-                    name="products_or_services_concerned"
-                    placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PRODUCTS_OR_SERVICES_CONCERNED')}
-                    className="w-full"
-                    id="products_or_services_concerned"
-                    onTextChange={handleEditor("products_or_services_concerned")} style={{ height: '100px' }} />
+            <Chips name="products_or_services_concerned"
+                   id="products_or_services_concerned"
+                   placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PRODUCTS_OR_SERVICES_CONCERNED')}
+                   value={formValues.products_or_services_concerned.value}
+                   className="w-full"
+                   onChange={handleChange} />
+            {/*<Editor value={formValues.products_or_services_concerned.value}*/}
+            {/*        name="products_or_services_concerned"*/}
+            {/*        placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PRODUCTS_OR_SERVICES_CONCERNED')}*/}
+            {/*        className="w-full"*/}
+            {/*        id="products_or_services_concerned"*/}
+            {/*        onTextChange={handleEditor("products_or_services_concerned")} style={{ height: '100px' }} />*/}
           </div>
 
           {/*purpose_and_scope_of_text*/}

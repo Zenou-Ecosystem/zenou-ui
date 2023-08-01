@@ -43,7 +43,7 @@ function Dashboard() {
             <div className="mb-6">
               <div className="flex flex-wrap -mx-3 -mb-6">
                 <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm shadow-xl mx-auto py-8 px-6 bg-primary rounded-lg">
+                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
                     <div className="max-w-xs mx-auto text-center">
                       <div
                         className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
@@ -64,7 +64,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm shadow-xl mx-auto py-8 px-6 bg-primary rounded-lg">
+                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
                     <div className="max-w-xs mx-auto text-center">
                       <div
                         className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
@@ -85,7 +85,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm shadow-xl mx-auto py-8 px-6 bg-primary rounded-lg">
+                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
                     <div className="max-w-xs mx-auto text-center">
                       <div
                         className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
@@ -106,7 +106,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm shadow-xl mx-auto py-8 px-6 bg-primary rounded-lg">
+                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
                     <div className="max-w-xs mx-auto text-center">
                       <div
                         className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
@@ -129,7 +129,7 @@ function Dashboard() {
               </div>
             </div>
             <div className="grid grid-cols-1 mt-10 md:grid-cols-8 gap-6">
-              <div className='col-span-6'>
+              <div className='col-span-8'>
                 <h1
                   className="font-medium text-2xl"
                 >
@@ -137,53 +137,36 @@ function Dashboard() {
                 </h1>
                 <p className="text-gray-500 font-light">This is an overview of the laws exisitng in the system</p>
                 <Datatable
-                  data={laws?.slice(1, 7)}
+                  data={laws?.slice(0, 7)}
                   noPagination
                   fields={[
-                    "title",
-                    "compliance",
-                    "severity",
-                    "decision",
-                    "Actions",
+                    "title_of_text",
+                    "type_of_text",
+                    "date_of_issue",
+                    "applicability",
+                    "compliant",
                   ]}
                   actionTypes={LawActionTypes}
                   context={LawContext}
+                  translationKey={'LAW.ADD.FORM'}
                   accessControls={{
                     EDIT: AppUserActions.EDIT_LAW,
                     DELETE: AppUserActions.DELETE_LAW,
                     VIEW: AppUserActions.VIEW_LAW,
                   }}
                 />
-                <button className="bg-yellow-700 text-white rounded-lg text-sm px-6 py-2.5">
+                <button className="bg-yellow-700 text-white rounded-md text-sm px-6 py-2.5">
                   <NavLink to={'/dashboard/laws'}>
                     See all laws
                   </NavLink>
                 </button>
               </div>
-              <div className="w-full col-span-2 my-6 mt-8">
-                <div className="h-full py-6 px-4 sm:px-6 bg-primary rounded-xl">
-                  <h4 className="text-lg text-gray-100 font-semibold mb-6" >Recent Activities</h4>
-                  {
-                    [1, 2, 3, 4, 5].map(x =>  <a
-                      className="flex p-4 items-center justify-between hover:bg-gray-600 rounded-xl transition duration-150"
-                      href="#" key={x}>
-                      <div className="flex items-center pr-2">
-                        <div
-                          className="flex w-10 h-10 mr-3 items-center justify-center bg-gray-400 bg-opacity-20 text-white rounded-xl">
-                          <i className="pi pi-sign-in"></i>
-                        </div>
-                        <div>
-                          <h5 className="text-sm text-gray-100 leading-5 font-medium mb-1"
-                              data-config-id="auto-txt-28-2">Sign in</h5>
-                          <p className="text-xs text-gray-300 font-semibold">Signed in about
-                            7 hours</p>
-                        </div>
-                      </div>
-                      <i className="pi pi-ellipsis-v text-white"></i>
-                    </a> )
-                  }
-
-                </div>
+              <div className='col-span-5'>
+                {/*<LineChartComponent />*/}
+              </div>
+              <div className='col-span-3'>
+                {/*<AreaChartComponent />*/}
+                {/*<CustomBarChartComponent />*/}
               </div>
             </div>
 

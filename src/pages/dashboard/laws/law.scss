@@ -4,6 +4,24 @@
 li.p-dropdown-item{
     text-transform: capitalize;
 }
+.file-container {
+    input[type="file"] {
+        display: none;
+    }
+
+    label {
+        display: block;
+        background-color: #025bee;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 500;
+        text-align: center;
+        padding: 0.80rem 1.5rem;
+        border-radius: 0.31em;
+        cursor: pointer;
+    }
+}
+
 form{
     label{
         padding-bottom: 0.35rem !important;
@@ -19,6 +37,38 @@ form{
     .p-placeholder{
         font-size: 14px !important;
         color: #9f9d9d !important;
+    }
+    .p-checkbox .p-checkbox-box.p-highlight{
+        border-color: red !important;
+        background: red !important;
+    }
+    .p-chips  {
+        .p-chips-multiple-container {
+            width: 100%;
+            &:not(.p-disabled){
+                &.p-focus{
+                    box-shadow: 0 0 0 1px #537895 !important;
+                    border-color: #09203f !important;
+                }
+            }
+            .p-chips-input-token{
+                input{
+                    &::placeholder{
+                        font-size: 14px !important;
+                        color: #9f9d9d !important;
+                    }
+                }
+            }
+            .p-chips-token{
+                padding: 0.25rem 0.5rem !important;
+                //margin-right: 0.5rem;
+                background: linear-gradient(-45deg,  #537895, #09203f) !important;
+                color: #e5e7eb;
+                font-weight: 500 !important;
+                font-size: 14px !important;
+                border-radius: 5px !important;
+            }
+    }
     }
 }
 .submit{
@@ -39,4 +89,8 @@ form{
     &:focus{
         box-shadow: none !important;
     }
+}
+.addTextToAnalysisTable{
+    background: linear-gradient(-45deg,  #537895, #09203f) !important;
+    border: none !important;
 }

@@ -9,9 +9,9 @@ export const actionReducer = async (state: any, action: ActionStoreActions) => {
             return { ...state, data, hasCreated: true };
         case "DELETE_ACTION":
             const response = await deleteAction(action.payload as any);
-            console.log(state);
-            const newState = state?.data.filter((data: any) => data.id !== action.payload);
-            return { ...newState };
+            // console.log(state);
+            // const newState = state?.data.filter((data: any) => data.id !== action.payload);
+            return state;
         default:
             throw new Error();
     }

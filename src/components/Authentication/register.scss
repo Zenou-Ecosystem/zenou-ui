@@ -1,13 +1,32 @@
 section {
     div.welcome-container {
-        background: linear-gradient(180deg, #005377 0%, #052F5F 100%);
-
-        .welcome-main-text {
-            font-family: 'Poppins', sans-serif;
-            font-style: normal;
-            font-weight: 700;
-            font-size: 2rem;
-            color: #F1A208;
+        position: relative;
+        .welcome-image {
+            background-image: url("./../../assets/search_text.jpeg"), linear-gradient(180deg, #282828 0%, #000000 100%);
+            background-blend-mode: overlay;
+            background-position: center;
+            background-repeat: repeat;
+            height: 100vh;
+            width: 100%;
+        }
+        .welcome-text{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            padding: 20px;
+            width: inherit;
+            &.register {
+                width: 80%;
+            }
+            .welcome-main-text {
+                font-family: 'Poppins', sans-serif;
+                font-style: normal;
+                font-weight: 700;
+                font-size: 2rem;
+                color: #F1A208;
+            }
         }
     }
     div.signup-section {
