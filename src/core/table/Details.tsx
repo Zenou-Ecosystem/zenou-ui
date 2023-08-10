@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import { LocalStore } from "../../utils/storage.utils";
 import { TabMenu } from 'primereact/tabmenu';
 import './index.scss';
-import { useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useNavigation, useParams } from 'react-router-dom';
 import { singularize } from '../../utils/singularize.util';
 import { currentLanguageValue, translationService } from '../../services/translation.service';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Tag } from 'primereact/tag';
-import { LawActionTypes } from '../../store/action-types/laws.actions';
-import { LawContext } from '../../contexts/LawContext';
-import { AppUserActions } from '../../constants/user.constants';
-import Datatable from './Datatable';
+import { fetchLaws } from '../../services/laws.service';
+import { Toast } from 'primereact/toast';
+
 
 export default function DataDetails() {
   const [props, setProps] = useState<any>();
@@ -19,6 +18,8 @@ export default function DataDetails() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  const toast = useRef<Toast>(null);
+  const navigate = useNavigate();
 
   const lawItems = [
     {label: translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT'), icon: 'pi pi-sync'},
@@ -45,7 +46,7 @@ export default function DataDetails() {
         setItems([ ...primaryItems, ...controlPlanItems])
         break;
     }
-  }, [actionPlanItems, controlPlanItems, lawItems, params?.context, primaryItems]);
+  }, []);
 
   const showPropDetail = (props: object) => {
     let elements: any = [];
@@ -68,7 +69,7 @@ export default function DataDetails() {
         // Reformat key if necessary
         const optionsTranslation = ['yes', 'no', 'information', 'weak', 'medium', 'major', 'critical', 'true', 'false', 'convention']
         const textArray = ["products_or_services_concerned", "expertise", "purpose_and_scope_of_text", "requirements"]
-        // key = key?.replaceAll("_", " ").toLowerCase();
+
         if( textArray.includes(key)){
           elements.unshift(
               <div
@@ -113,7 +114,7 @@ export default function DataDetails() {
         }
       }
     }
-    console.log(detailElements);
+    // console.log(detailElements);
     return { elements, detailElements };
   };
 
@@ -154,6 +155,7 @@ export default function DataDetails() {
   }
   return (
     <section>
+      <Toast ref={toast as any} />
       <div className="header-frame h-48 items-center justify-center flex-col flex w-full">
         <h1 className='font-semibold text-2xl md:text-4xl'>{ params?.context && translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.DESCRIPTION`) !== 'no such key'  ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.TITLE`): 'Section des détails'}</h1>
         <p className="font-light text-gray-300 mt-1">{ params?.context && translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.DESCRIPTION`) !== 'no such key'  ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.DETAILS.DESCRIPTION`): 'Quelques descriptifs de détails'}</p>
@@ -172,6 +174,45 @@ export default function DataDetails() {
         <div hidden={activeTab.value?.label !== items[0]?.label} className='p-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {props ? showPropDetail(props).elements.map((prop:any) => prop) : ""}
+            {showPropDetail(props)?.detailElements?.products_or_services_concerned?.length ?
+              (
+                <div>
+                  <p className='border-b pb-2'>
+                    { translationService(currentLanguage,`LAW.ADD.FORM.PRODUCTS_OR_SERVICES_CONCERNED`) }:
+                  </p>
+                  <ul className="list-disc py-2 ml-6 grid grid-cols-2 mt-2">
+                    {showPropDetail(props)?.detailElements?.products_or_services_concerned?.map((item:string, index:any) =>
+                    <li className="capitalize text-gray-400 " key={index}>
+                      {item}
+                    </li>)}
+                  </ul>
+                </div>
+              ): ""}
+            {showPropDetail(props)?.detailElements?.id ?
+              (
+                <div className='flex gap-2 items-center'>
+                  <i className='pi pi-external-link text-orange-500'></i>
+                  <button className='text-blue-500 underline' onClick={(e) => {
+                    e.preventDefault();
+                   fetchLaws().then(result => {
+                     const currentLaw = result.find((x:any) => x.id === showPropDetail(props)?.detailElements?.id);
+                     if(currentLaw) {
+                      LocalStore.set('VIEW_DATA', currentLaw);
+                      setProps(currentLaw);
+                      navigate(`/dashboard/laws/${showPropDetail(props)?.detailElements?.id}`);
+                      return;
+                     }
+                      toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+                   }).catch(() => {
+                     toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+                   })
+                  }}>
+                    {translationService(currentLanguage, 'LAW.ADD.FORM.PARENT_OF_TEXT')}
+                  </button>
+                </div>
+              )
+              : ''}
+
           </div>
         </div>
         <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT')}>

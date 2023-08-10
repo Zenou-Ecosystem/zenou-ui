@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { HiEye, HiPencilAlt, HiTrash } from "react-icons/hi";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { LocalStore } from "../../utils/storage.utils";
@@ -22,7 +21,7 @@ function Datatable(props: {
   const { data, fields, actionTypes, context, accessControls } = props;
   const [tableColumns, setTableColumns] = useState<string[]>([]);
   const actions = Object.keys(actionTypes as any);
-  const { state, dispatch } = useContext(context);
+  const { dispatch } = useContext(context);
   const [tableData, setTableData] = useState([{}] as any);
   const toast = useRef({});
   const navigate = useNavigate();
@@ -66,7 +65,6 @@ function Datatable(props: {
   };
 
   useEffect(() => {
-    console.log(data);
     setTableData(data?.map((item) => {
       item?.type_of_text && (item["type_of_text"] = translationService(currentLanguage,`OPTIONS.${item.type_of_text.toUpperCase()}`))
       item?.applicability && (item["applicability"] = translationService(currentLanguage,`OPTIONS.${item?.applicability.toString().toUpperCase()}`));
@@ -80,50 +78,33 @@ function Datatable(props: {
     setTableColumns(columns);
   }, [data]);
 
-  const actionHandler = (e: any, action: string) => {
-    e.preventDefault();
-    // this trick allows for state remembrance in rowClickedHandler
-    LocalStore.set("action", action.toUpperCase());
-  };
-
   const rowClickedHandler = (e: any) => {
-    const data = e.data;
-    // Using this simple trick to replace useState
-    // This helps as one doesn't have to click the action buttons twice
-    let clickedAction = LocalStore.get("action");
-    switch (clickedAction) {
-      case "VIEW":
-        const item = actions.find((value) => value.startsWith(clickedAction));
-        if (item && data) {
-          // dispatch({ type: item, payload: data?.id ?? data });
-          LocalStore.set("VIEWED_DATA", data);
-          LocalStore.remove("action");
-          let context = actions[0].split('_',);
-          navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
-        }
-        break;
 
-      case "EDIT":
-        const actionType = actions.find((value) =>
-          value.startsWith(clickedAction)
-        );
-        if (actionType && data) {
-          dispatch({ type: actionType, payload: data });
-        }
-        break;
+    if("originalEvent" in e && "data" in e){
+      let context = e.originalEvent.target.title;
+      const data = e.data;
 
-      case "DELETE":
-        const actionItem = actions.find((value) =>
-          value.startsWith(clickedAction)
-        );
-        if (actionItem) {
-          requestDeleteConfirmation(actionItem, data);
+      switch (true) {
+        case context === "view":
+          if (data) {
+            LocalStore.set("VIEWED_DATA", data);
+            LocalStore.remove("action");
+            context = actions[0].split('_',);
+            navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
+          }
           break;
-        }
-        break;
 
-      default:
-        break;
+        case context === 'edit':
+          LocalStore.set("EDIT_DATA", {data, index: e.index})
+          break;
+
+        case context === 'delete':
+          const actionItem = actions.find((value) =>
+                  value.startsWith("DELETE")
+                );
+          (actionItem) &&  requestDeleteConfirmation(actionItem, data);
+          break;
+      }
     }
   };
 
@@ -136,7 +117,6 @@ function Datatable(props: {
       }
     </ul>
   }
-
 
   return (
     <div className="">
@@ -151,8 +131,7 @@ function Datatable(props: {
         showGridlines
         rowsPerPageOptions={[5, 10, 25, 50]}
         sortMode="multiple"
-        onRowClick={(e) => rowClickedHandler(e)}
-        // style={{ cursor: "pointer" }}
+        onRowClick={rowClickedHandler}
         className="border my-8 text-center rounded-md overflow-y-hidden text-gray-500"
       >
         {tableColumns.length
@@ -172,28 +151,27 @@ function Datatable(props: {
                       key={index}
                       body={
                         <span className="flex justify-end items-center gap-2 text-xl">
-                          {!can(accessControls.VIEW) ? null : (
-                            <span onClick={(e) => actionHandler(e, "view")}>
-                              <HiEye className="text-yellow-600" />
-                            </span>
-                          )}
-                          {!can(accessControls.EDIT) ? null : (
-                            <span onClick={(e) => actionHandler(e, "edit")}>
-                              <HiPencilAlt className="text-primary" />
-                            </span>
-                          )}
-                          {!can(accessControls.DELETE) ? null : (
-                            <span onClick={(e) => actionHandler(e, "delete")}>
-                              <HiTrash className="text-red-600" />
-                            </span>
-                          )}
+                           {!can(accessControls.VIEW) ? null:
+                             (
+                               <i className='pi pi-eye text-blue-500 cursor-pointer' title='view'></i>
+                             )
+                           }
+                          {!can(accessControls.EDIT) ? null:
+                            (
+                              <i className='pi pi-pencil text-green-500 cursor-pointer' title='edit'></i>
+                            )
+                          }
+                          {!can(accessControls.DELETE) ? null:
+                            (
+                              <i className='pi pi-trash text-red-500 cursor-pointer' title='delete'></i>
+                            )
+                          }
                         </span>
                       }
                       style={{ width: "5%" }}
                     ></Column>
                   );
                 }
-
 
                 return (
                   <Column

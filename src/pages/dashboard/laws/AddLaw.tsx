@@ -179,15 +179,16 @@ function AddLaw(props: { close: Function, setNewLaw: Function }) {
 
     console.log(formData);
 
-    // createLaw(formData).then(res => {
-    //   console.log(res);
-    //   if(res){
-    //     props.setNewLaw();
-    //     props.close();
-    //   }
-    // }).catch(() => {
-    //   toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-    // })
+    createLaw(formData).then(res => {
+      console.log(res);
+      if(res){
+        props.setNewLaw();
+        props.close();
+      }
+      toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS_ACTION') });
+    }).catch(() => {
+      toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+    })
 
   };
 

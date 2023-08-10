@@ -85,35 +85,16 @@ function Laws() {
       const worksheet = workbook.Sheets[sheetName];
       const json = xlsx.utils.sheet_to_json(worksheet);
 
-      let formattedData:any[] = json.map((value:any) => {
-        return Object.keys(value).reduce((acc, key) => {
+      console.log(workbook.SheetNames);
 
-          // @ts-ignore
-          if(key === 'TYPE_DE_TEXTE'){
-            // @ts-ignore
-            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = translationService(currentLanguage, `OPTIONS.${value[key].toUpperCase()}`);
-          }
-          else if(key === 'SECTEURS_ACTIVITE'){
-            let newValue = value[key].split(',');
-            newValue = newValue.map((i: string) => translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`));
+      let formattedData:any[] = transformData(json);
 
-            // @ts-ignore
-            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = newValue;
-          }
-          else {
-            // @ts-ignore
-            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = value[key];
-          }
-
-          return acc;
-        }, {})
-      });
-
-      console.log(replaceParentsWithObjects(formattedData));
-
+      replaceParentsWithObjects(formattedData);
     };
 
     reader.readAsArrayBuffer(e.target.files[0]);
+
+  };
 
     const replaceParentsWithObjects = (array:any[]) => {
       // First, create a lookup table for all the objects in the array
@@ -131,9 +112,28 @@ function Laws() {
 
       return array;
     }
-   //  toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
-   // fetchLaws().then(setLaws);
-  };
+
+    const transformData = (array: any[]) => {
+      return array.map(value => {
+        return Object.keys(value).reduce((acc:Record<string, any>, key) => {
+
+          if(key === 'TYPE_DE_TEXTE'){
+            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = translationService(currentLanguage, `OPTIONS.${value[key].toUpperCase()}`);
+          }
+          else if(key === 'SECTEURS_ACTIVITE'){
+            let newValue = value[key].split(',');
+            newValue = newValue.map((i: string) => translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`));
+
+            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = newValue;
+          }
+          else {
+            acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = value[key];
+          }
+
+          return acc;
+        }, {})
+      })
+    }
 
   return (
     <LawContextProvider>
