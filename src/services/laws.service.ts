@@ -18,7 +18,7 @@ export const createLaw = async (payload: ILaws) => {
                 "Content-Type": "application/json"
             }
         });
-        return response.data;
+        return (await response).data;
     } catch (error) {
         console.log('An error occured => ', error);
     }
@@ -27,6 +27,32 @@ export const createLaw = async (payload: ILaws) => {
 export const deleteLaw = async (id: string | number) => {
     try {
         const response = await axios.delete(`${Config.baseUrl}/law/${id}`);
+        return (await response).data;
+    } catch (error) {
+        console.log('An error occured => ', error);
+    }
+}
+
+export const archiveLaw = async (id: string | number) => {
+    try {
+        const response = await axios.delete(`${Config.baseUrl}/law/archive/${id}`);
+        return (await response).data;
+    } catch (error) {
+        console.log('An error occured => ', error);
+    }
+}
+
+export const restoreArchivedLaw = async (id: string | number) => {
+    try {
+        const response = await axios.patch(`${Config.baseUrl}/law/archive/${id}`);
+        return (await response).data;
+    } catch (error) {
+        console.log('An error occured => ', error);
+    }
+}
+export const getArchivedLaw = async () => {
+    try {
+        const response = await axios.get(`${Config.baseUrl}/law/archive/`);
         return response.data;
     } catch (error) {
         console.log('An error occured => ', error);

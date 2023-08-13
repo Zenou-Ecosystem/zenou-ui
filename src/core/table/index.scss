@@ -17,6 +17,22 @@
     }
 }
 .p-datatable {
+    .p-sortable-column{
+        &:focus{
+            box-shadow: none !important;
+            border: 1px dashed #fff !important;
+        }
+        .p-sortable-column-icon{
+            color: #fff !important;
+            &.p-highlight {
+                .p-sortable-column-icon{
+                    color: #fff !important;
+                }
+            }
+        }
+
+    }
+
     div.p-datatable-wrapper {
         table.p-datatable-table{
             thead.p-datatable-thead{
@@ -28,6 +44,7 @@
                             justify-content: center !important;
                             span {
                                 font-size: 15px !important;
+                                color: #fff !important;
                             }
                         }
                         &:first-child {

@@ -180,7 +180,6 @@ function AddLaw(props: { close: Function, setNewLaw: Function }) {
     console.log(formData);
 
     createLaw(formData).then(res => {
-      console.log(res);
       if(res){
         props.setNewLaw();
         props.close();

@@ -5,26 +5,29 @@ import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
 import { Dialog } from "primereact/dialog";
 import AddLaw from "./AddLaw";
-import { HiFolderAdd, HiPlus } from 'react-icons/hi';
 import useAppContext from "../../../hooks/useAppContext.hooks";
 import LawContextProvider, { LawContext } from "../../../contexts/LawContext";
 import useLawContext from "../../../hooks/useLawContext";
 import { ILaws } from "../../../interfaces/laws.interface";
 import { LawActionTypes } from "../../../store/action-types/laws.actions";
-import { fetchLaws } from "../../../services/laws.service";
+import { fetchLaws, getArchivedLaw } from '../../../services/laws.service';
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
 import * as xlsx from 'xlsx';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import { TabMenu } from 'primereact/tabmenu';
+import { MenuItem } from 'primereact/menuitem';
 
 function Laws() {
   const [laws, setLaws] = useState<ILaws[]>([]);
+  const [archives, setArchives] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
   const { state } = useAppContext();
   const { state: LawState } = useLawContext();
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const toast = useRef<Toast>(null);
+  const [activeTab, setActiveTab] = useState<number>(0);
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
@@ -39,6 +42,8 @@ function Laws() {
       if (!data || data?.length < 1) {
         data = await fetchLaws();
       }
+      // const archive = await getArchivedLaw();
+      // setArchives([]);
       setLaws(data);
     })();
 
@@ -50,6 +55,11 @@ function Laws() {
       }
     })();
   }, [state, LawState]);
+
+  const items = [
+    {label: translationService(currentLanguage,'ALL'), icon: 'pi pi-file'},
+    {label: translationService(currentLanguage,'ARCHIVES'), icon: 'pi pi-briefcase'},
+  ];
 
   const filterProps = [
     {
@@ -66,35 +76,83 @@ function Laws() {
     },
     {
       onChange: () => {},
-      label: translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.COMPLIANT'),
+      label: translationService(currentLanguage,'LAW.ADD.FORM.COMPLIANT'),
     },
     {
       onChange: () => {},
-      label: translationService(currentLanguage,'LAW.ANALYSE_TEXT.FORM.IMPACT'),
+      label: translationService(currentLanguage,'LAW.ADD.FORM.IMPACT'),
     },
   ];
 
+  const sheetNames = ['identification', 'analyse_du_texte'];
   const onUpload = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if(!e.target.files) return;
     const reader = new FileReader();
     reader.onload = (e) => {
+
       const data = e.target?.result;
       const workbook = xlsx.read(data, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const json = xlsx.utils.sheet_to_json(worksheet);
 
-      console.log(workbook.SheetNames);
+      const identificationSheet = workbook.SheetNames.find(x => x === sheetNames[0]);
+      const analyseDeTexteSheet = workbook.SheetNames.find(x => x === sheetNames[1]);
 
-      let formattedData:any[] = transformData(json);
+      if(!identificationSheet || !analyseDeTexteSheet) return;
+      const identificationWorksheet = workbook.Sheets[identificationSheet];
+      const identificationData = xlsx.utils.sheet_to_json(identificationWorksheet);
 
-      replaceParentsWithObjects(formattedData);
+      const formattedIdentificationData:any[] = transformData(identificationData);
+      const translatedIdentificationData:any[] = replaceParentsWithObjects(formattedIdentificationData);
+
+      const analyseDuTexteWorksheet = workbook.Sheets[analyseDeTexteSheet];
+      const analyseDuTexteData = xlsx.utils.sheet_to_json(analyseDuTexteWorksheet);
+
+      const newAnalyseDuTexteData = analyseDuTexteData.map((obj: any) => {
+
+        if(obj.PREUVES) {
+          let name = obj.PREUVES.split(',');
+          let img_url = obj.__EMPTY.split(',');
+
+          const maxLength = Math.min(name.length, img_url.length);
+
+          if(name.length > img_url.length) name.slice(0, maxLength);
+          if(name.length < img_url.length) img_url.slice(0, maxLength);
+
+          obj['PREUVES'] = name.map((x:string, index:number) => ({name: x, img_url: img_url[index]}));
+
+          delete obj.__EMPTY;
+        }
+        return obj;
+      })
+
+      const formattedAnalyseDuTexteData:any[] = transformData(newAnalyseDuTexteData);
+
+      const finalData: any[] = formatAnalysisData(translatedIdentificationData, formattedAnalyseDuTexteData);
+
+      console.log(formattedAnalyseDuTexteData, finalData);
     };
 
     reader.readAsArrayBuffer(e.target.files[0]);
 
   };
+
+  const formatAnalysisData = (array1:any[], array2: any[]) => {
+
+    return array1.map((obj) => {
+      const matchingObject = array2.find(x => x.identification === obj.number);
+
+      matchingObject ? (obj['text_analysis'] = matchingObject): obj['is_analysed'] = false;
+
+      obj?.text_analysis && delete obj.text_analysis.identification;
+
+      return obj;
+    })
+  };
+
+  const displayMenuItems: MenuItem[] = [
+    {label: 'All', icon: 'pi pi-fw pi-plus'},
+    {label: 'Archives', icon: 'pi pi-fw pi-trash'}
+  ];
 
     const replaceParentsWithObjects = (array:any[]) => {
       // First, create a lookup table for all the objects in the array
@@ -117,15 +175,16 @@ function Laws() {
       return array.map(value => {
         return Object.keys(value).reduce((acc:Record<string, any>, key) => {
 
-          if(key === 'TYPE_DE_TEXTE'){
+          if(key === 'TYPE_DE_TEXTE'|| key === 'IMPACT' || key === 'APPLICABLE' || key === 'NATURE' || key === 'CONFORME'){
             acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = translationService(currentLanguage, `OPTIONS.${value[key].toUpperCase()}`);
           }
-          else if(key === 'SECTEURS_ACTIVITE'){
+          else if(key === 'SECTEURS_ACTIVITE' || key === 'PROCESSUS_OU_DIRECTION'){
             let newValue = value[key].split(',');
             newValue = newValue.map((i: string) => translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`));
 
             acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = newValue;
           }
+
           else {
             acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = value[key];
           }
@@ -138,8 +197,9 @@ function Laws() {
   return (
     <LawContextProvider>
       <div className="w-full px-4">
+        {/*translationService(currentLanguage,'LAW.LIST.TITLE')*/}
         <BasicCard
-          title={translationService(currentLanguage,'LAW.LIST.TITLE')}
+          title={''}
           headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
@@ -156,7 +216,7 @@ function Laws() {
                     {/*</button>*/}
                     <div className='file-container'>
                       <label htmlFor='file-input'>
-                        <i className='pi pi-upload'></i> &nbsp;
+                        <i className='pi pi-cloud-upload'></i> &nbsp;
                         {translationService(currentLanguage,'BUTTON.IMPORT')}
                       </label>
                       <input type="file" onChange={onUpload} id="file-input" accept=".xlsx" />
@@ -187,27 +247,53 @@ function Laws() {
                   } } close={() => setVisible(false)} />
                 </Dialog>
               </div>
-              <Datatable
-                data={laws}
-                fields={[
-                  "title_of_text",
-                  "type_of_text",
-                  "date_of_issue",
-                  "applicability",
-                  "compliant",
-                  // "impact",
-                  // "nature_of_impact",
-                  "actions",
-                ]}
-                actionTypes={LawActionTypes}
-                context={LawContext}
-                translationKey={'LAW.ADD.FORM'}
-                accessControls={{
-                  EDIT: AppUserActions.EDIT_LAW,
-                  DELETE: AppUserActions.DELETE_LAW,
-                  VIEW: AppUserActions.VIEW_LAW,
-                }}
-              />
+
+              <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
+                setActiveTab(e.index);
+              }} />
+              <div hidden={activeTab !== 0}>
+                <Datatable
+                  data={laws}
+                  fields={[
+                    "title_of_text",
+                    "type_of_text",
+                    "date_of_issue",
+                    "is_analysed",
+                    "nature_of_text",
+                    "actions",
+                  ]}
+                  actionTypes={LawActionTypes}
+                  context={LawContext}
+                  translationKey={'LAW.ADD.FORM'}
+                  accessControls={{
+                    EDIT: AppUserActions.EDIT_LAW,
+                    DELETE: AppUserActions.DELETE_LAW,
+                    VIEW: AppUserActions.VIEW_LAW,
+                  }}
+                />
+              </div>
+
+              <div hidden={activeTab !== 1}>
+                <Datatable
+                  data={laws}
+                  fields={[
+                    "title_of_text",
+                    "type_of_text",
+                    "date_of_issue",
+                    "applicability",
+                    "compliant",
+                    "actions",
+                  ]}
+                  actionTypes={LawActionTypes}
+                  context={LawContext}
+                  translationKey={'LAW.ADD.FORM'}
+                  accessControls={{
+                    EDIT: AppUserActions.EDIT_LAW,
+                    DELETE: AppUserActions.DELETE_LAW,
+                    VIEW: AppUserActions.VIEW_LAW,
+                  }}
+                />
+              </div>
             </>
           )}
           styles="px-6"

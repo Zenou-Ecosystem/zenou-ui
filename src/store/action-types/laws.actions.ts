@@ -5,7 +5,10 @@ export enum LawActionTypes {
     ADD_LAW = 'ADD_LAW',
     DELETE_LAW = 'DELETE_LAW',
     EDIT_LAW = 'EDIT_LAW',
-    VIEW = "VIEW_LAW"
+    VIEW = "VIEW_LAW",
+    ARCHIVE_LAW = "ARCHIVE_LAW",
+    RESTORE_ARCHIVED_LAW="RESTORE_ARCHIVED_LAW",
+    GET_ARCHIVED_LAWS="GET_ARCHIVED_LAWS"
 }
 
 export type LawActions = {

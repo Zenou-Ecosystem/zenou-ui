@@ -8,6 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { can } from "../../utils/access-control.utils";
 import { currentLanguageValue, translationService } from '../../services/translation.service';
 import "./index.scss";
+import { classNames } from 'primereact/utils';
+import { AppUserActions } from '../../constants/user.constants';
+import { Menu } from 'primereact/menu';
 
 function Datatable(props: {
   data: any[];
@@ -26,8 +29,37 @@ function Datatable(props: {
   const toast = useRef({});
   const navigate = useNavigate();
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const menu = React.useRef<Menu | any>(null);
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+
+  let items = [
+    { label: 'View', icon: "pi pi-fw pi-eye", command:() => {
+        const data = LocalStore.get('VIEWED_DATA');
+        const context = actions[0].split('_',);
+        LocalStore.remove("action");
+        navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
+      }  },
+    { label: 'Edit', icon: "pi pi-fw pi-file-edit",  command:() => {
+
+      }  },
+    { label: 'Archive', icon: "pi pi-briefcase",  command:() => {
+        const actionItem = actions.find((value) =>
+          value.startsWith("ARCHIVE_LAW")
+        );
+        (actionItem) &&  requestDeleteConfirmation(actionItem, data);
+      }  },
+    { separator: true },
+    { label: 'Delete', icon: "pi pi-fw pi-trash",  command:() => {
+        const actionItem = actions.find((value) =>
+          value.startsWith("DELETE")
+        );
+        (actionItem) &&  requestDeleteConfirmation(actionItem, data);
+      }  },
+  ];
+  // if(can(AppUserActions.VIEW_COMPANY)){
+  //   items.splice(2, 0, { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.COMPANIES'), icon: "pi pi-building",  command:() => navigate('/dashboard/company')  })
+  // }
 
   const acceptDeletion = (action: string, payload: any) => {
     dispatch({ type: action, payload: payload?.id });
@@ -83,28 +115,30 @@ function Datatable(props: {
     if("originalEvent" in e && "data" in e){
       let context = e.originalEvent.target.title;
       const data = e.data;
+      LocalStore.set("EDIT_DATA", {data, index: e.index})
+      LocalStore.set("VIEWED_DATA", data);
 
-      switch (true) {
-        case context === "view":
-          if (data) {
-            LocalStore.set("VIEWED_DATA", data);
-            LocalStore.remove("action");
-            context = actions[0].split('_',);
-            navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
-          }
-          break;
-
-        case context === 'edit':
-          LocalStore.set("EDIT_DATA", {data, index: e.index})
-          break;
-
-        case context === 'delete':
-          const actionItem = actions.find((value) =>
-                  value.startsWith("DELETE")
-                );
-          (actionItem) &&  requestDeleteConfirmation(actionItem, data);
-          break;
-      }
+      // switch (true) {
+      //   case context === "view":
+      //     if (data) {
+      //       LocalStore.set("VIEWED_DATA", data);
+      //       LocalStore.remove("action");
+      //       context = actions[0].split('_',);
+      //       navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
+      //     }
+      //     break;
+      //
+      //   case context === 'edit':
+      //     LocalStore.set("EDIT_DATA", {data, index: e.index})
+      //     break;
+      //
+      //   case context === 'delete':
+      //     const actionItem = actions.find((value) =>
+      //             value.startsWith("DELETE")
+      //           );
+      //     (actionItem) &&  requestDeleteConfirmation(actionItem, data);
+      //     break;
+      // }
     }
   };
 
@@ -151,21 +185,29 @@ function Datatable(props: {
                       key={index}
                       body={
                         <span className="flex justify-end items-center gap-2 text-xl">
-                           {!can(accessControls.VIEW) ? null:
-                             (
-                               <i className='pi pi-eye text-blue-500 cursor-pointer' title='view'></i>
-                             )
-                           }
-                          {!can(accessControls.EDIT) ? null:
-                            (
-                              <i className='pi pi-pencil text-green-500 cursor-pointer' title='edit'></i>
-                            )
-                          }
-                          {!can(accessControls.DELETE) ? null:
-                            (
-                              <i className='pi pi-trash text-red-500 cursor-pointer' title='delete'></i>
-                            )
-                          }
+                            <i onClick={(e) => menu.current.toggle(e)} className='pi p-2 rounded-md pi-ellipsis-v text-gray-500 cursor-pointer'></i>
+                            <Menu model={items} popup ref={menu} id="dropdown" />
+                          {/* {!can(accessControls.VIEW) ? null:*/}
+                          {/*   (*/}
+                          {/*     <i className='pi border p-2 border-blue-500 rounded-md bg-blue-50 pi-eye text-blue-500 cursor-pointer' title='view'></i>*/}
+                          {/*   )*/}
+                          {/* }*/}
+                          {/*{!can(accessControls.EDIT) ? null:*/}
+                          {/*  (*/}
+                          {/*    <i className='pi p-2 border border-green-500 rounded-md bg-green-50 pi-pencil text-green-500 cursor-pointer' title='edit'></i>*/}
+                          {/*  )*/}
+                          {/*}*/}
+                          {/*{!can(accessControls.DELETE) ? null:*/}
+                          {/*  (*/}
+                          {/*    <i className='pi p-2 border border-red-500 rounded-md bg-red-50 pi-trash text-red-500 cursor-pointer' title='delete'></i>*/}
+                          {/*  )*/}
+                          {/*}*/}
+                          {/*{!can(accessControls.DELETE) ? null:*/}
+                          {/*  (*/}
+                          {/*    <i className='pi p-2 border border-gray-500 rounded-md bg-gray-50 pi-briefcase text-gray-500 cursor-pointer' title='delete'></i>*/}
+                          {/*  )*/}
+                          {/*}*/}
+
                         </span>
                       }
                       style={{ width: "5%" }}

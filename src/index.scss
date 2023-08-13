@@ -29,6 +29,35 @@ code {
 .add-form-submit-btn {
   @apply flex flex-col justify-center items-center mt-4;
 }
+.p-button-primary, .p-datepicker-trigger {
+  background: linear-gradient(-45deg,  #537895, #09203f) !important;
+  border: 1px solid #537895 !important;
+}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:focus {
+  box-shadow: none !important;
+  border: 1px dashed #09203f !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+  color: #09203f;
+  background: rgba(154, 153, 153, 0.09);
+  //font-size: 14px !important;
+  font-weight: 400 !important;
+}
+.p-checkbox .p-checkbox-box.p-highlight {
+  background: #537895 !important;
+  border: 1px solid #537895 !important;
+}
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  border-color: $primary !important;
+}
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  color: $primary !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
 
 .p-inputtext:enabled:focus, .p-dropdown:not(.p-disabled).p-focus, .p-multiselect:not(.p-disabled).p-focus {
   box-shadow: 0 0 0 1px #537895 !important;
@@ -38,3 +67,4 @@ code {
     border: 1px solid #bebebe !important;
     border-radius: 0.35rem !important;
    }
+

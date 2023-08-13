@@ -9,6 +9,8 @@ import useAppContext from '../../../hooks/useAppContext.hooks';
 import useLawContext from '../../../hooks/useLawContext';
 import { NavLink } from 'react-router-dom';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import LineChartComponent from '../../../core/charts/Line/SimpleLineChart';
+import SimpleBarChartComponent from '../../../core/charts/Bar/SimpleBarChart';
 
 function Dashboard() {
   const [laws, setLaws] = useState<ILaws[]>([]);
@@ -40,87 +42,107 @@ function Dashboard() {
       <div>
         <section className="py-3">
           <div className="container px-4 mx-auto">
+          <div className='mb-10'>
+            <h2 className='text-3xl py-2 font-medium'>Welcome back, Admin</h2>
+            <p className='text-gray-400 font-normal'>An overview of the system's information</p>
+          </div>
             <div className="mb-6">
-              <div className="flex flex-wrap -mx-3 -mb-6">
-                <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
-                    <div className="max-w-xs mx-auto text-center">
-                      <div
-                        className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
-                        <i className='pi pi-book'></i>
+              <div className="flex flex-wrap border rounded-md py-8">
+                <div className="w-full md:w-1/2 lg:w-1/4 border-r">
+                  <div className="max-w-sm  px-6">
+                    <div className="max-w-xs">
+                      <div className='flex items-start justify-between'>
+                        <div>
+                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
+                          <span className="text-gray-700 font-normal">Total laws</span>
+                        </div>
+                          <div
+                            className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
+                            <i className='pi pi-book'></i>
+                          </div>
                       </div>
-                      <span className="text-gray-300 font-normal">Total laws</span>
-                      <h4 className="text-2xl leading-8 text-gray-100 font-semibold mb-4">$28K</h4>
-                      <div className="flex flex-wrap items-center justify-center -m-1">
+                      <div className="flex flex-wrap mt-4 items-center justify-start ">
                         <div className="w-auto p-1">
-                          <span
-                            className="inline-block py-1 px-2 text-xs text-green-500 border border-green-300 font-medium bg-teal-900 rounded-full">1,0%</span>
+                          <small
+                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
                         </div>
                         <div className="w-auto p-1">
-                          <span className="text-xs text-gray-300 font-medium">Since last month</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
-                    <div className="max-w-xs mx-auto text-center">
-                      <div
-                        className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
-                        <i className='pi pi-building'></i>
-                      </div>
-                      <span className="text-gray-300 font-normal">Total companies</span>
-                      <h4 className="text-2xl leading-8 text-gray-100 font-semibold mb-4">128K</h4>
-                      <div className="flex flex-wrap items-center justify-center -m-1">
-                        <div className="w-auto p-1">
-                          <span
-                            className="inline-block py-1 px-2 text-xs text-green-500 border border-green-300 font-medium bg-teal-900 rounded-full">1,0%</span>
-                        </div>
-                        <div className="w-auto p-1">
-                          <span className="text-xs text-gray-300 font-medium">Since last month</span>
+                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
-                    <div className="max-w-xs mx-auto text-center">
-                      <div
-                        className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
-                        <i className='pi pi-save'></i>
+                <div className="w-full md:w-1/2 lg:w-1/4 border-r">
+                  <div className="max-w-sm  px-6">
+                    <div className="max-w-xs">
+                      <div className='flex items-start justify-between'>
+                        <div>
+                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
+                          <span className="text-gray-700 font-normal">Total laws</span>
+                        </div>
+                        <div
+                          className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
+                          <i className='pi pi-book'></i>
+                        </div>
                       </div>
-                      <span className="text-gray-300 font-normal">Percentage subscriptions</span>
-                      <h4 className="text-2xl leading-8 text-gray-100 font-semibold mb-4">20%</h4>
-                      <div className="flex flex-wrap items-center justify-center -m-1">
+                      <div className="flex flex-wrap mt-4 items-center justify-start ">
                         <div className="w-auto p-1">
-                          <span
-                            className="inline-block py-1 px-2 text-xs text-green-500 border border-green-300 font-medium bg-teal-900 rounded-full">1,0%</span>
+                          <small
+                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
                         </div>
                         <div className="w-auto p-1">
-                          <span className="text-xs text-gray-300 font-medium">Since last month</span>
+                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="w-full md:w-1/2 lg:w-1/4 px-3 mb-6">
-                  <div className="max-w-sm mx-auto py-8 px-6 bg-primary rounded-lg">
-                    <div className="max-w-xs mx-auto text-center">
-                      <div
-                        className="flex mx-auto w-12 h-12 mb-4 items-center justify-center bg-gray-200 bg-opacity-20 text-gray-100 rounded-xl">
-                        <i className='pi pi-users'></i>
+                <div className="w-full md:w-1/2 lg:w-1/4 border-r">
+                  <div className="max-w-sm  px-6">
+                    <div className="max-w-xs">
+                      <div className='flex items-start justify-between'>
+                        <div>
+                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
+                          <span className="text-gray-700 font-normal">Total laws</span>
+                        </div>
+                        <div
+                          className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
+                          <i className='pi pi-book'></i>
+                        </div>
                       </div>
-                      <span className="text-gray-300 font-normal">Total users</span>
-                      <h4 className="text-2xl leading-8 text-gray-100 font-semibold mb-4">20K</h4>
-                      <div className="flex flex-wrap items-center justify-center -m-1">
+                      <div className="flex flex-wrap mt-4 items-center justify-start ">
                         <div className="w-auto p-1">
-                          <span
-                            className="inline-block py-1 px-2 text-xs text-green-500 border border-green-300 font-medium bg-teal-900 rounded-full">1,0%</span>
+                          <small
+                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
                         </div>
                         <div className="w-auto p-1">
-                          <span className="text-xs text-gray-300 font-medium">Since last month</span>
+                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full md:w-1/2 lg:w-1/4">
+                  <div className="max-w-sm  px-6">
+                    <div className="max-w-xs">
+                      <div className='flex items-start justify-between'>
+                        <div>
+                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
+                          <span className="text-gray-700 font-normal">Total laws</span>
+                        </div>
+                        <div
+                          className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
+                          <i className='pi pi-book'></i>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap mt-4 items-center justify-start ">
+                        <div className="w-auto p-1">
+                          <small
+                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
+                        </div>
+                        <div className="w-auto p-1">
+                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
                         </div>
                       </div>
                     </div>
@@ -128,14 +150,32 @@ function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 mt-10 md:grid-cols-8 gap-6">
-              <div className='col-span-8'>
+            <div className='grid grid-cols-1 mt-10 md:grid-cols-9 gap-6'>
+              <div className='col-span-6 border rounded-md p-4'>
+                <h1
+                  className="font-medium text-xl pl-3 mb-4"
+                >
+                  Laws Analytics
+                </h1>
+                <LineChartComponent />
+              </div>
+              <div className='col-span-3 border rounded-md p-4'>
+                <h1
+                  className="font-medium text-xl pl-3 mb-4"
+                >
+                  Laws Analytics
+                </h1>
+                <br/>
+                <SimpleBarChartComponent />
+              </div>
+            </div>
+            <div className="mt-10 border rounded-md p-8">
+              <div className=''>
                 <h1
                   className="font-medium text-2xl"
                 >
                   Laws
                 </h1>
-                <p className="text-gray-500 font-light">This is an overview of the laws exisitng in the system</p>
                 <Datatable
                   data={laws?.slice(0, 7)}
                   noPagination
