@@ -137,7 +137,7 @@
   "LAW.NOT_COMPLAINT": "Nous somme pas conforme",
   "ANALYSIS_STATUS": "Statut de l'analyse",
   "ANALYSIS_PREVIEW_TEXT_ANALYSIS": "Aperçu de L'analyse du Texte",
-  "TOAST.SAVE_LAW_SUCCESS": "Action réussie !",
+  "TOAST.SUCCESS.ACTION": "Action réussie !",
   "TOAST.ERROR_ACTION": "Une erreur s'est produite!",
   "LAW.LIST.TITLE": "Liste des lois",
   "BUTTON.IMPORT": "Importer",
@@ -187,7 +187,9 @@
 
   "OPTIONS.LOI": "law",
   "OPTIONS.DÉCRET": "decree",
+  "OPTIONS.DECRET": "decree",
   "OPTIONS.ARRÊTÉ": "order",
+  "OPTIONS.ARRETÉ": "order",
   "OPTIONS.DÉCISION": "decision",
   "OPTIONS.AIR": "air",
   "OPTIONS.TERRE": "land",

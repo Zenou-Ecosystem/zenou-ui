@@ -501,14 +501,14 @@ export default function TextAnalysis() {
     return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData.expertise }}></div>
   }
 
-  const actionPlanTemplate = (rowData: any) => {
-    return !rowData.action_plans ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData.action_plans}</div>
+  const actionPlanTemplate = (key:string) => (rowData: any) =>  {
+    return !rowData[key] ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData[key]}</div>
   }
 
   const proofBodyTemplate = (rowData: any) => {
     return <ol className='list-disc'>
       {
-        rowData?.proof_of_conformity ? rowData.proof_of_conformity.map(({ data }: any, idx:number) => {
+        rowData?.proof_of_conformity ? rowData.proof_of_conformity.map((data: any, idx:number) => {
           return <li key={idx} className='truncate w-32'>
             <a href={data?.img_url} className='underline text-blue-500'>{data?.name}</a>
           </li>
@@ -595,7 +595,7 @@ export default function TextAnalysis() {
                   ?applicableBodyTemplate(item)
                   : ['expertise'].includes(item)? expertiseTemplate
                     : ['action_plans', 'conformity_cost', 'conformity_deadline'].includes(item)
-                      ? actionPlanTemplate
+                      ? actionPlanTemplate(item)
                       : ['proof_of_conformity'].includes(item)? proofBodyTemplate : ['process_management'].includes(item) ? servicesBodyTemplate : ''} header={translationService(currentLanguage,`LAW.ADD.FORM.${item.toString().toUpperCase()}`)}></Column>)
           }
           <Column  style={{ width: '10px' }} body={

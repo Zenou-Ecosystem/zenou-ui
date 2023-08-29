@@ -40,13 +40,13 @@ export default function JoinLineChartComponent() {
           }}
         >
           <CartesianGrid />
-          <XAxis type="number" dataKey="x" name="stature" unit="cm" />
-          <YAxis type="number" dataKey="y" name="weight" unit="kg" />
+          <XAxis type="number" dataKey="x" name="stature"  />
+          <YAxis type="number" dataKey="y" name="weight" />
           <ZAxis type="number" range={[100]} />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} />
           <Legend />
-          <Scatter name="A school" data={data01} fill="#8884d8" line shape="cross" />
-          <Scatter name="B school" data={data02} fill="#82ca9d" line shape="diamond" />
+          <Scatter name="Pas Conforme" data={data01} fill="red" line shape="cross" />
+          <Scatter name="conforme" data={data02} fill="#82ca9d" line shape="diamond" />
         </ScatterChart>
       </ResponsiveContainer>
     );

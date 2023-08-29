@@ -62,7 +62,6 @@ export default function ReviewLaw(){
   const items = [
     {label: translationService(currentLanguage,'OPTIONS.LAW'), icon: 'pi pi-file-edit'},
     {label: translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT'), icon: 'pi pi-wrench'},
-    {label: translationService(currentLanguage,'LAW.KPI'), icon: 'pi pi-chart-bar'},
   ];
 
   const submitLaw = () => {
@@ -97,7 +96,7 @@ export default function ReviewLaw(){
   const proofBodyTemplate = (rowData: any) => {
     return <ol className='list-disc'>
       {
-        rowData?.proof_of_conformity ? rowData.proof_of_conformity.map(({ data }: any, idx:number) => {
+        rowData?.proof_of_conformity ? rowData.proof_of_conformity.map((data: any, idx:number) => {
           return <li key={idx} className='truncate w-32'>
             <a href={data?.img_url} className='underline text-blue-500'>{data?.name}</a>
           </li>

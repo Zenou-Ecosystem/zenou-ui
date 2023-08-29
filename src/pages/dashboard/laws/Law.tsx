@@ -1,18 +1,18 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-import Filter from "../../../components/filter/Filter";
-import Button from "../../../core/Button/Button";
-import BasicCard from "../../../core/card/BasicCard";
-import Datatable from "../../../core/table/Datatable";
-import { Dialog } from "primereact/dialog";
-import AddLaw from "./AddLaw";
-import useAppContext from "../../../hooks/useAppContext.hooks";
-import LawContextProvider, { LawContext } from "../../../contexts/LawContext";
-import useLawContext from "../../../hooks/useLawContext";
-import { ILaws } from "../../../interfaces/laws.interface";
-import { LawActionTypes } from "../../../store/action-types/laws.actions";
-import { fetchLaws, getArchivedLaw } from '../../../services/laws.service';
-import { can } from "../../../utils/access-control.utils";
-import { AppUserActions } from "../../../constants/user.constants";
+import Filter from '../../../components/filter/Filter';
+import Button from '../../../core/Button/Button';
+import BasicCard from '../../../core/card/BasicCard';
+import Datatable from '../../../core/table/Datatable';
+import { Dialog } from 'primereact/dialog';
+import AddLaw from './AddLaw';
+import useAppContext from '../../../hooks/useAppContext.hooks';
+import LawContextProvider, { LawContext } from '../../../contexts/LawContext';
+import useLawContext from '../../../hooks/useLawContext';
+import { ILaws } from '../../../interfaces/laws.interface';
+import { LawActionTypes } from '../../../store/action-types/laws.actions';
+import { createLaw, fetchLaws } from '../../../services/laws.service';
+import { can } from '../../../utils/access-control.utils';
+import { AppUserActions } from '../../../constants/user.constants';
 import * as xlsx from 'xlsx';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
@@ -125,11 +125,18 @@ function Laws() {
         return obj;
       })
 
-      const formattedAnalyseDuTexteData:any[] = transformData(newAnalyseDuTexteData);
+      const formattedAnalyseDuTextData:any[] = transformData(newAnalyseDuTexteData);
 
-      const finalData: any[] = formatAnalysisData(translatedIdentificationData, formattedAnalyseDuTexteData);
+      const finalData: any[] = formatAnalysisData(translatedIdentificationData, formattedAnalyseDuTextData);
 
-      console.log(formattedAnalyseDuTexteData, finalData);
+      createLaw(finalData as unknown as ILaws).then(res => {
+        if(res) {
+          toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS.ACTION') });
+          setLaws(res?.data ?? res);
+        }else {
+          toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+        }
+      })
     };
 
     reader.readAsArrayBuffer(e.target.files[0]);
@@ -139,11 +146,9 @@ function Laws() {
   const formatAnalysisData = (array1:any[], array2: any[]) => {
 
     return array1.map((obj) => {
-      const matchingObject = array2.find(x => x.identification === obj.number);
-
-      matchingObject ? (obj['text_analysis'] = matchingObject): obj['is_analysed'] = false;
-
-      obj?.text_analysis && delete obj.text_analysis.identification;
+      obj['text_analysis'] = array2.filter(x => x.identification === obj.number);
+      obj['is_analysed']= !!obj.text_analysis?.length;
+      obj['is_achieved']=false;
 
       return obj;
     })
@@ -178,9 +183,9 @@ function Laws() {
           if(key === 'TYPE_DE_TEXTE'|| key === 'IMPACT' || key === 'APPLICABLE' || key === 'NATURE' || key === 'CONFORME'){
             acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = translationService(currentLanguage, `OPTIONS.${value[key].toUpperCase()}`);
           }
-          else if(key === 'SECTEURS_ACTIVITE' || key === 'PROCESSUS_OU_DIRECTION'){
+          else if(key === 'SECTEURS_ACTIVITE' || key === 'PROCESSUS_OU_DIRECTION' || key === 'PRODUITS_OU_SERVICES_CONCERNES'){
             let newValue = value[key].split(',');
-            newValue = newValue.map((i: string) => translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`));
+            newValue = newValue.map((i: string) => key === 'PRODUITS_OU_SERVICES_CONCERNES' ? i :translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`));
 
             acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = newValue;
           }
