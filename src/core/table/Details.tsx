@@ -10,6 +10,8 @@ import { DataTable } from 'primereact/datatable';
 import { Tag } from 'primereact/tag';
 import { fetchLaws } from '../../services/laws.service';
 import { Toast } from 'primereact/toast';
+import { getApplicableRequirements, getRequirementsByImpact } from '../../services/kpi.service';
+import { Chart } from 'primereact/chart';
 
 
 export default function DataDetails() {
@@ -17,6 +19,8 @@ export default function DataDetails() {
   const params = useParams();
   const circumference = 30 * 2 * Math.PI;
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const [chartData, setChartData] = React.useState({}) as any;
+  const [chartOptions, setChartOptions] = React.useState({});
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
   const toast = useRef<Toast>(null);
@@ -32,9 +36,11 @@ export default function DataDetails() {
   const actionPlanItems = lawItems.filter(({label}) => ['Control plan'].includes(label))
   const primaryItems = [{label: translationService(currentLanguage,'PRIMARY_INFO'), icon: 'pi pi-home'},]
   const [items, setItems] = useState(primaryItems)
+  const [statistics, setStatistics] = React.useState({});
 
   useEffect(() => {
     const data = LocalStore.get("VIEWED_DATA");
+    const userRole = LocalStore.get("user");
     setProps(data ?? {});
     switch (true) {
       case params?.context && params?.context === 'laws':
@@ -46,6 +52,63 @@ export default function DataDetails() {
       case params?.context && params?.context === 'controls':
         setItems([ ...primaryItems, ...controlPlanItems])
         break;
+    }
+
+    if(params?.context && params?.context === 'laws' ) {
+      (async() => {
+        const requirementsByImpactData = {
+          weak: await getRequirementsByImpact(userRole?.role, {impact: "weak"}),
+          medium: await getRequirementsByImpact(userRole?.role, {impact: "medium"}),
+          major: await getRequirementsByImpact(userRole?.role, {impact: "major"}),
+          critical: await getRequirementsByImpact(userRole?.role, {impact: "critical"})
+        }
+        const requirementsByApplicabilityData =  await getApplicableRequirements(userRole?.role, { applicability: 'yes' })
+
+        const documentStyle = getComputedStyle(document.documentElement);
+
+        console.log(requirementsByImpactData, requirementsByApplicabilityData);
+        const requirementsByImpact = {
+          labels: ["Faible", 'Moyen', 'Majeur', 'Critique'],
+          datasets: [
+            {
+              data: [requirementsByImpactData.weak?.length, requirementsByImpactData.medium?.length, requirementsByImpactData.major?.length, requirementsByImpactData.critical?.length],
+              backgroundColor: [
+                documentStyle.getPropertyValue('--red-700'),
+                documentStyle.getPropertyValue('--yellow-500'),
+                documentStyle.getPropertyValue('--blue-500'),
+                documentStyle.getPropertyValue('--red-500')
+              ],
+              hoverBackgroundColor: [
+                documentStyle.getPropertyValue('--red-500'),
+                documentStyle.getPropertyValue('--yellow-400'),
+                documentStyle.getPropertyValue('--blue-400'),
+                documentStyle.getPropertyValue('--red-400')
+              ]
+            }
+          ]
+        }
+        const requirementsByApplicability = {
+          labels: ["Oui", 'Non'],
+          datasets: [
+            {
+              data: [requirementsByApplicabilityData?.length, props?.text_analysis?.length - requirementsByApplicabilityData?.length],
+            }
+          ]
+        }
+        const options = {
+          plugins: {
+            legend: {
+              labels: {
+                usePointStyle: true
+              }
+            }
+          }
+        };
+
+        setChartData({ requirementsByImpact, requirementsByApplicability });
+        setChartOptions(options);
+
+      })()
     }
   }, []);
 
@@ -319,199 +382,73 @@ export default function DataDetails() {
         <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.KPI')}>
           <div className='p-6'>
                 {/*requirements by impact*/}
-                <div className='py-8'>
-                  <h1 className='text-3xl font-medium'>Exigences par impact</h1>
-                  <p className='text-gray-400 font-normal'>Statistiques des exigence par impact du texte</p>
+                <div className='pt-8 pb-3 border-b'>
+                  <h1 className='text-3xl font-medium'>Statistique des exigence</h1>
+                  <p className='text-gray-400 font-normal'>Statistiques des exigence par critere du texte</p>
                 </div>
-                <div className="container px-4 mx-auto">
-                  <div className="flex py-8 flex-wrap items-center">
-                    <div className="w-full border-r md:w-1/2 lg:w-1/4 px-4 text-center">
-                      <div className="relative w-20 mx-auto mb-8">
-                        <div className="absolute inset-0 ml-2 flex items-center justify-center">
-                          {/*<p className="text-lg font-semibold">*/}
-                          {/*  {calculateKPI().requirementsByImpact?.weak}*/}
-                          {/*  /!*<span className="ml-px align-top text-xs text-gray-500">%</span>*!/*/}
-                          {/*</p>*/}
-                          <span className="text-xl">{calculateKPI().requirementsByImpact?.weak}<sub>/{calculateKPI().textAnalysisTotal}</sub></span>
+                <div className="px-4 mx-auto">
+                  <div className="flex py-8 items-center">
+                    <div className="flex justify-between w-full items-center flex-col">
+                      <div className="flex border-b justify-between w-full items-center">
+                        <div className="w-1/2">
+                        <p className='text-gray-400 font-normal text-center'>Par impact</p>
                         </div>
-                        <span className="relative block">
-                          <svg width="69" height="91" viewBox="0 0 69 91" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-1-2">
-                            <path
-                              d="M67.9865 79.0753C69.3577 81.148 68.7977 83.9622 66.5984 85.1196C61.1443 87.99 55.1436 89.717 48.9653 90.1747C41.2869 90.7435 33.5909 89.3326 26.6136 86.077C19.6362 82.8215 13.6109 77.8301 9.11396 71.5803C4.61701 65.3306 1.79884 58.0315 0.92903 50.3813C0.0592193 42.7311 1.16686 34.9857 4.146 27.8859C7.12514 20.7861 11.8761 14.5695 17.9445 9.83067C24.0129 5.09182 31.1957 1.98927 38.8058 0.819781C44.9292 -0.12122 51.1644 0.214628 57.1237 1.78733C59.5267 2.42151 60.7042 5.03807 59.8333 7.36576C58.9623 9.69345 56.3723 10.8445 53.9542 10.2706C49.4528 9.20231 44.7734 9.00838 40.1729 9.71535C34.0848 10.6509 28.3385 13.133 23.4838 16.9241C18.6291 20.7151 14.8283 25.6884 12.445 31.3683C10.0617 37.0481 9.17557 43.2444 9.87142 49.3646C10.5673 55.4847 12.8218 61.324 16.4194 66.3238C20.0169 71.3236 24.8372 75.3167 30.419 77.9212C36.0009 80.5256 42.1577 81.6543 48.3004 81.1993C52.9422 80.8554 57.4587 79.616 61.6053 77.5644C63.8329 76.4623 66.6152 77.0025 67.9865 79.0753Z"
-                              fill="#F1F5FB"></path>
-                          </svg>
-                        </span>
-                        <span className="absolute inset-0 ml-3 mt-px block mx-auto">
-                          <svg width="78" height="88" viewBox="0 0 78 88" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-2-2">
-                            <path
-                              d="M34 4.49613C34 2.01299 36.0182 -0.0237881 38.4884 0.229514C44.4509 0.840933 50.2422 2.66606 55.4993 5.61018C62.0678 9.2887 67.5826 14.5911 71.5162 21.0101C75.4497 27.4291 77.6705 34.75 77.9661 42.2726C78.2616 49.7951 76.6221 57.2677 73.2043 63.9756C69.7865 70.6834 64.7047 76.4021 58.4451 80.5847C52.1855 84.7672 44.9574 87.2737 37.4522 87.8644C29.947 88.455 22.4158 87.1101 15.579 83.9583C10.1071 81.4357 5.22649 77.8232 1.22716 73.3589C-0.429708 71.5093 0.0317984 68.6794 2.0407 67.2198C4.04961 65.7602 6.8421 66.2296 8.54694 68.0351C11.6079 71.2766 15.2698 73.914 19.3437 75.792C24.7833 78.2997 30.7753 79.3698 36.7467 78.8998C42.718 78.4299 48.4689 76.4356 53.4493 73.1079C58.4296 69.7801 62.4728 65.2301 65.1921 59.8932C67.9114 54.5562 69.2159 48.6108 68.9807 42.6256C68.7456 36.6404 66.9787 30.8157 63.849 25.7085C60.7193 20.6014 56.3316 16.3826 51.1055 13.4559C47.1916 11.264 42.9055 9.85163 38.4838 9.28059C36.0211 8.96254 34 6.97928 34 4.49613Z"
-                              fill="#E4572E"></path>
-                          </svg>
-                        </span>
-                      </div>
-                      <h3 className="mb-4 text-2xl font-meduim font-heading">Faible</h3>
-                      <p className="text-gray-400 text-md">Total des exigence par impact</p>
-                    </div>
-                    <div className="w-full border-r md:w-1/2 lg:w-1/4 px-4 text-center">
-                      <div className="relative w-20 mx-auto mb-8">
-                        <div className="absolute inset-0 ml-2 flex items-center justify-center">
-                          {/*<p className="text-lg font-semibold">*/}
-                          {/*  {calculateKPI().requirementsByImpact?.medium}*/}
-                          {/*  /!*<span className="ml-px align-top text-xs text-gray-500">%</span>*!/*/}
-                          {/*</p>*/}
-                          <span className="text-xl">{calculateKPI().requirementsByImpact?.medium}<sub>/{calculateKPI().textAnalysisTotal}</sub></span>
+                        <div className="w-1/2">
+                          <p className='text-gray-400 font-normal text-center'>Par status applicable</p>
                         </div>
-                        <span className="relative block">
-                          <svg width="69" height="91" viewBox="0 0 69 91" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-1-2">
-                            <path
-                              d="M67.9865 79.0753C69.3577 81.148 68.7977 83.9622 66.5984 85.1196C61.1443 87.99 55.1436 89.717 48.9653 90.1747C41.2869 90.7435 33.5909 89.3326 26.6136 86.077C19.6362 82.8215 13.6109 77.8301 9.11396 71.5803C4.61701 65.3306 1.79884 58.0315 0.92903 50.3813C0.0592193 42.7311 1.16686 34.9857 4.146 27.8859C7.12514 20.7861 11.8761 14.5695 17.9445 9.83067C24.0129 5.09182 31.1957 1.98927 38.8058 0.819781C44.9292 -0.12122 51.1644 0.214628 57.1237 1.78733C59.5267 2.42151 60.7042 5.03807 59.8333 7.36576C58.9623 9.69345 56.3723 10.8445 53.9542 10.2706C49.4528 9.20231 44.7734 9.00838 40.1729 9.71535C34.0848 10.6509 28.3385 13.133 23.4838 16.9241C18.6291 20.7151 14.8283 25.6884 12.445 31.3683C10.0617 37.0481 9.17557 43.2444 9.87142 49.3646C10.5673 55.4847 12.8218 61.324 16.4194 66.3238C20.0169 71.3236 24.8372 75.3167 30.419 77.9212C36.0009 80.5256 42.1577 81.6543 48.3004 81.1993C52.9422 80.8554 57.4587 79.616 61.6053 77.5644C63.8329 76.4623 66.6152 77.0025 67.9865 79.0753Z"
-                              fill="#F1F5FB"></path>
-                          </svg>
-                        </span>
-                        <span className="absolute inset-0 ml-3 mt-px block mx-auto">
-                          <svg width="78" height="88" viewBox="0 0 78 88" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-2-2">
-                            <path
-                              d="M34 4.49613C34 2.01299 36.0182 -0.0237881 38.4884 0.229514C44.4509 0.840933 50.2422 2.66606 55.4993 5.61018C62.0678 9.2887 67.5826 14.5911 71.5162 21.0101C75.4497 27.4291 77.6705 34.75 77.9661 42.2726C78.2616 49.7951 76.6221 57.2677 73.2043 63.9756C69.7865 70.6834 64.7047 76.4021 58.4451 80.5847C52.1855 84.7672 44.9574 87.2737 37.4522 87.8644C29.947 88.455 22.4158 87.1101 15.579 83.9583C10.1071 81.4357 5.22649 77.8232 1.22716 73.3589C-0.429708 71.5093 0.0317984 68.6794 2.0407 67.2198C4.04961 65.7602 6.8421 66.2296 8.54694 68.0351C11.6079 71.2766 15.2698 73.914 19.3437 75.792C24.7833 78.2997 30.7753 79.3698 36.7467 78.8998C42.718 78.4299 48.4689 76.4356 53.4493 73.1079C58.4296 69.7801 62.4728 65.2301 65.1921 59.8932C67.9114 54.5562 69.2159 48.6108 68.9807 42.6256C68.7456 36.6404 66.9787 30.8157 63.849 25.7085C60.7193 20.6014 56.3316 16.3826 51.1055 13.4559C47.1916 11.264 42.9055 9.85163 38.4838 9.28059C36.0211 8.96254 34 6.97928 34 4.49613Z"
-                              fill="orange"></path>
-                          </svg>
-                        </span>
-                      </div>
-                      <h3 className="mb-4 text-2xl font-meduim font-heading">Moyen</h3>
-                      <p className="text-gray-400 text-md">Total des exigence par impact</p>
-                    </div>
-                    <div className="w-full border-r md:w-1/2 lg:w-1/4 px-4 text-center">
-                      <div className="relative w-20 mx-auto mb-8">
-                        <div className="absolute inset-0 ml-2 flex items-center justify-center">
-                          {/*<p className="text-lg font-semibold">*/}
-                          {/*  {calculateKPI().requirementsByImpact?.major}*/}
-                          {/*  /!*<span className="ml-px align-top text-xs text-gray-500">%</span>*!/*/}
-                          {/*</p>*/}
-                          <span className="text-xl">{calculateKPI().requirementsByImpact?.major}<sub>/{calculateKPI().textAnalysisTotal}</sub></span>
-                        </div>
-                        <span className="relative block">
-                          <svg width="69" height="91" viewBox="0 0 69 91" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-1-2">
-                            <path
-                              d="M67.9865 79.0753C69.3577 81.148 68.7977 83.9622 66.5984 85.1196C61.1443 87.99 55.1436 89.717 48.9653 90.1747C41.2869 90.7435 33.5909 89.3326 26.6136 86.077C19.6362 82.8215 13.6109 77.8301 9.11396 71.5803C4.61701 65.3306 1.79884 58.0315 0.92903 50.3813C0.0592193 42.7311 1.16686 34.9857 4.146 27.8859C7.12514 20.7861 11.8761 14.5695 17.9445 9.83067C24.0129 5.09182 31.1957 1.98927 38.8058 0.819781C44.9292 -0.12122 51.1644 0.214628 57.1237 1.78733C59.5267 2.42151 60.7042 5.03807 59.8333 7.36576C58.9623 9.69345 56.3723 10.8445 53.9542 10.2706C49.4528 9.20231 44.7734 9.00838 40.1729 9.71535C34.0848 10.6509 28.3385 13.133 23.4838 16.9241C18.6291 20.7151 14.8283 25.6884 12.445 31.3683C10.0617 37.0481 9.17557 43.2444 9.87142 49.3646C10.5673 55.4847 12.8218 61.324 16.4194 66.3238C20.0169 71.3236 24.8372 75.3167 30.419 77.9212C36.0009 80.5256 42.1577 81.6543 48.3004 81.1993C52.9422 80.8554 57.4587 79.616 61.6053 77.5644C63.8329 76.4623 66.6152 77.0025 67.9865 79.0753Z"
-                              fill="#F1F5FB"></path>
-                          </svg>
-                        </span>
-                        <span className="absolute inset-0 ml-3 mt-px block mx-auto">
-                          <svg width="78" height="88" viewBox="0 0 78 88" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-2-2">
-                            <path
-                              d="M34 4.49613C34 2.01299 36.0182 -0.0237881 38.4884 0.229514C44.4509 0.840933 50.2422 2.66606 55.4993 5.61018C62.0678 9.2887 67.5826 14.5911 71.5162 21.0101C75.4497 27.4291 77.6705 34.75 77.9661 42.2726C78.2616 49.7951 76.6221 57.2677 73.2043 63.9756C69.7865 70.6834 64.7047 76.4021 58.4451 80.5847C52.1855 84.7672 44.9574 87.2737 37.4522 87.8644C29.947 88.455 22.4158 87.1101 15.579 83.9583C10.1071 81.4357 5.22649 77.8232 1.22716 73.3589C-0.429708 71.5093 0.0317984 68.6794 2.0407 67.2198C4.04961 65.7602 6.8421 66.2296 8.54694 68.0351C11.6079 71.2766 15.2698 73.914 19.3437 75.792C24.7833 78.2997 30.7753 79.3698 36.7467 78.8998C42.718 78.4299 48.4689 76.4356 53.4493 73.1079C58.4296 69.7801 62.4728 65.2301 65.1921 59.8932C67.9114 54.5562 69.2159 48.6108 68.9807 42.6256C68.7456 36.6404 66.9787 30.8157 63.849 25.7085C60.7193 20.6014 56.3316 16.3826 51.1055 13.4559C47.1916 11.264 42.9055 9.85163 38.4838 9.28059C36.0211 8.96254 34 6.97928 34 4.49613Z"
-                              fill="#025bee"></path>
-                          </svg>
-                        </span>
-                      </div>
-                      <h3 className="mb-4 text-2xl font-meduim font-heading">Majeur</h3>
-                      <p className="text-gray-400 text-md">Total des exigence par impact</p>
-                    </div>
-                    <div className="w-full md:w-1/2 lg:w-1/4 px-4 text-center">
-                      <div className="relative w-20 mx-auto mb-8">
-                        <div className="absolute inset-0 ml-2 flex items-center justify-center">
-                          <span className="text-xl">{calculateKPI().requirementsByImpact?.critical}<sub>/{calculateKPI().textAnalysisTotal}</sub></span>
-                          {/*<p className="text-lg font-semibold">*/}
-                          {/*  {calculateKPI().requirementsByImpact?.critical}*/}
-                          {/*  /!*<span className="ml-px align-top text-xs text-gray-500">%</span>*!/*/}
-                          {/*</p>*/}
-                        </div>
-                        <span className="relative block">
-                          <svg width="69" height="91" viewBox="0 0 69 91" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-1-2">
-                            <path
-                              d="M67.9865 79.0753C69.3577 81.148 68.7977 83.9622 66.5984 85.1196C61.1443 87.99 55.1436 89.717 48.9653 90.1747C41.2869 90.7435 33.5909 89.3326 26.6136 86.077C19.6362 82.8215 13.6109 77.8301 9.11396 71.5803C4.61701 65.3306 1.79884 58.0315 0.92903 50.3813C0.0592193 42.7311 1.16686 34.9857 4.146 27.8859C7.12514 20.7861 11.8761 14.5695 17.9445 9.83067C24.0129 5.09182 31.1957 1.98927 38.8058 0.819781C44.9292 -0.12122 51.1644 0.214628 57.1237 1.78733C59.5267 2.42151 60.7042 5.03807 59.8333 7.36576C58.9623 9.69345 56.3723 10.8445 53.9542 10.2706C49.4528 9.20231 44.7734 9.00838 40.1729 9.71535C34.0848 10.6509 28.3385 13.133 23.4838 16.9241C18.6291 20.7151 14.8283 25.6884 12.445 31.3683C10.0617 37.0481 9.17557 43.2444 9.87142 49.3646C10.5673 55.4847 12.8218 61.324 16.4194 66.3238C20.0169 71.3236 24.8372 75.3167 30.419 77.9212C36.0009 80.5256 42.1577 81.6543 48.3004 81.1993C52.9422 80.8554 57.4587 79.616 61.6053 77.5644C63.8329 76.4623 66.6152 77.0025 67.9865 79.0753Z"
-                              fill="#F1F5FB"></path>
-                          </svg>
-                        </span>
-                        <span className="absolute inset-0 ml-3 mt-px block mx-auto">
-                          <svg width="78" height="88" viewBox="0 0 78 88" fill="none" xmlns="http://www.w3.org/2000/svg"
-                               data-config-id="auto-svg-2-2">
-                            <path
-                              d="M34 4.49613C34 2.01299 36.0182 -0.0237881 38.4884 0.229514C44.4509 0.840933 50.2422 2.66606 55.4993 5.61018C62.0678 9.2887 67.5826 14.5911 71.5162 21.0101C75.4497 27.4291 77.6705 34.75 77.9661 42.2726C78.2616 49.7951 76.6221 57.2677 73.2043 63.9756C69.7865 70.6834 64.7047 76.4021 58.4451 80.5847C52.1855 84.7672 44.9574 87.2737 37.4522 87.8644C29.947 88.455 22.4158 87.1101 15.579 83.9583C10.1071 81.4357 5.22649 77.8232 1.22716 73.3589C-0.429708 71.5093 0.0317984 68.6794 2.0407 67.2198C4.04961 65.7602 6.8421 66.2296 8.54694 68.0351C11.6079 71.2766 15.2698 73.914 19.3437 75.792C24.7833 78.2997 30.7753 79.3698 36.7467 78.8998C42.718 78.4299 48.4689 76.4356 53.4493 73.1079C58.4296 69.7801 62.4728 65.2301 65.1921 59.8932C67.9114 54.5562 69.2159 48.6108 68.9807 42.6256C68.7456 36.6404 66.9787 30.8157 63.849 25.7085C60.7193 20.6014 56.3316 16.3826 51.1055 13.4559C47.1916 11.264 42.9055 9.85163 38.4838 9.28059C36.0211 8.96254 34 6.97928 34 4.49613Z"
-                              fill="red"></path>
-                          </svg>
-                        </span>
-                      </div>
 
-
-                      {/*<div className="relative inline-flex items-center justify-center overflow-hidden rounded-full bottom-5 left-5">*/}
-                      {/*  <svg className="w-20 h-20">*/}
-                      {/*    <circle*/}
-                      {/*      className="text-gray-300"*/}
-                      {/*      stroke-width="5"*/}
-                      {/*      stroke="currentColor"*/}
-                      {/*      fill="transparent"*/}
-                      {/*      r="30"*/}
-                      {/*      cx="40"*/}
-                      {/*      cy="40"*/}
-                      {/*    />*/}
-                      {/*    <circle*/}
-                      {/*      className="text-blue-600"*/}
-                      {/*      stroke-width="5"*/}
-                      {/*      stroke-dasharray={circumference}*/}
-                      {/*      stroke-dashoffset={(calculateKPI().textAnalysisTotal  - calculateKPI().requirementsByImpact?.critical) * circumference}*/}
-                      {/*      stroke-linecap="round"*/}
-                      {/*      stroke="blue"*/}
-                      {/*      fill="transparent"*/}
-                      {/*      r="30"*/}
-                      {/*      cx="40"*/}
-                      {/*      cy="40"*/}
-                      {/*    />*/}
-                      {/*  </svg>*/}
-                      {/*  <span className="absolute text-xl text-blue-500">{calculateKPI().requirementsByImpact?.critical}<sub>/1</sub></span>*/}
-                      {/*</div>*/}
-
-                      <h3 className="mb-4 text-2xl font-meduim font-heading">Critique</h3>
-                      <p className="text-gray-400 text-md">Total des exigence par impact</p>
+                      </div>
+                      <div className="flex justify-between w-full items-center">
+                        <div className="border-r py-4 w-1/2 flex items-center justify-center">
+                          <Chart type="pie" data={chartData?.requirementsByImpact} options={chartOptions} className="w-72" />
+                        </div>
+                        <div className='py-4 w-1/2 flex items-center justify-center'>
+                          <Chart type="pie" data={chartData?.requirementsByApplicability} options={chartOptions} className="w-72" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/*  requirements by nature of impact*/}
-                <div className='py-8'>
-                  <h1 className='text-3xl font-medium'>Exigences par nature</h1>
-                  <p className='text-gray-400 font-normal'>Statistiques des exigence par nature de l'impact du texte</p>
-                </div>
-                <dl className="grid py-16  border rounded-md grid-cols-1 gap-x-8 gap-y-8 text-center md:grid-cols-4">
-                  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">
-                    <dt className="text-base leading-7 text-gray-600">Financier</dt>
-                    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">
-                      { calculateKPI().requirementsByNatureOfImpact?.financial } <sub>/{calculateKPI().textAnalysisTotal}</sub>
-                    </dd>
-                  </div>
-                  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">
-                    <dt className="text-base leading-7 text-gray-600">Organisation</dt>
-                    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">
-                      { calculateKPI().requirementsByNatureOfImpact?.organisation } <sub>/{calculateKPI().textAnalysisTotal}</sub>
-                    </dd>
-                  </div>
-                  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">
-                    <dt className="text-base leading-7 text-gray-600">Produit</dt>
-                    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">
-                      { calculateKPI().requirementsByNatureOfImpact?.products } <sub>/{calculateKPI().textAnalysisTotal}</sub>
-                    </dd>
-                  </div>
-                  <div className="mx-auto px-24 flex max-w-xs flex-col gap-y-4">
-                    <dt className="text-base leading-7 text-gray-600">Image</dt>
-                    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">
-                      { calculateKPI().requirementsByNatureOfImpact?.image } <sub>/{calculateKPI().textAnalysisTotal}</sub>
-                    </dd>
-                  </div>
-                </dl>
+                {/*<div className='py-8'>*/}
+                {/*  <h1 className='text-3xl font-medium'>Exigences par nature</h1>*/}
+                {/*  <p className='text-gray-400 font-normal'>Statistiques des exigence par nature de l'impact du texte</p>*/}
+                {/*</div>*/}
+                {/*<dl className="grid py-16  border rounded-md grid-cols-1 gap-x-8 gap-y-8 text-center md:grid-cols-4">*/}
+                {/*  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">*/}
+                {/*    <dt className="text-base leading-7 text-gray-600">Financier</dt>*/}
+                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
+                {/*      { calculateKPI().requirementsByNatureOfImpact?.financial } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
+                {/*    </dd>*/}
+                {/*  </div>*/}
+                {/*  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">*/}
+                {/*    <dt className="text-base leading-7 text-gray-600">Organisation</dt>*/}
+                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
+                {/*      { calculateKPI().requirementsByNatureOfImpact?.organisation } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
+                {/*    </dd>*/}
+                {/*  </div>*/}
+                {/*  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">*/}
+                {/*    <dt className="text-base leading-7 text-gray-600">Produit</dt>*/}
+                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
+                {/*      { calculateKPI().requirementsByNatureOfImpact?.products } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
+                {/*    </dd>*/}
+                {/*  </div>*/}
+                {/*  <div className="mx-auto px-24 flex max-w-xs flex-col gap-y-4">*/}
+                {/*    <dt className="text-base leading-7 text-gray-600">Image</dt>*/}
+                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
+                {/*      { calculateKPI().requirementsByNatureOfImpact?.image } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
+                {/*    </dd>*/}
+                {/*  </div>*/}
+                {/*</dl>*/}
 
             {/*total applicable text*/}
-            <div className='py-8'>
-              <h1 className='text-3xl font-medium'>Taux</h1>
-              <p className='text-gray-400 font-normal'>Section statistique des des taux du texte</p>
-            </div>
+            {/*<div className='py-8'>*/}
+            {/*  <h1 className='text-3xl font-medium'>Taux</h1>*/}
+            {/*  <p className='text-gray-400 font-normal'>Section statistique des des taux du texte</p>*/}
+            {/*</div>*/}
             {/*total applicable text*/}
-            <div className="flex flex-wrap -mx-3">
+            {/*<div className="flex flex-wrap -mx-3">
               <div className="w-full md:w-1/2 px-3 mb-6">
                 <div className="px-8 border md:px-12 lg:px-16 pt-14 pb-12 sm:pb-16 rounded-md">
                   <h3 className="mb-3 font-heading font-medium text-indigo-600">
@@ -550,7 +487,7 @@ export default function DataDetails() {
                   >Pourcentage</span>
                 </div>
               </div>
-            </div>
+            </div>*/}
           </div>
         </div>
       </div>
