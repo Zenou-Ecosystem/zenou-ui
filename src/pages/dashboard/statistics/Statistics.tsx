@@ -141,25 +141,13 @@ function Statistics() {
                 </div>
               </div>
               <div className=''>
-                <Datatable
-                  data={lawsStatistics?.laws ?? []}
-                  fields={[
-                    "title_of_text",
-                    "type_of_text",
-                    "actions",
-                  ]}
-                  actionTypes={LawActionTypes}
-                  context={LawContext}
-                  translationKey={'LAW.ADD.FORM'}
-                  accessControls={{
-                    EDIT: AppUserActions.EDIT_LAW,
-                    DELETE: AppUserActions.DELETE_LAW,
-                    VIEW: AppUserActions.VIEW_LAW,
-                  }}
-                />
+                <div className="flex justify-evenly items-center">
+                  <Chart type="pie" data={chartData?.filterByDatesLawDate} options={chartOptions} className="w-72" />
+                  <Chart type="pie" data={chartData?.filterByDatesConformityData} options={chartOptions} className="w-72" />
+                </div>
 
                 <div className='p-4'>
-                  <div className="flex flex-wrap border-b ">
+                  <div className="flex flex-wrap border ">
                     <div className="w-full md:w-1/3 lg:w-1/3 border-r">
                       <div className="max-w-sm h-full  py-10">
                         <div className="max-w-xs h-full">
@@ -193,10 +181,23 @@ function Statistics() {
                   </div>
                 </div>
 
-                <div className="flex justify-evenly items-center">
-                  <Chart type="pie" data={chartData?.filterByDatesLawDate} options={chartOptions} className="w-72" />
-                  <Chart type="pie" data={chartData?.filterByDatesConformityData} options={chartOptions} className="w-72" />
-                </div>
+                <Datatable
+                  data={lawsStatistics?.laws ?? []}
+                  fields={[
+                    "title_of_text",
+                    "type_of_text",
+                    "actions",
+                  ]}
+                  actionTypes={LawActionTypes}
+                  context={LawContext}
+                  translationKey={'LAW.ADD.FORM'}
+                  accessControls={{
+                    EDIT: AppUserActions.EDIT_LAW,
+                    DELETE: AppUserActions.DELETE_LAW,
+                    VIEW: AppUserActions.VIEW_LAW,
+                  }}
+                />
+
                 {/*<JoinLineChartComponent />*/}
               </div>
             </div>
