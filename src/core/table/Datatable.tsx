@@ -38,7 +38,7 @@ function Datatable(props: {
         const data = LocalStore.get('VIEWED_DATA');
         const context = actions[0].split('_',);
         LocalStore.remove("action");
-        navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
+        navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id || data?._id}`);
       }  },
     { label: 'Edit', icon: "pi pi-fw pi-file-edit",  command:() => {
 

@@ -14,11 +14,11 @@ export interface OptionsFilter {
 }
 
 export interface DateFilter {
-    startDate: Date,
-    endDate: Date
+    startDate: string,
+    endDate: string
 }
 
 export interface FilterPayload extends Partial<DateFilter> {
-    pageSize: number,
+    pageSize?: number,
     summary?:boolean
 }

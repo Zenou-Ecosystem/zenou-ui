@@ -279,25 +279,25 @@ function Laws() {
               </div>
 
               <div hidden={activeTab !== 1}>
-                <Datatable
-                  data={laws}
-                  fields={[
-                    "title_of_text",
-                    "type_of_text",
-                    "date_of_issue",
-                    "applicability",
-                    "compliant",
-                    "actions",
-                  ]}
-                  actionTypes={LawActionTypes}
-                  context={LawContext}
-                  translationKey={'LAW.ADD.FORM'}
-                  accessControls={{
-                    EDIT: AppUserActions.EDIT_LAW,
-                    DELETE: AppUserActions.DELETE_LAW,
-                    VIEW: AppUserActions.VIEW_LAW,
-                  }}
-                />
+                {/*<Datatable*/}
+                {/*  data={laws}*/}
+                {/*  fields={[*/}
+                {/*    "title_of_text",*/}
+                {/*    "type_of_text",*/}
+                {/*    "date_of_issue",*/}
+                {/*    "applicability",*/}
+                {/*    "compliant",*/}
+                {/*    "actions",*/}
+                {/*  ]}*/}
+                {/*  actionTypes={LawActionTypes}*/}
+                {/*  context={LawContext}*/}
+                {/*  translationKey={'LAW.ADD.FORM'}*/}
+                {/*  accessControls={{*/}
+                {/*    EDIT: AppUserActions.EDIT_LAW,*/}
+                {/*    DELETE: AppUserActions.DELETE_LAW,*/}
+                {/*    VIEW: AppUserActions.VIEW_LAW,*/}
+                {/*  }}*/}
+                {/*/>*/}
               </div>
             </>
           )}

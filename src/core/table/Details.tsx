@@ -17,7 +17,6 @@ import { Chart } from 'primereact/chart';
 export default function DataDetails() {
   const [props, setProps] = useState<any>();
   const params = useParams();
-  const circumference = 30 * 2 * Math.PI;
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const [chartData, setChartData] = React.useState({}) as any;
   const [chartOptions, setChartOptions] = React.useState({});
@@ -36,7 +35,6 @@ export default function DataDetails() {
   const actionPlanItems = lawItems.filter(({label}) => ['Control plan'].includes(label))
   const primaryItems = [{label: translationService(currentLanguage,'PRIMARY_INFO'), icon: 'pi pi-home'},]
   const [items, setItems] = useState(primaryItems)
-  const [statistics, setStatistics] = React.useState({});
 
   useEffect(() => {
     const data = LocalStore.get("VIEWED_DATA");
@@ -112,39 +110,39 @@ export default function DataDetails() {
     }
   }, []);
 
-  const calculateKPI = () => {
-
-    const textAnalysisTotal = props?.text_analysis?.length;
-
-    const filterCriteria = (condition: any) => {
-      return  props
-        ?.text_analysis.filter(condition)
-    }
-
-    const requirementsByApplicability = {
-      total: filterCriteria((obj:any) => obj.applicability === 'yes')?.length,
-    }
-
-    const conformity = {
-      total: filterCriteria((obj:any) => obj.complaint === true)?.length / requirementsByApplicability.total
-    }
-
-    const requirementsByImpact = {
-      weak: filterCriteria((obj:any) => obj.impact === 'weak')?.length,
-      medium: filterCriteria((obj:any) => obj.impact === 'medium')?.length,
-      major: filterCriteria((obj:any) => obj.impact === 'major')?.length,
-      critical: filterCriteria((obj:any) => obj.impact === 'critical')?.length
-    }
-
-    const requirementsByNatureOfImpact = {
-      financial: filterCriteria((obj:any) => obj.nature_of_impact === 'financial')?.length,
-      image: filterCriteria((obj:any) => obj.nature_of_impact === 'image')?.length,
-      organisation: filterCriteria((obj:any) => obj.nature_of_impact === 'organisation')?.length,
-      products: filterCriteria((obj:any) => obj.nature_of_impact === 'products')?.length
-    }
-
-    return {requirementsByApplicability, textAnalysisTotal, conformity, requirementsByNatureOfImpact, requirementsByImpact}
-  }
+  // const calculateKPI = () => {
+  //
+  //   const textAnalysisTotal = props?.text_analysis?.length;
+  //
+  //   const filterCriteria = (condition: any) => {
+  //     return  props
+  //       ?.text_analysis.filter(condition)
+  //   }
+  //
+  //   const requirementsByApplicability = {
+  //     total: filterCriteria((obj:any) => obj.applicability === 'yes')?.length,
+  //   }
+  //
+  //   const conformity = {
+  //     total: filterCriteria((obj:any) => obj.complaint === true)?.length / requirementsByApplicability.total
+  //   }
+  //
+  //   const requirementsByImpact = {
+  //     weak: filterCriteria((obj:any) => obj.impact === 'weak')?.length,
+  //     medium: filterCriteria((obj:any) => obj.impact === 'medium')?.length,
+  //     major: filterCriteria((obj:any) => obj.impact === 'major')?.length,
+  //     critical: filterCriteria((obj:any) => obj.impact === 'critical')?.length
+  //   }
+  //
+  //   const requirementsByNatureOfImpact = {
+  //     financial: filterCriteria((obj:any) => obj.nature_of_impact === 'financial')?.length,
+  //     image: filterCriteria((obj:any) => obj.nature_of_impact === 'image')?.length,
+  //     organisation: filterCriteria((obj:any) => obj.nature_of_impact === 'organisation')?.length,
+  //     products: filterCriteria((obj:any) => obj.nature_of_impact === 'products')?.length
+  //   }
+  //
+  //   return {requirementsByApplicability, textAnalysisTotal, conformity, requirementsByNatureOfImpact, requirementsByImpact}
+  // }
 
   const showPropDetail = (props: object) => {
     let elements: any = [];
@@ -154,7 +152,7 @@ export default function DataDetails() {
      return { elements, detailElements };
     }
     for (let [key, value] of Object.entries(props)) {
-      key = key === "id" ? "Signature" : key;
+      key = key === "id" || key === "_id" ? "Signature" : key;
       // @ts-ignore
       key === 'password' && delete props[key];
       if (typeof value === "object" || ["action_plans"].includes(key)) {
