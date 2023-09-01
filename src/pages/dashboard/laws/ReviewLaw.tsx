@@ -36,8 +36,10 @@ export default function ReviewLaw(){
 
   const submitLaw = () => {
     const text_analysis = draftItems.text_analysis.map((x: any) => {
-      x.requirement = x.requirements.id;
-      delete x.requirements
+      if(x?.requirements?.id) {
+        x.requirement = x?.requirements?.id;
+        delete x.requirements
+      }
       return x;
     })
     let law = {
@@ -63,8 +65,8 @@ export default function ReviewLaw(){
     return <div className='truncate' dangerouslySetInnerHTML={{ __html: rowData.expertise }}></div>
   }
 
-  const actionPlanTemplate = (rowData: any) => {
-    return !rowData.action_plans ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData.action_plans}</div>
+  const actionPlanTemplate = (key:string) => (rowData: any) =>  {
+    return !rowData[key] ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData[key]}</div>
   }
 
   const proofBodyTemplate = (rowData: any) => {
@@ -80,7 +82,14 @@ export default function ReviewLaw(){
   }
 
   const requirementsTemplate = (rowData: any) => {
-    return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
+    let element
+    if(rowData?.requirements){
+      element = <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
+    }
+    if(rowData?.requirement){
+      element = <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: draftInfo().requirements.find((x:{id: number, name: string}) => x.id = rowData?.requirement)?.name.slice(0, 60)+"..." }}></div>
+    }
+    return  element;
   }
 
   const servicesBodyTemplate = (rowData:any) => {
@@ -142,12 +151,12 @@ export default function ReviewLaw(){
               draftInfo().text_analysis_keys.map((item:any, index:number) =>
                 <Column style={{ width: '20px' }} key={index} field={item}
                         body={
-                 ['requirements'].includes(item) ? requirementsTemplate:
+                 ['requirement'].includes(item) || ['requirements'].includes(item) ? requirementsTemplate:
                   ['applicability', 'impact', 'nature_of_impact', 'compliant'].includes(item)
                     ? applicableBodyTemplate(item): ['expertise'].includes(item)
                       ? expertiseTemplate :
                       ['action_plans', 'conformity_cost', 'conformity_deadline'].includes(item)
-                        ? actionPlanTemplate :
+                        ? actionPlanTemplate(item) :
                         ['process_management'].includes(item) ? servicesBodyTemplate : ['proof_of_conformity'].includes(item)? proofBodyTemplate :'' }
                         header={translationService(currentLanguage,`LAW.ADD.FORM.${item.toString().toUpperCase()}`)}/>)
             }

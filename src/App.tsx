@@ -40,6 +40,7 @@ function App() {
           <Route path="laws" element={<Outlet />}>
             <Route index path="" element={<Law />}></Route>
             <Route path="new" element={<NewLaw />}/>
+            <Route path="edit/:id" element={<NewLaw />}/>
             <Route path="analysis/:id/review" element={<ReviewLaw />}></Route>
             <Route path="analysis/:id" element={<TextAnalysis />}></Route>
           </Route>

@@ -126,6 +126,8 @@ export default function TextAnalysis() {
 
     type === "checkbox" && (value = e.checked);
 
+    name === "conformity_deadline" && (value = new Date(String(value)).toLocaleDateString())
+
     const targetProperty = formValues[name];
 
     let error = targetProperty?.validator
@@ -438,14 +440,15 @@ export default function TextAnalysis() {
               {/*conformity_deadline*/}
               <div className="w-full flex flex-col form-control">
                 <label htmlFor="conformity_deadline">{translationService(currentLanguage,'LAW.ADD.FORM.CONFORMITY_DEADLINE')}</label>
-                <InputText
+                <Calendar
                   value={formValues.conformity_deadline.value}
                   id="conformity_deadline"
                   onChange={handleChange}
                   name="conformity_deadline"
                   placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.CONFORMITY_DEADLINE')}
                   className="w-full"
-                />
+                    showIcon
+                  />
               </div>
             </div>
           </div>
@@ -499,8 +502,16 @@ export default function TextAnalysis() {
   }
 
   const requirementsTemplate = (rowData: any) => {
-    return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
+    let element
+    if(rowData?.requirements){
+      element = <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
+    }
+    if(rowData?.requirement){
+      element = <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: draftLaw?.storeData?.requirements.find((x:{id: number, name: string}) => x.id = rowData?.requirement)?.name.slice(0, 60)+"..." }}></div>
+    }
+    return  element;
   }
+
   const actionPlanTemplate = (key:string) => (rowData: any) =>  {
     return !rowData[key] ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData[key]}</div>
   }

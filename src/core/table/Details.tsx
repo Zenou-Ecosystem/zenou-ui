@@ -26,6 +26,7 @@ export default function DataDetails() {
   const navigate = useNavigate();
 
   const lawItems = [
+    {label: translationService(currentLanguage,'LAW.ADD.FORM.REQUIREMENTS'), icon: 'pi pi-chart-bar'},
     {label: translationService(currentLanguage,'LAW.ADD.FORM.ANALYSE_TEXT'), icon: 'pi pi-sync'},
     {label: translationService(currentLanguage,'LAW.KPI'), icon: 'pi pi-chart-bar'},
     {label: translationService(currentLanguage,'LAW.ADD.FORM.SECTORS_OF_ACTIVITY'), icon: 'pi pi-book'}
@@ -225,8 +226,8 @@ export default function DataDetails() {
     return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData.expertise }}></div>
   }
 
-  const actionPlanTemplate = (rowData: any) => {
-    return !rowData.action_plans ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData.action_plans}</div>
+  const actionPlanTemplate = (key:string) => (rowData: any) =>  {
+    return !rowData[key] ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData[key]}</div>
   }
 
   const proofBodyTemplate = (rowData: any) => {
@@ -240,6 +241,11 @@ export default function DataDetails() {
       }
     </ol>
   }
+
+  const requirementsTemplate = (rowData: any) => {
+    return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
+  }
+
   const servicesBodyTemplate = (rowData:any) => {
     return <ul>
       {
@@ -324,7 +330,7 @@ export default function DataDetails() {
                             ? applicableBodyTemplate(item): ['expertise'].includes(item)
                               ? expertiseTemplate :
                               ['action_plans', 'conformity_cost', 'conformity_deadline'].includes(item)
-                                ? actionPlanTemplate :
+                                ? actionPlanTemplate(item) :
                                 ['process_management'].includes(item) ? servicesBodyTemplate : ['proof_of_conformity'].includes(item)? proofBodyTemplate :'' }
                         header={translationService(currentLanguage,`LAW.ADD.FORM.${item.toString().toUpperCase()}`)}/>)
             }
@@ -335,6 +341,19 @@ export default function DataDetails() {
             { showPropDetail(props)?.detailElements?.control_plan &&
               showPropDetail(props)?.detailElements?.control_plan?.length ?
                 showPropDetail(props)?.detailElements.control_plan?.map((data: any) => <div key={data}>{data}</div> ):
+                <div className='col-span-2 flex items-center h-48 w-full justify-center'>{translationService(currentLanguage,`TABLE.NO_RESULT_FOUND`)}</div>
+            }
+          </div>
+        </div>
+
+        <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.ADD.FORM.REQUIREMENTS')}>
+          <div className='grid grid-cols-1 md:grid-cols-2 my-4 gap-4'>
+            { showPropDetail(props)?.detailElements?.requirements &&
+              showPropDetail(props)?.detailElements?.requirements?.length ?
+                showPropDetail(props)?.detailElements.requirements?.map((data: any) => <div key={data?.id} className="col-span-2">
+                  <p className='border-b pb-2'>Numeros: {data?.id}</p>
+                  <div className='text-gray-500 px-4' dangerouslySetInnerHTML={{ __html: data?.name }}></div>
+                </div> ):
                 <div className='col-span-2 flex items-center h-48 w-full justify-center'>{translationService(currentLanguage,`TABLE.NO_RESULT_FOUND`)}</div>
             }
           </div>

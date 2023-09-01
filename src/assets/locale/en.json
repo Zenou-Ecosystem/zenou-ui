@@ -188,9 +188,9 @@
 
   "OPTIONS.LOI": "law",
   "OPTIONS.DÉCRET": "decree",
-  "OPTIONS.DECRET": "decree",
+  "OPTIONS.DECRETS": "decree",
   "OPTIONS.ARRÊTÉ": "order",
-  "OPTIONS.ARRETÉ": "order",
+  "OPTIONS.ARRETER": "order",
   "OPTIONS.DÉCISION": "decision",
   "OPTIONS.AIR": "air",
   "OPTIONS.TERRE": "land",

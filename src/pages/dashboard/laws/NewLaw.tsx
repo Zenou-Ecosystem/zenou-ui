@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Steps } from 'primereact/steps';
 import { Toast } from 'primereact/toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
-import { createLaw, fetchLaws } from '../../../services/laws.service';
+import { createLaw, fetchLaws, updateLaw } from '../../../services/laws.service';
 import { LocalStore } from '../../../utils/storage.utils';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
@@ -16,7 +16,7 @@ import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Menu } from 'primereact/menu';
 
-const initialFormState = {
+let initialFormState = {
   title_of_text: {
     value: "",
     error: true,
@@ -102,6 +102,8 @@ export default function InteractiveDemo() {
 
   const [laws, setLaws] = React.useState<any[]>([]);
 
+  const {id} = useParams();
+
   const menu = React.useRef<Menu | any>(null);
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
@@ -166,6 +168,21 @@ export default function InteractiveDemo() {
     (async () => {
       setLaws(await fetchLaws());
     })()
+    if(id){
+      let { requirements, id, ...others } = LocalStore.get("EDIT_DATA");
+
+      console.log(others, requirements);
+      Object.entries(others).forEach(([key,value]) => {
+        // @ts-ignore
+        if(initialFormState[key]){
+        // @ts-ignore
+
+          key === "date_of_issue" ? initialFormState["date_of_issue"].value = new Date(String(value)) : initialFormState[key].value = value
+        }
+      })
+      setFormValues(initialFormState);
+      setRequirements(requirements);
+    }
   }, [])
 
   const handleAnalysis = () => {
@@ -198,13 +215,30 @@ export default function InteractiveDemo() {
     e.stopPropagation();
 
     setLoader(true);
+    if(!id) {
+      createLaw(formData).then(res => {
+        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS_ACTION') });
+        is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
+      }).catch(() => {
+        toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+      })
 
-    createLaw(formData).then(res => {
-      toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS_ACTION') });
-      is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
-    }).catch(() => {
-      toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-    })
+    }else {
+      updateLaw(id, formData).then(res => {
+        if(res){
+          toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
+          if(is_analysis) {
+            let prevData= LocalStore.get("EDIT_DATA");
+            LocalStore.set("EDIT_DATA", {...prevData, ...formData});
+            navigate(`/dashboard/laws/analysis/${id}?edit`);
+          }else {
+            LocalStore.remove("EDIT_DATA");
+            navigate(`/dashboard/laws`);
+          }
+        }
+      })
+    }
+
 
   };
 
@@ -419,7 +453,7 @@ export default function InteractiveDemo() {
             <Button onClick={addRequirements} size="small" label="Ajouter un exigence" icon="pi pi-plus" />
           <div className=''>
             {
-              requirements.length ? (
+              requirements?.length ? (
                 <DataTable size="small" tableStyle={{ width: '100%' }} value={requirements} showGridlines>
                   <Column field={"id"} style={{ width: 20 }}
                           header="Nō"/>

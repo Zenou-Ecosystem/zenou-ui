@@ -47,7 +47,7 @@ function Datatable(props: {
           value.startsWith("EDIT")
         );
         LocalStore.set("EDIT_DATA", currentData)
-        navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/analysis/${currentData?.id}?edit`);
+        navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/edit/${currentData?.id || currentData?._id}`);
         // console.log(actionItem, currentData);
       }  },
     { label: 'Archive', icon: "pi pi-briefcase",  command:() => {
@@ -61,7 +61,7 @@ function Datatable(props: {
         const actionItem = actions.find((value) =>
           value.startsWith("DELETE")
         );
-        (actionItem) &&  requestDeleteConfirmation(actionItem, data);
+        (actionItem) &&  requestDeleteConfirmation(actionItem, currentData);
       }  },
   ];
   // if(can(AppUserActions.VIEW_COMPANY)){
