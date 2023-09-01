@@ -315,10 +315,11 @@ export default function DataDetails() {
           <br/>
           <DataTable size="small" tableStyle={{ width: '100%' }} value={showPropDetail(props)?.detailElements?.text_analysis} showGridlines>
             {
-              ["requirements", "applicability", "process_management", "impact", "nature_of_impact", "expertise",
+              ["requirement", "applicability", "process_management", "impact", "nature_of_impact", "expertise",
               "action_plans", "proof_of_conformity", "compliant", "conformity_cost", "conformity_deadline"].map((item:any, index:number) =>
                 <Column style={{ width: '20px' }} key={index} field={item}
                         body={
+
                           ['applicability', 'impact', 'nature_of_impact', 'compliant'].includes(item)
                             ? applicableBodyTemplate(item): ['expertise'].includes(item)
                               ? expertiseTemplate :

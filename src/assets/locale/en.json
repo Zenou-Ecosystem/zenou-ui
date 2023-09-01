@@ -105,6 +105,7 @@
   "OPTIONS.MAJOR": "Major",
   "OPTIONS.CRITICAL": "Critical",
   "LAW.ADD.FORM.REQUIREMENTS": "Requirements",
+  "LAW.ADD.FORM.REQUIREMENT": "Nō Requirements",
   "LAW.ADD.FORM.PLACEHOLDER.REQUIREMENTS": "Enter Requirements",
   "LAW.ADD.FORM.APPLICABILITY": "Applicability",
   "LAW.ADD.FORM.PLACEHOLDER.APPLICABILITY": "Select Applicability Status",

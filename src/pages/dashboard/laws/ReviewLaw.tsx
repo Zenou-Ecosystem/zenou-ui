@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { LocalStore } from '../../../utils/storage.utils';
 import Button from '../../../core/Button/Button';
 import { HiArrowSmRight, HiCheck } from 'react-icons/hi';
-import { createLaw } from '../../../services/laws.service';
+import { createLaw, updateLaw } from '../../../services/laws.service';
 import { Toast } from 'primereact/toast';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -35,18 +35,24 @@ export default function ReviewLaw(){
   ];
 
   const submitLaw = () => {
+    const text_analysis = draftItems.text_analysis.map((x: any) => {
+      x.requirement = x.requirements.id;
+      delete x.requirements
+      return x;
+    })
     let law = {
       ...draftItems,
+      text_analysis,
       is_analysed: true,
     }
     console.log(law);
-    // createLaw(law).then(res => {
-    //   if(res){
-    //     toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
-    //     LocalStore.remove("EDIT_DATA");
-    //     navigate(`/dashboard/laws`);
-    //   }
-    // })
+    updateLaw(draftItems.id, law).then(res => {
+      if(res){
+        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
+        LocalStore.remove("EDIT_DATA");
+        navigate(`/dashboard/laws`);
+      }
+    })
   }
 
   const applicableBodyTemplate = (key:string) => (rowData:any) => {

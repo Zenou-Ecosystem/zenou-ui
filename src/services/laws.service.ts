@@ -24,6 +24,15 @@ export const createLaw = async (payload: ILaws) => {
     }
 }
 
+export const updateLaw = async (id: string | number, data: any) => {
+    try {
+        const response = await axios.patch(`${Config.baseUrl}/law/${id}`, data);
+        return (await response).data;
+    } catch (error) {
+        console.log('An error occured => ', error);
+    }
+}
+
 export const deleteLaw = async (id: string | number) => {
     try {
         const response = await axios.delete(`${Config.baseUrl}/law/${id}`);

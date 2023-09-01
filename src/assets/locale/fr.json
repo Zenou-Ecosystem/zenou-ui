@@ -107,6 +107,7 @@
   "OPTIONS.MAJOR": "Majeur",
   "OPTIONS.CRITICAL": "Critique",
   "LAW.ADD.FORM.REQUIREMENTS": "Exigences ",
+  "LAW.ADD.FORM.REQUIREMENT": "Nō Exigences",
   "LAW.ADD.FORM.PLACEHOLDER.REQUIREMENTS": "Liste des Exigences",
   "LAW.ADD.FORM.APPLICABILITY": "Applicable",
   "LAW.ADD.FORM.PLACEHOLDER.APPLICABILITY": "Sélectionner le Statut D'applicabilité",
