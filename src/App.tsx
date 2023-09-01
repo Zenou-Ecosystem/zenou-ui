@@ -18,6 +18,7 @@ import DataDetails from "./core/table/Details";
 import Personnel from "./pages/dashboard/personnels";
 import ReviewLaw from './pages/dashboard/laws/ReviewLaw';
 import TextAnalysis from './pages/dashboard/laws/TextAnalysis';
+import NewLaw from './pages/dashboard/laws/NewLaw';
 // import Documentation from './pages/api-docs/Documentation';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           ></Route>
           <Route path="laws" element={<Outlet />}>
             <Route index path="" element={<Law />}></Route>
+            <Route path="new" element={<NewLaw />}/>
             <Route path="analysis/:id/review" element={<ReviewLaw />}></Route>
             <Route path="analysis/:id" element={<TextAnalysis />}></Route>
           </Route>
