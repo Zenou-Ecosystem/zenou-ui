@@ -91,9 +91,6 @@ export default function TextAnalysis() {
 
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialFormState);
-  const [actions, setActions] = useState<any[]>([]);
-
-  const { dispatch } = useLawContext();
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
@@ -106,29 +103,18 @@ export default function TextAnalysis() {
   const [visible, setVisible] = useState(false);
 
   const draftLaw = React.useMemo(() => {
-    let storeData = LocalStore.get('LAW_DRAFT');
-    if (storeData.length) {
-      return { storeData, currentLawData: storeData.find((law: any) => law.id === Number(id)) };
-    }
+    let storeData = LocalStore.get('EDIT_DATA');
+
     return { storeData, currentLawData: '' };
   }, []);
 
-  const [analysedText, setAnalysedText] = React.useState<any[]>(draftLaw?.currentLawData?.text_analysis || []);
+  const [analysedText, setAnalysedText] = React.useState<any[]>(draftLaw?.storeData?.text_analysis || []);
 
   React.useMemo(() => currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   const [formState, setFormState] = React.useState('create');
 
   const toast = React.useRef({});
-
-  React.useEffect(() => {
-    (async () => {
-      // Fetch Actions
-      const data = await fetchActions();
-      setActions(data);
-    })()
-
-  }, []);
 
   /**
    * description: handle change function. this function is used to handle on change events in an input field
@@ -207,16 +193,16 @@ export default function TextAnalysis() {
       formData[key] = value?.value;
     });
 
-    const lawData = draftLaw?.currentLawData
+    const lawData = draftLaw?.storeData
 
     if (lawData) {
 
       if ("text_analysis" in lawData && !edit) lawData["text_analysis"]?.push(formData)
       if (!edit && !lawData?.text_analysis) (lawData["text_analysis"] = [formData]);
 
-      draftLaw.storeData[lawData.id - 1] = edit ? editForm(formData) : lawData;
+      draftLaw.storeData = edit ? editForm(formData) : lawData;
 
-      LocalStore.set("LAW_DRAFT", draftLaw.storeData);
+      LocalStore.set("EDIT_DATA", draftLaw.storeData);
 
       addToAnalysedText(formData, edit);
 
@@ -233,13 +219,7 @@ export default function TextAnalysis() {
   const addToAnalysedText = (value: Record<string, string | boolean | number>, edit?: boolean) => {
 
     setAnalysedText(prevState => {
-
-      if (edit) {
-        return draftLaw.currentLawData.text_analysis;
-      }
-
-      return draftLaw.storeData[draftLaw?.currentLawData.id - 1].text_analysis;
-
+      return draftLaw.storeData.text_analysis;
     });
   };
 
@@ -266,11 +246,11 @@ export default function TextAnalysis() {
 
   const removeFromAnalysedText = () => {
     const index = LocalStore.get("DELETE_DATA")?.index;
-    let textAnalysis = draftLaw.currentLawData.text_analysis as Array<any>;
+    let textAnalysis = draftLaw.storeData.text_analysis as Array<any>;
 
-    draftLaw.currentLawData['text_analysis'] = textAnalysis.filter((x, idx) => idx !== index );
+    draftLaw.storeData['text_analysis'] = textAnalysis.filter((x, idx) => idx !== index );
 
-    draftLaw.storeData[draftLaw.currentLawData.id - 1] = draftLaw.currentLawData;
+    // draftLaw.storeData = draftLaw.currentLawData;
 
     (toast.current as any).show({
       severity: "info",
@@ -279,9 +259,9 @@ export default function TextAnalysis() {
       life: 3000,
     });
 
-    setAnalysedText(draftLaw.currentLawData['text_analysis']);
+    setAnalysedText(draftLaw.storeData['text_analysis']);
 
-    LocalStore.set("LAW_DRAFT", draftLaw.storeData);
+    LocalStore.set("EDIT_DATA", draftLaw.storeData);
 
     LocalStore.remove("DELETE_DATA");
   }
@@ -295,14 +275,29 @@ export default function TextAnalysis() {
           {/*requirements*/}
           <div className="col-span-2">
             <label htmlFor="requirements">{translationService(currentLanguage,'LAW.ADD.FORM.REQUIREMENTS')}</label>
-            <InputText
+            <Dropdown
               value={formValues.requirements.value}
               name="requirements"
               placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.REQUIREMENTS')}
               className="w-full"
               id="requirements"
               onChange={handleChange}
+              optionLabel="name"
+              filter
+              valueTemplate={(options) => options?.name ? <div className="py-0.5" dangerouslySetInnerHTML={{ __html: options?.name?.slice(0,100) + "..." }}></div> : translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.REQUIREMENTS')}
+              options={draftLaw.storeData?.requirements ?? []}
+              itemTemplate={(options) => {
+                return <div dangerouslySetInnerHTML={{ __html: options?.name?.slice(0, 90)+"..." }}></div>
+              }}
             />
+            {/*<InputText*/}
+            {/*  value={formValues.requirements.value}*/}
+            {/*  name="requirements"*/}
+            {/*  placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.REQUIREMENTS')}*/}
+            {/*  className="w-full"*/}
+            {/*  id="requirements"*/}
+            {/*  onChange={handleChange}*/}
+            {/*/>*/}
            </div>
 
           {/*applicability*/}
@@ -484,7 +479,9 @@ export default function TextAnalysis() {
         {/*submit btn*/}
         <div className="w-full flex items-center justify-between">
           {/*<Button disabled={loader} size='small' severity='warning' icon={`pi ${loader ? 'pi-spin pi-spinner': 'pi-check'}`} label={translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')} className={`px-6 py-4 text-center rounded-md ${loader?'submit':''}`} onClick={()=>{}} />*/}
-          <Button icon={`pi pi-${formValues.compliant.value?'check':'times'}`} size='small' label={translationService(currentLanguage,`LAW.ADD.${formState === 'edit' ? 'EDIT' :'REVIEW'}`)} className={`py-4 w-full px-6 text-center rounded-md ${formValues.compliant.value?'conformity':'not-conformed'}`} onClick={(e)=>{
+          <Button icon={`pi pi-${formValues.compliant.value?'check':'times'}`} size='small'
+                  label={translationService(currentLanguage,`LAW.ADD.${formState === 'edit' ? 'EDIT' :'REVIEW'}`)}
+                  className={`py-4 w-full px-6 text-center rounded-md ${formValues.compliant.value?'conformity':'not-conformed'}`} onClick={(e)=>{
             e.preventDefault()
             handleSubmission(e, formState === 'edit');
           }} />
@@ -501,6 +498,9 @@ export default function TextAnalysis() {
     return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData.expertise }}></div>
   }
 
+  const requirementsTemplate = (rowData: any) => {
+    return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
+  }
   const actionPlanTemplate = (key:string) => (rowData: any) =>  {
     return !rowData[key] ? <i className='pi pi-times-circle text-red-500'></i> : <div>{rowData[key]}</div>
   }
@@ -524,7 +524,7 @@ export default function TextAnalysis() {
      switch (true) {
        case context === 'edit':
          setFormState('edit')
-         LocalStore.set("EDIT_DATA", {data: e.data, index: e.index})
+         LocalStore.set("CURRENT_EDIT_DATA", {data: e.data, index: e.index})
          editFunction(e.data, e.index);
          break;
        case context === 'delete':
@@ -551,15 +551,15 @@ export default function TextAnalysis() {
 
   const editForm = (formData:Record<string, any>) => {
 
-    const index = LocalStore.get("EDIT_DATA")?.index;
+    const index = LocalStore.get("CURRENT_EDIT_DATA")?.index;
 
-    draftLaw.currentLawData["text_analysis"][index] = formData;
+    draftLaw.storeData["text_analysis"][index] = formData;
 
-    console.log(index, draftLaw.currentLawData);
+    console.log(index, draftLaw.storeData);
 
-    LocalStore.remove("EDIT_DATA");
+    LocalStore.remove("CURRENT_EDIT_DATA");
 
-    return draftLaw.currentLawData;
+    return draftLaw.storeData;
   }
 
   const servicesBodyTemplate = (rowData:any) => {
@@ -591,6 +591,7 @@ export default function TextAnalysis() {
             [...Object.keys(initialFormState),'proof_of_conformity'].map((item, index) =>
               <Column key={item} field={item}
                       body={
+                ['requirements'].includes(item) ? requirementsTemplate:
                 ['applicability', 'impact', 'nature_of_impact', 'compliant'].includes(item)
                   ?applicableBodyTemplate(item)
                   : ['expertise'].includes(item)? expertiseTemplate
@@ -600,7 +601,7 @@ export default function TextAnalysis() {
           }
           <Column  style={{ width: '10px' }} body={
             <div className='flex gap-4'>
-                <i className='pi pi-eye text-blue-500 cursor-pointer' title='view'></i>
+                {/*<i className='pi pi-eye text-blue-500 cursor-pointer' title='view'></i>*/}
                 <i className='pi pi-pencil text-green-500 cursor-pointer' title='edit'></i>
                 <i className='pi pi-trash text-red-500 cursor-pointer' title='delete'></i>
             </div>
@@ -624,7 +625,7 @@ export default function TextAnalysis() {
         style={{ width: "800px", maxWidth: "100%" }}
         onHide={() => {
           setFormValues(initialFormState);
-          LocalStore.remove("EDIT_DATA");
+          LocalStore.remove("CURRENT_EDIT_DATA");
           setFormState('create')
           setVisible(false);
         }}

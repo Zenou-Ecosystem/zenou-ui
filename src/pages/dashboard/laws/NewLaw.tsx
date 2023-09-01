@@ -87,7 +87,7 @@ const initialFormState = {
 
 
 export default function InteractiveDemo() {
-  const [activeIndex, setActiveIndex] = useState<number>(1);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   const [requirements, setRequirements] = React.useState<{id: number, name: string}[]>([]);
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialFormState);
@@ -169,15 +169,7 @@ export default function InteractiveDemo() {
   }, [])
 
   const handleAnalysis = () => {
-    const draftData = LocalStore.get("LAW_DRAFT");
-
-    if(!draftData){
-      formData["id"]=1;
-      LocalStore.set("LAW_DRAFT", [formData]);
-    } else {
-      formData["id"]=draftData.length+1;
-      LocalStore.set("LAW_DRAFT", [...draftData, formData]);
-    }
+    LocalStore.set("EDIT_DATA", formData);
     navigate(`/dashboard/laws/analysis/${formData.id}`);
   }
 

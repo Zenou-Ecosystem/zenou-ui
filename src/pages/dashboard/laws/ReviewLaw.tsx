@@ -21,43 +21,13 @@ export default function ReviewLaw(){
 
   const { id } = useParams();
 
-  const draftItems = LocalStore.get("LAW_DRAFT");
+  const draftItems = LocalStore.get("EDIT_DATA");
 
   const draftInfo = () => {
-    const { text_analysis, parent_of_text, ...others } = draftItems.find((item:any) => item.id === Number(id));
+    const { text_analysis, created_at, updated_at, requirements, parent_of_text, ...others } = draftItems;
 
-    return {text_analysis, parent_of_text, text_analysis_keys:Object.keys(text_analysis[0]), others}
+    return {text_analysis, created_at, updated_at, requirements, parent_of_text, text_analysis_keys:Object.keys(text_analysis[0]), others}
   };
-
-  const calculateKPI = () => {
-
-    const filterCriteria = (condition: any) => {
-      return draftInfo().text_analysis.filter(condition)
-    }
-
-    const requirementsByApplicability = {
-      total: filterCriteria((obj:any) => obj.applicability === 'yes')?.length,
-    }
-
-    const conformity = {
-      total: filterCriteria((obj:any) => obj.complaint === true)?.length / requirementsByApplicability.total
-    }
-
-    const requirementsByFamily = {
-      weak: filterCriteria((obj:any) => obj.impact === 'weak')?.length,
-      medium: filterCriteria((obj:any) => obj.impact === 'medium')?.length,
-      major: filterCriteria((obj:any) => obj.impact === 'major')?.length,
-      critical: filterCriteria((obj:any) => obj.impact === 'critical')?.length
-    }
-
-    const requirementsByNatureOfImpact = {
-      financial: filterCriteria((obj:any) => obj.nature_of_impact === 'financial')?.length,
-      image: filterCriteria((obj:any) => obj.nature_of_impact === 'image')?.length,
-      organisation: filterCriteria((obj:any) => obj.nature_of_impact === 'organisation')?.length,
-      products: filterCriteria((obj:any) => obj.nature_of_impact === 'products')?.length
-    }
-
-  }
 
   const items = [
     {label: translationService(currentLanguage,'OPTIONS.LAW'), icon: 'pi pi-file-edit'},
@@ -66,19 +36,17 @@ export default function ReviewLaw(){
 
   const submitLaw = () => {
     let law = {
-      ...draftInfo().others,
-      text_analysis: draftInfo().text_analysis,
+      ...draftItems,
       is_analysed: true,
-      parent_of_text: draftInfo().parent_of_text
     }
-    createLaw(law).then(res => {
-      if(res){
-        let newDraftData = draftItems.filter((x:any) => x.id !== Number(id));
-        LocalStore.set("LAW_DRAFT", newDraftData);
-        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
-        navigate(`/dashboard/laws`);
-      }
-    })
+    console.log(law);
+    // createLaw(law).then(res => {
+    //   if(res){
+    //     toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
+    //     LocalStore.remove("EDIT_DATA");
+    //     navigate(`/dashboard/laws`);
+    //   }
+    // })
   }
 
   const applicableBodyTemplate = (key:string) => (rowData:any) => {
@@ -105,6 +73,10 @@ export default function ReviewLaw(){
     </ol>
   }
 
+  const requirementsTemplate = (rowData: any) => {
+    return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
+  }
+
   const servicesBodyTemplate = (rowData:any) => {
     return <ul>
       {
@@ -120,11 +92,6 @@ export default function ReviewLaw(){
       <Toast ref={toast}></Toast>
       <div className="header-frame h-48 items-center justify-center flex-col flex w-full">
         <h1 className='font-semibold text-2xl md:text-4xl capitalize'>{translationService(currentLanguage,'ANALYSIS_PREVIEW_TEXT_ANALYSIS')}</h1>
-        {/*<div*/}
-        {/*  className={`flex justify-center items-center mt-2 gap-1 font-medium py-1 px-2 rounded-full border ${!draftInfo().text_analysis['compliant'] ? 'bg-red-100 border-red-500 text-red-500' : 'bg-green-100 text-green-500 border-green-500'}`}>*/}
-        {/*  <small className="font-light">{translationService(currentLanguage,'ANALYSIS_STATUS')}:</small>*/}
-        {/*  <i className={`pi pi-${draftInfo().text_analysis['compliant']?'check':'times'}`}></i>*/}
-        {/*</div>*/}
       </div>
       <div className="overflow-hidden mt-2">
         <TabMenu className='tab-menu' model={items} activeIndex={activeIndex} onTabChange={(e) => {
@@ -169,6 +136,7 @@ export default function ReviewLaw(){
               draftInfo().text_analysis_keys.map((item:any, index:number) =>
                 <Column style={{ width: '20px' }} key={index} field={item}
                         body={
+                 ['requirements'].includes(item) ? requirementsTemplate:
                   ['applicability', 'impact', 'nature_of_impact', 'compliant'].includes(item)
                     ? applicableBodyTemplate(item): ['expertise'].includes(item)
                       ? expertiseTemplate :

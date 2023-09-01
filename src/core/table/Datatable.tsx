@@ -30,6 +30,7 @@ function Datatable(props: {
   const navigate = useNavigate();
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const menu = React.useRef<Menu | any>(null);
+  const [currentData, setCurrentData] = React.useState<any>(null);
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
@@ -41,7 +42,13 @@ function Datatable(props: {
         navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id || data?._id}`);
       }  },
     { label: 'Edit', icon: "pi pi-fw pi-file-edit",  command:() => {
-
+        const context = actions[0].split('_',);
+      const actionItem = actions.find((value) =>
+          value.startsWith("EDIT")
+        );
+        LocalStore.set("EDIT_DATA", currentData)
+        navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/analysis/${currentData?.id}?edit`);
+        // console.log(actionItem, currentData);
       }  },
     { label: 'Archive', icon: "pi pi-briefcase",  command:() => {
         const actionItem = actions.find((value) =>
@@ -183,31 +190,12 @@ function Datatable(props: {
                     <Column
                       header={key}
                       key={index}
-                      body={
-                        <span className="flex justify-end items-center gap-2 text-xl">
-                            <i onClick={(e) => menu.current.toggle(e)} className='pi p-2 rounded-md pi-ellipsis-v text-gray-500 cursor-pointer'></i>
+                      body={( data ) => <span className="flex justify-end items-center gap-2 text-xl">
+                            <i onClick={(e) => {
+                              menu.current.toggle(e);
+                              setCurrentData(data);
+                            }} className='pi p-2 rounded-md pi-ellipsis-v text-gray-500 cursor-pointer'></i>
                             <Menu model={items} popup ref={menu} id="dropdown" />
-                          {/* {!can(accessControls.VIEW) ? null:*/}
-                          {/*   (*/}
-                          {/*     <i className='pi border p-2 border-blue-500 rounded-md bg-blue-50 pi-eye text-blue-500 cursor-pointer' title='view'></i>*/}
-                          {/*   )*/}
-                          {/* }*/}
-                          {/*{!can(accessControls.EDIT) ? null:*/}
-                          {/*  (*/}
-                          {/*    <i className='pi p-2 border border-green-500 rounded-md bg-green-50 pi-pencil text-green-500 cursor-pointer' title='edit'></i>*/}
-                          {/*  )*/}
-                          {/*}*/}
-                          {/*{!can(accessControls.DELETE) ? null:*/}
-                          {/*  (*/}
-                          {/*    <i className='pi p-2 border border-red-500 rounded-md bg-red-50 pi-trash text-red-500 cursor-pointer' title='delete'></i>*/}
-                          {/*  )*/}
-                          {/*}*/}
-                          {/*{!can(accessControls.DELETE) ? null:*/}
-                          {/*  (*/}
-                          {/*    <i className='pi p-2 border border-gray-500 rounded-md bg-gray-50 pi-briefcase text-gray-500 cursor-pointer' title='delete'></i>*/}
-                          {/*  )*/}
-                          {/*}*/}
-
                         </span>
                       }
                       style={{ width: "5%" }}

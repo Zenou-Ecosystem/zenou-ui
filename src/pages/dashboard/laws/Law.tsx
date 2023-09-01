@@ -18,6 +18,7 @@ import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { TabMenu } from 'primereact/tabmenu';
 import { MenuItem } from 'primereact/menuitem';
+import { useNavigate } from 'react-router-dom';
 
 function Laws() {
   const [laws, setLaws] = useState<ILaws[]>([]);
@@ -28,11 +29,12 @@ function Laws() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const toast = useRef<Toast>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
+  const navigate = useNavigate();
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   const openAddLawForm = () => {
-    setVisible(true);
+    navigate('/dashboard/laws/new')
   };
 
   useEffect(() => {
