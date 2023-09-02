@@ -220,10 +220,6 @@ function Laws() {
                 </div>
                 {!can(AppUserActions.ADD_LAW) ? null : (
                   <div className="flex justify-end gap-2 w-6/12">
-                    {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-blue-500 rounded-md'>*/}
-                    {/*  <i className='pi pi-file-excel'></i>*/}
-                    {/*  Import*/}
-                    {/*</button>*/}
                     <div className='file-container'>
                       <label htmlFor='file-input'>
                         <i className='pi pi-cloud-upload'></i> &nbsp;

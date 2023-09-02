@@ -121,7 +121,7 @@ function Actions() {
                                       {/*  <i className='pi pi-file-excel'></i>*/}
                                       {/*  Import*/}
                                       {/*</button>*/}
-                                      <FileUpload mode="basic" name="file" url="http://localhost:3001/actions/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel={translationService(currentLanguage,'BUTTON.IMPORT')} />
+                                      {/*<FileUpload mode="basic" name="file" url="http://localhost:3001/actions/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel={translationService(currentLanguage,'BUTTON.IMPORT')} />*/}
                                       {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
                                       {/*    <i className='pi pi-file-import'></i>*/}
                                       {/*    Export*/}

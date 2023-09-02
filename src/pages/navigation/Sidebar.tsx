@@ -62,19 +62,19 @@ function SidebarComponent() {
             </li>
           </NavLink>
         )}
-        {!can(AppUserActions.VIEW_PERSONNEL) ? null : (
-          <NavLink
-            to="/dashboard/personnel"
-            state={"personnel"}
-            className="px-4"
-          >
-            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
-              <i className="pi pi-users"></i>
-              <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.EMPLOYEES')}</span>
-            </li>
-          </NavLink>
-        )}
-        {!can(AppUserActions.VIEW_SUBSCRIPTION) ? null : (
+        {/*{!can(AppUserActions.VIEW_PERSONNEL) ? null : (*/}
+        {/*  <NavLink*/}
+        {/*    to="/dashboard/personnel"*/}
+        {/*    state={"personnel"}*/}
+        {/*    className="px-4"*/}
+        {/*  >*/}
+        {/*    <li className="py-2 flex flex-wrap items-center gap-2 text-lg">*/}
+        {/*      <i className="pi pi-users"></i>*/}
+        {/*      <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.EMPLOYEES')}</span>*/}
+        {/*    </li>*/}
+        {/*  </NavLink>*/}
+        {/*)}*/}
+        {/*{!can(AppUserActions.VIEW_SUBSCRIPTION) ? null : (
           <NavLink
             to="/dashboard/subscriptions"
             state={"subscriptions"}
@@ -85,13 +85,13 @@ function SidebarComponent() {
               <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SUBSCRIPTION')}</span>
             </li>
           </NavLink>
-        )}
-        <NavLink to="/user/profile" state={"user"} className="px-4">
-          <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
-            <i className="pi pi-cog"></i>
-            <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS')}</span>
-          </li>
-        </NavLink>
+        )}*/}
+        {/*<NavLink to="/user/profile" state={"user"} className="px-4">*/}
+        {/*  <li className="py-2 flex flex-wrap items-center gap-2 text-lg">*/}
+        {/*    <i className="pi pi-cog"></i>*/}
+        {/*    <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS')}</span>*/}
+        {/*  </li>*/}
+        {/*</NavLink>*/}
       </ul>
           <li className="py-3 px-4 fixed bottom-10 lef-0 w-full flex flex-wrap bg-red-500 gap-2">
             <NavLink to="/user/logout" className="w-full flex gap-2 items-center">

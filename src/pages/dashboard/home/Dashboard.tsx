@@ -8,15 +8,13 @@ import { fetchLaws } from '../../../services/laws.service';
 import useAppContext from '../../../hooks/useAppContext.hooks';
 import useLawContext from '../../../hooks/useLawContext';
 import { NavLink } from 'react-router-dom';
-import { currentLanguageValue, translationService } from '../../../services/translation.service';
-import LineChartComponent from '../../../core/charts/Line/SimpleLineChart';
-import SimpleBarChartComponent from '../../../core/charts/Bar/SimpleBarChart';
+import { currentLanguageValue } from '../../../services/translation.service';
 import { fetchControls } from '../../../services/control.service';
 import { fetchActions } from '../../../services/actions.service';
 import { fecthCompanies } from '../../../services/companies.service';
 import { Chart } from 'primereact/chart';
 import { LocalStore } from '../../../utils/storage.utils';
-import { fetchAllKpis, filterAndSummarizeDateRange } from '../../../services/kpi.service';
+import { fetchAllKpis } from '../../../services/kpi.service';
 
 function Dashboard() {
   const [laws, setLaws] = useState<ILaws[]>([]);
@@ -28,6 +26,7 @@ function Dashboard() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const [chartData, setChartData] = React.useState({}) as any;
   const [chartOptions, setChartOptions] = React.useState({});
+  const [statisticsState, setStatisticsState] = React.useState<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -43,6 +42,8 @@ function Dashboard() {
       const userRole = LocalStore.get('user');
       const kpiData = await fetchAllKpis(userRole?.role);
 
+      setStatisticsState(kpiData);
+
       const statisticsLawsBySectorOfActivity = {
         air: data.filter((x:any) => x.sectors_of_activity.includes("air"))?.length,
         land: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
@@ -54,7 +55,7 @@ function Dashboard() {
         agriculture: data?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length,
         business: data?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length,
       }
-      console.log(statisticsLawsBySectorOfActivity, data);
+
       const generalLawData = {
         labels: Object.keys(statisticsLawsBySectorOfActivity),
         datasets: [
@@ -64,6 +65,15 @@ function Dashboard() {
           }
         ]
       }
+      const analysisData = {
+        labels: ["Poucentage analysé", 'Poucentage non-analysé'],
+        datasets: [
+          {
+            data: [kpiData?.percentageAnalysed ?? 0, kpiData?.percentageNotAnalysed ?? 0],
+          }
+        ]
+      }
+
       const generalConformityAnalysis = {
         labels: ["Poucentage comforme", 'Poucentage non-conforme'],
         datasets: [
@@ -83,7 +93,7 @@ function Dashboard() {
         }
       };
 
-      setChartData({ generalLawData, generalConformityAnalysis });
+      setChartData({ generalLawData, generalConformityAnalysis, analysisData });
       setChartOptions(options);
 
   })();
@@ -162,40 +172,86 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className='grid grid-cols-1 mt-10 md:grid-cols-9 gap-6'>
-              <div className='col-span-6 border rounded-md p-4'>
-                <h1
-                  className="font-medium text-xl pl-3 mb-4"
-                >
-                  Loi par secteur d'activite
-                </h1>
-                <Chart type="bar" data={chartData?.generalLawData} options={{
-                  scales: {
-                    y: {
-                      beginAtZero: true
-                    }
+            <div className='border my-4 rounded-md p-4'>
+              <h1
+                className="font-medium text-xl pl-3 mb-4"
+              >
+                Loi par secteur d'activite
+              </h1>
+              <Chart type="bar" data={chartData?.generalLawData} options={{
+                scales: {
+                  y: {
+                    beginAtZero: true
                   }
-                }} className="w-full" />
-              </div>
-              <div className='col-span-3 border rounded-md p-4'>
+                }
+              }} className="w-full" />
+            </div>
+
+            <div className='grid grid-cols-1 border my-4 rounded-md md:grid-cols-9 '>
+              <div className='col-span-3 border-r p-4'>
                 <h1
                   className="font-medium text-xl pl-3 mb-4"
                 >
-                  Comformité generale
+                  Statitique generale de Comformité
                 </h1>
                 <br/>
                 <Chart type="pie" data={chartData?.generalConformityAnalysis} options={chartOptions} className="w-72" />
               </div>
+              <div className='col-span-3 border-r p-4'>
+                <h1
+                  className="font-medium text-xl pl-3 mb-4"
+                >
+                  Statitique generale de analyse
+                </h1>
+                <br/>
+                <Chart type="pie" data={chartData?.analysisData} options={chartOptions} className="w-72" />
+              </div>
+              <div className='col-span-3 border-r p-4'>
+                <br/>
+                <div className="flex justify-evenly h-full flex-col ">
+                  <div className="w-full border-b py-6">
+                    <div className="max-w-sm h-full">
+                      <div className="max-w-xs h-full">
+                        <div className='flex items-center w-full h-full justify-center flex-col'>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.complianceRate}</h4>
+                          <span className="text-gray-700 font-normal">Taux de loi</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-ful  border-b  py-6">
+                    <div className="max-w-sm h-full">
+                      <div className="max-w-xs h-full">
+                        <div className='flex items-center w-full h-full justify-center flex-col'>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalConform}</h4>
+                          <span className="text-gray-700 font-normal">Taux de loi conforme</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-full  py-6">
+                    <div className="max-w-sm h-full">
+                      <div className="max-w-xs h-full">
+                        <div className='flex items-center w-full h-full justify-center flex-col'>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalAnalysed}</h4>
+                          <span className="text-gray-700 font-normal">Taux de loi analyser</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-10 border rounded-md p-8">
+
+            <div className="my-6 border rounded-md p-8">
               <div className=''>
                 <h1
                   className="font-medium text-2xl"
                 >
-                  Quelques Laws
+                  Quelques Lois
                 </h1>
                 <Datatable
-                  data={laws?.slice(0, 7)}
+                  data={laws?.slice(0, 5)}
                   noPagination
                   fields={[
                     "title_of_text",
@@ -215,17 +271,11 @@ function Dashboard() {
                 />
                 <button className="bg-yellow-700 text-white rounded-md text-sm px-6 py-2.5">
                   <NavLink to={'/dashboard/laws'}>
-                    See all laws
+                    Voir toute les lois
                   </NavLink>
                 </button>
               </div>
-              <div className='col-span-5'>
-                {/*<LineChartComponent />*/}
-              </div>
-              <div className='col-span-3'>
-                {/*<AreaChartComponent />*/}
-                {/*<CustomBarChartComponent />*/}
-              </div>
+
             </div>
 
           </div>

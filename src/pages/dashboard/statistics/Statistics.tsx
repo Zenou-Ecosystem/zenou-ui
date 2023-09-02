@@ -132,7 +132,7 @@ function Statistics() {
                 <h1
                   className="font-medium text-lg"
                 >
-                  Statistique des lois par date
+                  Statistique lois generales
                 </h1>
                 <div>
                   <Calendar placeholder="Range" value={dates} onChange={(e : CalendarChangeEvent) => setDates(e?.value)} selectionMode="range" readOnlyInput />
@@ -140,13 +140,43 @@ function Statistics() {
                   <Button label={"soumettre"} onClick={submitDate} />
                 </div>
               </div>
+
+              <div className='py-4'>
+                <div className="flex flex-wrap border ">
+                  <div className="w-full md:w-1/2 lg:w-1/2 border-r">
+                    <div className="max-w-sm h-full  p-6">
+                      <div className="max-w-xs h-full">
+                        <div className='flex items-center w-full h-full justify-center flex-col'>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.expected} XAF</h4>
+                          <span className="text-gray-700 text-center font-normal">Taux de montant requi d'applicabilité</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-full md:w-1/2 lg:w-1/2">
+                    <div className="max-w-sm h-full  p-6">
+                      <div className="max-w-xs h-full">
+                        <div className='flex py-4 items-center w-full h-full justify-center flex-col'>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.actual} XAF</h4>
+                          <span className="text-gray-700 text-center font-normal">Taux de montant deja verse</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className=''>
-                <div className="flex justify-evenly items-center">
-                  <Chart type="pie" data={chartData?.filterByDatesLawDate} options={chartOptions} className="w-72" />
-                  <Chart type="pie" data={chartData?.filterByDatesConformityData} options={chartOptions} className="w-72" />
+                <div className="flex justify-between items-center">
+                  <div className="border py-4 flex items-center justify-center w-1/2">
+                    <Chart type="pie" data={chartData?.filterByDatesLawDate} options={chartOptions} className="w-72" />
+                  </div>
+                  <div className="border-y border-r py-4 flex items-center justify-center w-1/2">
+                    <Chart type="pie" data={chartData?.filterByDatesConformityData} options={chartOptions} className="w-72" />
+                  </div>
                 </div>
 
-                <div className='p-4'>
+                <div className='py-4'>
                   <div className="flex flex-wrap border ">
                     <div className="w-full md:w-1/3 lg:w-1/3 border-r">
                       <div className="max-w-sm h-full  py-10">
@@ -181,31 +211,6 @@ function Statistics() {
                   </div>
                 </div>
 
-                <div className='p-4'>
-                  <div className="flex flex-wrap border ">
-                    <div className="w-full md:w-1/2 lg:w-1/2 border-r">
-                      <div className="max-w-sm h-full  p-6">
-                        <div className="max-w-xs h-full">
-                          <div className='flex items-center w-full h-full justify-center flex-col'>
-                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.expected} XAF</h4>
-                            <span className="text-gray-700 text-center font-normal">Taux de montant requi d'applicabilité</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="w-full md:w-1/2 lg:w-1/2">
-                      <div className="max-w-sm h-full  p-6">
-                        <div className="max-w-xs h-full">
-                          <div className='flex py-4 items-center w-full h-full justify-center flex-col'>
-                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.actual} XAF</h4>
-                            <span className="text-gray-700 text-center font-normal">Taux de montant deja verse</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 <Datatable
                   data={lawsStatistics?.laws ?? []}
                   fields={[
@@ -226,62 +231,6 @@ function Statistics() {
                 {/*<JoinLineChartComponent />*/}
               </div>
             </div>
-
-
-            <div className='border my-8 rounded-md'>
-              <div className='flex border-b pt-4 px-4 mb-4 items-center justify-between'>
-                <h1
-                  className="font-medium text-xl pl-3 mb-4"
-                >
-                  Statistique generale des Lois
-                </h1>
-                <button><i className='pi pi-ellipsis-v'></i></button>
-              </div>
-              <div className='p-4'>
-                <div className="flex flex-wrap border-b ">
-                  <div className="w-full md:w-1/3 lg:w-1/3 border-r">
-                    <div className="max-w-sm h-full  py-10">
-                      <div className="max-w-xs h-full">
-                        <div className='flex items-center w-full h-full justify-center flex-col'>
-                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{state?.total}</h4>
-                            <span className="text-gray-700 font-normal">Taux de loi</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/3 lg:w-1/3 border-r">
-                    <div className="max-w-sm h-full  p-6">
-                      <div className="max-w-xs h-full">
-                        <div className='flex items-center w-full h-full justify-center flex-col'>
-                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{state?.totalConform}</h4>
-                          <span className="text-gray-700 font-normal">Taux de loi conforme</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/3 lg:w-1/3">
-                    <div className="max-w-sm h-full  p-6">
-                      <div className="max-w-xs h-full">
-                        <div className='flex items-center w-full h-full justify-center flex-col'>
-                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{state?.totalAnalysed}</h4>
-                          <span className="text-gray-700 font-normal">Taux de loi analyser</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-evenly items-center">
-                  <Chart type="pie" data={chartData?.generalLawData} options={chartOptions} className="w-72" />
-                  <Chart type="pie" data={chartData?.generalConformityAnalysis} options={chartOptions} className="w-72" />
-                </div>
-
-              {/*<LineChartComponent />*/}
-              </div>
-            </div>
-
-
-
 
           {/*<div className='border my-8 rounded-md'>*/}
           {/*  <div className='flex border-b pt-4 px-4 mb-4 items-center justify-between'>*/}
