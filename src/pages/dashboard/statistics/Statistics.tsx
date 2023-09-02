@@ -181,6 +181,31 @@ function Statistics() {
                   </div>
                 </div>
 
+                <div className='p-4'>
+                  <div className="flex flex-wrap border ">
+                    <div className="w-full md:w-1/2 lg:w-1/2 border-r">
+                      <div className="max-w-sm h-full  p-6">
+                        <div className="max-w-xs h-full">
+                          <div className='flex items-center w-full h-full justify-center flex-col'>
+                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.expected} XAF</h4>
+                            <span className="text-gray-700 text-center font-normal">Taux de montant requi d'applicabilité</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full md:w-1/2 lg:w-1/2">
+                      <div className="max-w-sm h-full  p-6">
+                        <div className="max-w-xs h-full">
+                          <div className='flex py-4 items-center w-full h-full justify-center flex-col'>
+                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.actual} XAF</h4>
+                            <span className="text-gray-700 text-center font-normal">Taux de montant deja verse</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <Datatable
                   data={lawsStatistics?.laws ?? []}
                   fields={[

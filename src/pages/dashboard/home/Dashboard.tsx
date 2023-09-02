@@ -11,12 +11,23 @@ import { NavLink } from 'react-router-dom';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import LineChartComponent from '../../../core/charts/Line/SimpleLineChart';
 import SimpleBarChartComponent from '../../../core/charts/Bar/SimpleBarChart';
+import { fetchControls } from '../../../services/control.service';
+import { fetchActions } from '../../../services/actions.service';
+import { fecthCompanies } from '../../../services/companies.service';
+import { Chart } from 'primereact/chart';
+import { LocalStore } from '../../../utils/storage.utils';
+import { fetchAllKpis, filterAndSummarizeDateRange } from '../../../services/kpi.service';
 
 function Dashboard() {
   const [laws, setLaws] = useState<ILaws[]>([]);
   const { state } = useAppContext();
   const { state: LawState } = useLawContext();
+  const [actionPlans, setActionPlans] = React.useState([]);
+  const [controlPlans, setControlPlans] = React.useState([]);
+  const [companies, setCompanies] = React.useState([]);
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const [chartData, setChartData] = React.useState({}) as any;
+  const [chartOptions, setChartOptions] = React.useState({});
 
   useEffect(() => {
     (async () => {
@@ -25,8 +36,57 @@ function Dashboard() {
       if (!data || data?.length < 1) {
         data = await fetchLaws();
       }
+      setControlPlans(await fetchControls());
+      setActionPlans(await fetchActions());
+      setCompanies(await fecthCompanies());
       setLaws(data);
-    })();
+      const userRole = LocalStore.get('user');
+      const kpiData = await fetchAllKpis(userRole?.role);
+
+      const statisticsLawsBySectorOfActivity = {
+        air: data.filter((x:any) => x.sectors_of_activity.includes("air"))?.length,
+        land: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
+        transport: data?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length,
+        environment: data?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length,
+        water: data?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length,
+        education: data?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length,
+        health: data?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length,
+        agriculture: data?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length,
+        business: data?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length,
+      }
+      console.log(statisticsLawsBySectorOfActivity, data);
+      const generalLawData = {
+        labels: Object.keys(statisticsLawsBySectorOfActivity),
+        datasets: [
+          {
+            label: "Secteur d'activiter",
+            data: Object.values(statisticsLawsBySectorOfActivity),
+          }
+        ]
+      }
+      const generalConformityAnalysis = {
+        labels: ["Poucentage comforme", 'Poucentage non-conforme'],
+        datasets: [
+          {
+            data: [kpiData?.percentageConform ?? 0, kpiData?.percentageNotConform ?? 0],
+          }
+        ]
+      }
+
+      const options = {
+        plugins: {
+          legend: {
+            labels: {
+              usePointStyle: true
+            }
+          }
+        }
+      };
+
+      setChartData({ generalLawData, generalConformityAnalysis });
+      setChartOptions(options);
+
+  })();
 
     (async () => {
       const resolvedLawState = await LawState;
@@ -51,23 +111,10 @@ function Dashboard() {
                 <div className="w-full md:w-1/2 lg:w-1/4 border-r">
                   <div className="max-w-sm  px-6">
                     <div className="max-w-xs">
-                      <div className='flex items-start justify-between'>
+                      <div className='flex items-center justify-center'>
                         <div>
-                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
-                          <span className="text-gray-700 font-normal">Total laws</span>
-                        </div>
-                          <div
-                            className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
-                            <i className='pi pi-book'></i>
-                          </div>
-                      </div>
-                      <div className="flex flex-wrap mt-4 items-center justify-start ">
-                        <div className="w-auto p-1">
-                          <small
-                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
-                        </div>
-                        <div className="w-auto p-1">
-                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{laws?.length ?? 0}</h4>
+                          <span className="text-gray-700 font-normal">Taux de lois</span>
                         </div>
                       </div>
                     </div>
@@ -76,48 +123,24 @@ function Dashboard() {
                 <div className="w-full md:w-1/2 lg:w-1/4 border-r">
                   <div className="max-w-sm  px-6">
                     <div className="max-w-xs">
-                      <div className='flex items-start justify-between'>
+                      <div className='flex items-center justify-center'>
                         <div>
-                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
-                          <span className="text-gray-700 font-normal">Total laws</span>
+                          <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{controlPlans?.length ?? 0}</h4>
+                          <span className="text-gray-700 font-normal">Taux des control</span>
                         </div>
-                        <div
-                          className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
-                          <i className='pi pi-book'></i>
-                        </div>
+
                       </div>
-                      <div className="flex flex-wrap mt-4 items-center justify-start ">
-                        <div className="w-auto p-1">
-                          <small
-                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
-                        </div>
-                        <div className="w-auto p-1">
-                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
-                        </div>
-                      </div>
+
                     </div>
                   </div>
                 </div>
                 <div className="w-full md:w-1/2 lg:w-1/4 border-r">
                   <div className="max-w-sm  px-6">
                     <div className="max-w-xs">
-                      <div className='flex items-start justify-between'>
+                      <div className='flex items-center justify-center'>
                         <div>
-                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
-                          <span className="text-gray-700 font-normal">Total laws</span>
-                        </div>
-                        <div
-                          className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
-                          <i className='pi pi-book'></i>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap mt-4 items-center justify-start ">
-                        <div className="w-auto p-1">
-                          <small
-                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
-                        </div>
-                        <div className="w-auto p-1">
-                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
+                          <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{actionPlans?.length ?? 0}</h4>
+                          <span className="text-gray-700 font-normal">Taux des plan d'action</span>
                         </div>
                       </div>
                     </div>
@@ -126,47 +149,42 @@ function Dashboard() {
                 <div className="w-full md:w-1/2 lg:w-1/4">
                   <div className="max-w-sm  px-6">
                     <div className="max-w-xs">
-                      <div className='flex items-start justify-between'>
+                      <div className='flex items-center justify-center'>
                         <div>
-                          <h4 className="text-2xl leading-8 text-gray-700 font-bold">89,235</h4>
-                          <span className="text-gray-700 font-normal">Total laws</span>
+                          <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{companies?.length ?? 0}</h4>
+                          <span className="text-gray-700 font-normal">Taux d'entreprise enregistré</span>
                         </div>
-                        <div
-                          className="flex w-10 h-10 shadow-lg  items-center justify-center text-blue-700 rounded-lg">
-                          <i className='pi pi-book'></i>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap mt-4 items-center justify-start ">
-                        <div className="w-auto p-1">
-                          <small
-                            className="inline-block py-0.5 px-2.5 text-green-500 border border-green-300 font-medium bg-green-100 rounded-full">1,0%</small>
-                        </div>
-                        <div className="w-auto p-1">
-                          <span className="font-normal text-gray-500 font-medium">Since last month</span>
-                        </div>
+
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
             <div className='grid grid-cols-1 mt-10 md:grid-cols-9 gap-6'>
               <div className='col-span-6 border rounded-md p-4'>
                 <h1
                   className="font-medium text-xl pl-3 mb-4"
                 >
-                  Laws Analytics
+                  Loi par secteur d'activite
                 </h1>
-                <LineChartComponent />
+                <Chart type="bar" data={chartData?.generalLawData} options={{
+                  scales: {
+                    y: {
+                      beginAtZero: true
+                    }
+                  }
+                }} className="w-full" />
               </div>
               <div className='col-span-3 border rounded-md p-4'>
                 <h1
                   className="font-medium text-xl pl-3 mb-4"
                 >
-                  Laws Analytics
+                  Comformité generale
                 </h1>
                 <br/>
-                <SimpleBarChartComponent />
+                <Chart type="pie" data={chartData?.generalConformityAnalysis} options={chartOptions} className="w-72" />
               </div>
             </div>
             <div className="mt-10 border rounded-md p-8">
@@ -174,7 +192,7 @@ function Dashboard() {
                 <h1
                   className="font-medium text-2xl"
                 >
-                  Laws
+                  Quelques Laws
                 </h1>
                 <Datatable
                   data={laws?.slice(0, 7)}
