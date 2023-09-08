@@ -46,12 +46,12 @@ function Dashboard() {
 
       const statisticsLawsBySectorOfActivity = {
         air: data.filter((x:any) => x.sectors_of_activity.includes("air"))?.length,
-        land: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
+        terre: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
         transport: data?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length,
-        environment: data?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length,
-        water: data?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length,
+        environnement: data?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length,
+        eau: data?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length,
         education: data?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length,
-        health: data?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length,
+        sante: data?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length,
         agriculture: data?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length,
         business: data?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length,
       }
@@ -124,7 +124,7 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{laws?.length ?? 0}</h4>
-                          <span className="text-gray-700 font-normal">Taux de lois</span>
+                          <span className="text-gray-700 text-center font-normal">Taux de lois</span>
                         </div>
                       </div>
                     </div>
@@ -136,11 +136,9 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{controlPlans?.length ?? 0}</h4>
-                          <span className="text-gray-700 font-normal">Taux des control</span>
+                          <span className="text-gray-700 text-center font-normal">Taux des control</span>
                         </div>
-
                       </div>
-
                     </div>
                   </div>
                 </div>
@@ -150,7 +148,7 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{actionPlans?.length ?? 0}</h4>
-                          <span className="text-gray-700 font-normal">Taux des plan d'action</span>
+                          <span className="text-gray-700 text-center font-normal">Taux des plan d'action</span>
                         </div>
                       </div>
                     </div>
@@ -162,7 +160,7 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{companies?.length ?? 0}</h4>
-                          <span className="text-gray-700 font-normal">Taux d'entreprise enregistré</span>
+                          <span className="text-gray-700 text-center font-normal">Taux d'entreprise enregistré</span>
                         </div>
 
                       </div>
@@ -214,7 +212,7 @@ function Dashboard() {
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.complianceRate}</h4>
-                          <span className="text-gray-700 font-normal">Taux de loi</span>
+                          <span className="text-gray-700 text-center font-normal">Taux de conformité</span>
                         </div>
                       </div>
                     </div>
@@ -224,7 +222,7 @@ function Dashboard() {
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalConform}</h4>
-                          <span className="text-gray-700 font-normal">Taux de loi conforme</span>
+                          <span className="text-gray-700 text-center font-normal">Total des lois conformes</span>
                         </div>
                       </div>
                     </div>
@@ -234,7 +232,7 @@ function Dashboard() {
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalAnalysed}</h4>
-                          <span className="text-gray-700 font-normal">Taux de loi analyser</span>
+                          <span className="text-gray-700 text-center font-normal">Total des loi analyser</span>
                         </div>
                       </div>
                     </div>

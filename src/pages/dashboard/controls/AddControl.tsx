@@ -78,12 +78,6 @@ let initialFormState = {
     error_message: "",
     required: true,
   },
-  // number: {
-  //   value: "",
-  //   error: true,
-  //   error_message: "",
-  //   required: true,
-  // },
 };
 
 function AddControl() {
@@ -92,35 +86,6 @@ function AddControl() {
   const [loader, setLoader] = useState(false);
   const { state, dispatch } = useControlContext();
   const [laws, setLaws] = useState<any[]>([]);
-
-  // const [type, setType] = useState("");
-  // const [duration, setDuration] = useState("");
-  // const [theme, setTheme] = useState("");
-  // const [department, setDepartment] = useState("");
-  // const [resources, setResources] = useState("");
-  // const [evaluation_criteria, setEvaluationCriteria] = useState("");
-  // const [proof_of_success, setProofOfSuccess] = useState("");
-  // const [text_of_the_law, setTextOfLaw] = useState("");
-  // const [responsible_for, setResponsibleFor] = useState("");
-  // const [action_plan, setActionPlan] = useState("");
-  // const [departments, setDepartments] = useState<string[]>([]);
-  //
-  // const getType = (type: string) => setType(type);
-  // const getDuration = (duration: string) => setDuration(duration);
-  // const getTheme = (theme: string) => setTheme(theme);
-  // const getDepartment = (department: string) => setDepartment(department);
-  // const getResources = (resources: string) => setResources(resources);
-  // const getEvaluationCriteria = (evaluation_criteria: string) =>
-  //   setEvaluationCriteria(evaluation_criteria);
-  // const getTextOfLaw = (text_of_the_law: string) =>
-  //   setTextOfLaw(text_of_the_law);
-  // const getActionPlan = (action_plan: string) => setActionPlan(action_plan);
-  // const getResponsibleFor = (responsible_for: string) =>
-  //   setResponsibleFor(responsible_for);
-  // const getProofOfSuccess = (proof_of_success: string) =>
-  //   setProofOfSuccess(proof_of_success);
-  //
-  // const [actions, setActions] = useState<any[]>([]);
 
   const handleSubmission = () => {
     setLoader(true);
@@ -198,7 +163,7 @@ function AddControl() {
   const addForm = () => {
     return (
       <form className="w-full">
-        <div className="form-elements grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
 
           {/*type*/}
           <div className="control-type">
@@ -208,37 +173,9 @@ function AddControl() {
               id="type"
               onChange={handleChange}
               name="type"
-              placeholder="Entre type de control"
+              placeholder="Saisissez le type de control"
               className="w-full"
             />
-            {/*<label htmlFor="type">Type</label>*/}
-            {/*<InputText*/}
-            {/*  type="text"*/}
-            {/*  id="type"*/}
-            {/*  name="type"*/}
-            {/*  className="p-inputtext-md w-full"*/}
-            {/*  placeholder="Entre type de control"*/}
-            {/*  onChange={(e) => getType(e.target.value)}*/}
-            {/*/>*/}
-          </div>
-
-          {/*resources*/}
-          <div className="control-resources">
-            <label htmlFor="resources">Resources</label>
-            <Chips name="resources"
-                   id="resources"
-                   value={formValues.resources.value}
-                   className="w-full"
-                   onChange={handleChange} />
-            {/*<label htmlFor="resources">Resources</label>*/}
-            {/*<InputText*/}
-            {/*  type="text"*/}
-            {/*  name="resources"*/}
-            {/*  id="resources"*/}
-            {/*  className="p-inputtext-md w-full"*/}
-            {/*  placeholder="Enter control resources"*/}
-            {/*  onChange={(e) => getResources(e.target.value)}*/}
-            {/*/>*/}
           </div>
 
           {/*responsible for*/}
@@ -250,21 +187,25 @@ function AddControl() {
               id="responsible_for"
               onChange={handleChange}
               name="responsible_for"
-              placeholder="est responsable pour?"
+              placeholder="Est responsable pour?"
               className="w-full"
             />
-            {/*<InputText*/}
-            {/*  type="text"*/}
-            {/*  name="responsible_for"*/}
-            {/*  id="responsible_for"*/}
-            {/*  className="p-inputtext-md w-full"*/}
-            {/*  placeholder="est responsable pour?"*/}
-            {/*  onChange={(e) => getResponsibleFor(e.target.value)}*/}
-            {/*/>*/}
+          </div>
+
+          {/*resources*/}
+          <div className="col-span-2">
+            <label htmlFor="resources">Resources</label>
+            <Chips name="resources"
+                   id="resources"
+                   value={formValues.resources.value}
+                   className="w-full"
+                   placeholder="Entree la liste des resources"
+                   onChange={handleChange} />
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle ressource</small>
           </div>
 
           {/*evaluation*/}
-          <div className="control-evaluation-criteria">
+          <div className="col-span-2">
             <label htmlFor="evaluation_criteria">Critaire d'evaluation</label>
             <Chips
               value={formValues.evaluation_criteria.value}
@@ -274,45 +215,7 @@ function AddControl() {
               placeholder="Entree les critaire d'evaluation"
               className="w-full"
             />
-            {/*<InputText*/}
-            {/*  value={formValues.evaluation.value}*/}
-            {/*  id="evaluation"*/}
-            {/*  onChange={handleChange}*/}
-            {/*  name="evaluation"*/}
-            {/*  placeholder="Entree les critaire d'evaluation"*/}
-            {/*  className="w-full"*/}
-            {/*/>*/}
-            {/*<label htmlFor="evaluation">Evaluation criteria</label>*/}
-            {/*<InputText*/}
-            {/*  type="text"*/}
-            {/*  name="evaluation"*/}
-            {/*  id="evaluation"*/}
-            {/*  className="p-inputtext-md w-full"*/}
-            {/*  placeholder="Is responsible for"*/}
-            {/*  onChange={(e) => getEvaluationCriteria(e.target.value)}*/}
-            {/*/>*/}
-          </div>
-
-          {/*proof of success*/}
-          <div className="control-ProofOfSuccess">
-            <label htmlFor="proof_of_success">Preuves de success</label>
-            <Chips
-              value={formValues.proof_of_success.value}
-              id="proof_of_success"
-              onChange={handleChange}
-              name="proof_of_success"
-              placeholder="Entrer les Preuves de success"
-              className="w-full"
-            />
-            {/*<label htmlFor="proofOfSuccess">Preuves de success</label>*/}
-            {/*<InputText*/}
-            {/*  type="text"*/}
-            {/*  name="proof_of_Success"*/}
-            {/*  id="proof_of_Success"*/}
-            {/*  className="p-inputtext-md w-full"*/}
-            {/*  placeholder="Entre les Preuves de success"*/}
-            {/*  onChange={(e) => getProofOfSuccess(e.target.value)}*/}
-            {/*/>*/}
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle evaluation</small>
           </div>
 
           {/*duration*/}
@@ -327,15 +230,6 @@ function AddControl() {
               value={formValues.duration.value}
               onChange={handleChange}
             />
-            {/*<label htmlFor="duration">Delias</label>*/}
-            {/*<InputText*/}
-            {/*  type="text"*/}
-            {/*  name="duration"*/}
-            {/*  id="duration"*/}
-            {/*  className="p-inputtext-md w-full"*/}
-            {/*  placeholder="Entre le delais"*/}
-            {/*  onChange={(e) => getDuration(e.target.value)}*/}
-            {/*/>*/}
           </div>
 
           {/*theme*/}
@@ -349,18 +243,24 @@ function AddControl() {
               placeholder="Entrer le theme"
               className="w-full"
             />
-            {/*<label htmlFor="theme">Theme</label>*/}
-            {/*<InputText*/}
-            {/*  id="theme"*/}
-            {/*  onChange={(e) => getTheme(e.target.value)}*/}
-            {/*  name="theme"*/}
-            {/*  placeholder="Entrer le theme"*/}
-            {/*  className="w-full"*/}
-            {/*/>*/}
+          </div>
+
+          {/*proof of success*/}
+          <div className="col-span-2">
+            <label htmlFor="proof_of_success">Preuves de success</label>
+            <Chips
+              value={formValues.proof_of_success.value}
+              id="proof_of_success"
+              onChange={handleChange}
+              name="proof_of_success"
+              placeholder="Entrer les Preuves de success"
+              className="w-full"
+            />
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle preuves</small>
           </div>
 
           {/*department*/}
-          <div className="control-Department">
+          <div className="col-span-2">
             <label htmlFor="department">Department</label>
             <Chips
               value={formValues.department.value}
@@ -370,16 +270,7 @@ function AddControl() {
               placeholder="Entrer les department"
               className="w-full"
             />
-            {/*<label htmlFor="department">Department</label>*/}
-            {/*<Dropdown*/}
-            {/*  name="department"*/}
-            {/*  id="department"*/}
-            {/*  value={department}*/}
-            {/*  onChange={(e) => getDepartment(e.target.value)}*/}
-            {/*  options={departments}*/}
-            {/*  placeholder="Entrer le departments"*/}
-            {/*  className="w-full md:w-14rem"*/}
-            {/*/>*/}
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter un departement</small>
           </div>
 
           {/*action plan section*/}
@@ -394,33 +285,24 @@ function AddControl() {
               onValueChange={handleChange}
               className='w-full'
             />
-            {/*<label htmlFor="action_plan">Select an action plan</label>*/}
-            {/*<MultiSelect*/}
-            {/*  value={action_plan}*/}
-            {/*  onChange={(e) => getActionPlan(e.value)}*/}
-            {/*  options={actions}*/}
-            {/*  id="action_plan"*/}
-            {/*  name="action_plan"*/}
-            {/*  optionLabel="theme"*/}
-            {/*  placeholder="Entrer le numeros de plan"*/}
-            {/*  maxSelectedLabels={3}*/}
-            {/*  className="w-full md:w-20rem"*/}
-            {/*/>*/}
           </div>
 
           {/*text of law*/}
-          <div className='col-span-2'>
+          <div className=''>
             <label htmlFor="text_of_the_law">Select a text of law</label>
             <Dropdown
               value={formValues.text_of_the_law.value}
               onChange={handleChange}
-              options={laws || []}
               id="text_of_the_law"
               filter
               name="text_of_the_law"
               optionLabel="title_of_text"
               placeholder="Selectionner le texte"
               className="w-full"
+              options={laws || []}
+              defaultValue={formValues.text_of_the_law.value}
+              valueTemplate={(options) => options?.title_of_text ? options?.title_of_text?.slice(0,40) + "..." : "Selectionner le texte"}
+              itemTemplate={(options) => options?.title_of_text?.slice(0,40) + "..."}
             />
           </div>
         </div>
@@ -434,7 +316,7 @@ function AddControl() {
               ""
             )}
           </div>
-          <Button title="Create control" styles="flex-row-reverse float-right px-6 py-3 items-center rounded-md" onClick={handleSubmission} />
+          <Button title="Créer un nouveau contrôle" styles="flex-row-reverse float-right px-6 py-3 items-center rounded-md" onClick={handleSubmission} />
         </div>
       </form>
     );

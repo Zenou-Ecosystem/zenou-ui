@@ -12,11 +12,7 @@ function Button(prop: {
 
   const handler = (e: any) => {
     e.preventDefault();
-    console.log("Happened here -> ", e);
-
     onClick();
-
-    console.log("This is the second action -> ", onClick);
   };
 
   return (

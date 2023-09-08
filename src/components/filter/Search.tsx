@@ -2,7 +2,6 @@ import React from 'react'
 import { useLocation } from 'react-router-dom';
 import Input from '../../core/Input/Input';
 import useAppContext from '../../hooks/useAppContext.hooks';
-import { simpleSearch } from '../../services/search.service';
 import { SearchActionTypes } from '../../store/action-types/search.actions';
 
 function Search() {

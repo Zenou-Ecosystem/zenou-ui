@@ -104,15 +104,7 @@ function Datatable(props: {
   };
 
   useEffect(() => {
-    setTableData(data?.map((item) => {
-      item?.type_of_text && (item["type_of_text"] = translationService(currentLanguage,`OPTIONS.${item.type_of_text.toUpperCase()}`))
-      item?.applicability && (item["applicability"] = translationService(currentLanguage,`OPTIONS.${item?.applicability.toString().toUpperCase()}`));
-      item?.impact && (item["impact"] = translationService(currentLanguage,`OPTIONS.${item.impact?.toString().toUpperCase()}`));
-      item?.nature_of_impact && (item["impact"] = translationService(currentLanguage,`OPTIONS.${item.impact?.toString().toUpperCase()}`));
-      item?.compliant && (item["compliant"] = translationService(currentLanguage,`OPTIONS.${item.compliant?.toString().toUpperCase()}`));
-
-      return item;
-    })||data);
+    setTableData(data);
     let columns = data && data.length >= 1 ? [...Object.keys(data[0]), 'Actions'] : [];
     setTableColumns(columns);
   }, [data]);
@@ -120,32 +112,9 @@ function Datatable(props: {
   const rowClickedHandler = (e: any) => {
 
     if("originalEvent" in e && "data" in e){
-      let context = e.originalEvent.target.title;
       const data = e.data;
       LocalStore.set("EDIT_DATA", {data, index: e.index})
       LocalStore.set("VIEWED_DATA", data);
-
-      // switch (true) {
-      //   case context === "view":
-      //     if (data) {
-      //       LocalStore.set("VIEWED_DATA", data);
-      //       LocalStore.remove("action");
-      //       context = actions[0].split('_',);
-      //       navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/${data?.id}`);
-      //     }
-      //     break;
-      //
-      //   case context === 'edit':
-      //     LocalStore.set("EDIT_DATA", {data, index: e.index})
-      //     break;
-      //
-      //   case context === 'delete':
-      //     const actionItem = actions.find((value) =>
-      //             value.startsWith("DELETE")
-      //           );
-      //     (actionItem) &&  requestDeleteConfirmation(actionItem, data);
-      //     break;
-      // }
     }
   };
 
@@ -157,6 +126,10 @@ function Datatable(props: {
         } )
       }
     </ul>
+  }
+
+  const simpleTranslation = (key:string, translationKey: string) => (rowData:any) => {
+    return <div> {translationService(currentLanguage, `${translationKey}.${rowData[key]?.toString()?.toUpperCase()}`)}</div>
   }
 
   return (
@@ -210,7 +183,9 @@ function Datatable(props: {
                     header={props.translationKey ? translationService(currentLanguage,`${props.translationKey}.${key.toUpperCase()}`): key}
                     sortable
                     body={
-                    ['department', 'sector_of_activity'].includes(key) ? simpleArrayBodyTemplate('department' || 'sector_of_activity') : ''
+                    ['department', 'sector_of_activity'].includes(key) ? simpleArrayBodyTemplate('department' || 'sector_of_activity')
+                      : key === 'is_analysed' ? simpleTranslation('is_analysed', 'OPTIONS') :
+                        key === 'type_of_text' ? simpleTranslation('type_of_text', 'OPTIONS') :''
                     }
                     style={{ width: "5%", textTransform: "capitalize" }}
                   ></Column>

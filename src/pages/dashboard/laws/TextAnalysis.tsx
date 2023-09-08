@@ -126,8 +126,6 @@ export default function TextAnalysis() {
 
     type === "checkbox" && (value = e.checked);
 
-    name === "conformity_deadline" && (value = new Date(String(value)).toLocaleDateString())
-
     const targetProperty = formValues[name];
 
     let error = targetProperty?.validator
@@ -191,7 +189,10 @@ export default function TextAnalysis() {
       proof_of_conformity: LocalStore.get("UPLOADED_FILES")
     };
 
+    console.log(formData, draftLaw?.storeData, 'lawdata');
+
     Object.entries(formValues).forEach(([key, value]) => {
+      key === "conformity_deadline" && value?.value && (value.value = new Date(String(value.value)).toLocaleDateString())
       formData[key] = value?.value;
     });
 
@@ -212,7 +213,7 @@ export default function TextAnalysis() {
 
       setVisible(false);
 
-      LocalStore.remove("UPLOADED_FILES");
+      // LocalStore.remove("UPLOADED_FILES");
 
       // navigate("review");
     }
@@ -252,8 +253,6 @@ export default function TextAnalysis() {
 
     draftLaw.storeData['text_analysis'] = textAnalysis.filter((x, idx) => idx !== index );
 
-    // draftLaw.storeData = draftLaw.currentLawData;
-
     (toast.current as any).show({
       severity: "info",
       summary: "Confirmed",
@@ -292,14 +291,7 @@ export default function TextAnalysis() {
                 return <div dangerouslySetInnerHTML={{ __html: options?.name?.slice(0, 90)+"..." }}></div>
               }}
             />
-            {/*<InputText*/}
-            {/*  value={formValues.requirements.value}*/}
-            {/*  name="requirements"*/}
-            {/*  placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.REQUIREMENTS')}*/}
-            {/*  className="w-full"*/}
-            {/*  id="requirements"*/}
-            {/*  onChange={handleChange}*/}
-            {/*/>*/}
+
            </div>
 
           {/*applicability*/}
@@ -441,13 +433,13 @@ export default function TextAnalysis() {
               <div className="w-full flex flex-col form-control">
                 <label htmlFor="conformity_deadline">{translationService(currentLanguage,'LAW.ADD.FORM.CONFORMITY_DEADLINE')}</label>
                 <Calendar
-                  value={formValues.conformity_deadline.value}
                   id="conformity_deadline"
-                  onChange={handleChange}
                   name="conformity_deadline"
-                  placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.CONFORMITY_DEADLINE')}
                   className="w-full"
-                    showIcon
+                  showIcon
+                  onChange={handleChange}
+                  placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.CONFORMITY_DEADLINE')}
+                  value={formValues.conformity_deadline.value}
                   />
               </div>
             </div>
@@ -455,20 +447,19 @@ export default function TextAnalysis() {
 
           <div  hidden={!formValues.compliant.value} className='col-span-2 p-4 border border-green-500 rounded-md'>
             <span className='mb-2'>{translationService(currentLanguage,'LABEL.PROOF')}</span>
-            <div hidden={!LocalStore.get("EDIT_DATA")?.data?.proof_of_conformity}>
+            <div>
               {
                 <ul>
-                  {
-                    LocalStore.get("EDIT_DATA")?.data?.proof_of_conformity ? (LocalStore.get("EDIT_DATA")?.data?.proof_of_conformity).map((item: { data: {img_url:string, name:string} }, index:number) => {
+                  {formValues?.proof_of_conformity?.value?.length ? formValues?.proof_of_conformity?.value?.map(({img_url, name}:any, index:number) => {
                       return (
                         <li key={index} className="p-1 my-2 flex items-center gap-4">
                           <p className='truncate w-72'>
-                            <a href={item.data?.img_url} className='underline text-blue-500'>{item.data?.name}</a>
+                            <a href={img_url} className='underline text-blue-500'>{name}</a>
                           </p>
                           {/*<button><i className='pi pi-times-circle text-red-500'></i></button>*/}
                         </li>
                       )
-                    }) : ''
+                    }): ''
                   }
                 </ul>
               }
@@ -547,8 +538,10 @@ export default function TextAnalysis() {
 
   const editFunction = (data: Record<string, any>, index:number) => {
     let newFormState: Record<string, any> = {};
+    console.log(data);
     Object.entries(data).forEach(([key, value]) => {
       if(value !== undefined){
+        key === "conformity_deadline" && value && (value = new Date(String(value)))
         newFormState[key] = { value, error: false, required: true }
       }
     });

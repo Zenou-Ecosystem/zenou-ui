@@ -14,9 +14,8 @@ import { Editor } from 'primereact/editor';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import { Menu } from 'primereact/menu';
 
-let initialFormState = {
+let initialFormState: Record<string, any> = {
   title_of_text: {
     value: "",
     error: true,
@@ -88,9 +87,6 @@ let initialFormState = {
 
 export default function InteractiveDemo() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [requirements, setRequirements] = React.useState<{id: number, name: string}[]>([]);
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialFormState);
 
   const navigate = useNavigate();
 
@@ -104,9 +100,96 @@ export default function InteractiveDemo() {
 
   const {id} = useParams();
 
-  const menu = React.useRef<Menu | any>(null);
+  const editForm = () => {
+    let { requirements, id, ...others } = LocalStore.get("EDIT_DATA");
+    let newItems = {
+      title_of_text: {
+        value: others.title_of_text,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      type_of_text: {
+        value: others.type_of_text,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      date_of_issue: {
+        value: new Date(String(others.date_of_issue)),
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      origin_of_text: {
+        value: others.origin_of_text,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      source_of_text: {
+        value: others.source_of_text,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      nature_of_text: {
+        value: others.nature_of_text,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      parent_of_text: {
+        value: others.parent_of_text,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      sectors_of_activity: {
+        value: others.sectors_of_activity,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      products_or_services_concerned: {
+        value: others.products_or_services_concerned,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      purpose_and_scope_of_text: {
+        value: others.purpose_and_scope_of_text,
+        error: true,
+        error_message: "",
+        required: true,
+      },
+      requirements: {
+        value: "",
+        error: true,
+        error_message: "",
+        required: true,
+      },
+    };
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
+    return {newItems, requirements}
+  }
+
+  const [formValues, setFormValues] =
+    useState<typeof  initialFormState>(!id ? initialFormState : editForm().newItems);
+
+  const [requirements, setRequirements] = React.useState<{id: number, name: string}[]>(!id ?[] : editForm().requirements);
+
+  React.useEffect(()=> {
+    currentLanguageValue.subscribe(setCurrentLanguage);
+  }, [currentLanguage]);
+
+  const options = [
+      { label: translationService(currentLanguage,'OPTIONS.LAW'), value: "law" },
+      { label: translationService(currentLanguage,'OPTIONS.CONVENTION'), value: "convention" },
+      { label: translationService(currentLanguage,'OPTIONS.DECREE'), value: "decree" },
+      { label: translationService(currentLanguage,'OPTIONS.ORDER'), value: "order" },
+      { label: translationService(currentLanguage,'OPTIONS.DECISION'), value: "decision" }
+  ]
 
   /**
    * description: handle change function. this function is used to handle on change events in an input field
@@ -152,7 +235,7 @@ export default function InteractiveDemo() {
     });
   }
 
-  let formData: any = React.useMemo(() => {
+  const formData = () => {
     let formData: Record<string, any>={};
     Object.entries(formValues).forEach(([key, value]) => {
       formData[key] =
@@ -162,32 +245,17 @@ export default function InteractiveDemo() {
     });
     formData["requirements"]=requirements;
     return formData;
-  }, [formValues])
+  }
 
   React.useEffect(() => {
     (async () => {
       setLaws(await fetchLaws());
     })()
-    if(id){
-      let { requirements, id, ...others } = LocalStore.get("EDIT_DATA");
-
-      console.log(others, requirements);
-      Object.entries(others).forEach(([key,value]) => {
-        // @ts-ignore
-        if(initialFormState[key]){
-        // @ts-ignore
-
-          key === "date_of_issue" ? initialFormState["date_of_issue"].value = new Date(String(value)) : initialFormState[key].value = value
-        }
-      })
-      setFormValues(initialFormState);
-      setRequirements(requirements);
-    }
-  }, [])
+  }, []);
 
   const handleAnalysis = () => {
-    LocalStore.set("EDIT_DATA", formData);
-    navigate(`/dashboard/laws/analysis/${formData.id}`);
+    LocalStore.set("EDIT_DATA", formData());
+    navigate(`/dashboard/laws/analysis/${formData().id}`);
   }
 
   const addRequirements = (e: React.MouseEvent) => {
@@ -216,7 +284,7 @@ export default function InteractiveDemo() {
 
     setLoader(true);
     if(!id) {
-      createLaw(formData).then(res => {
+      createLaw(formData() as any).then(res => {
         toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS_ACTION') });
         is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
       }).catch(() => {
@@ -224,12 +292,12 @@ export default function InteractiveDemo() {
       })
 
     }else {
-      updateLaw(id, formData).then(res => {
+      updateLaw(id, formData()).then(res => {
         if(res){
           toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
           if(is_analysis) {
             let prevData= LocalStore.get("EDIT_DATA");
-            LocalStore.set("EDIT_DATA", {...prevData, ...formData});
+            LocalStore.set("EDIT_DATA", {...prevData, ...formData()});
             navigate(`/dashboard/laws/analysis/${id}?edit`);
           }else {
             LocalStore.remove("EDIT_DATA");
@@ -289,15 +357,7 @@ export default function InteractiveDemo() {
                 id="type_of_text"
                 value={formValues.type_of_text.value}
                 onChange={handleChange}
-                options={
-                  [
-                    { label: translationService(currentLanguage,'OPTIONS.LAW'), value: "law" },
-                    { label: translationService(currentLanguage,'OPTIONS.CONVENTION'), value: "convention" },
-                    { label: translationService(currentLanguage,'OPTIONS.DECREE'), value: "decree" },
-                    { label: translationService(currentLanguage,'OPTIONS.ORDER'), value: "order" },
-                    { label: translationService(currentLanguage,'OPTIONS.DECISION'), value: "decision" }
-                  ]
-                }
+                options={options}
                 placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.TYPE_OF_TEXT')}
                 className="w-full"
               />
@@ -369,6 +429,9 @@ export default function InteractiveDemo() {
                 placeholder={translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.PARENT_OF_TEXT')}
                 className="w-full md:w-14rem"
                 options={laws || []}
+                defaultValue={formValues.parent_of_text.value}
+                valueTemplate={(options) => options?.title_of_text ? options?.title_of_text?.slice(0,40) + "..." : translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.TITLE_OF_TEXT')}
+                itemTemplate={(options) => options?.title_of_text?.slice(0,40) + "..."}
               />
             </div>
 

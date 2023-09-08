@@ -94,7 +94,7 @@ function Laws() {
     reader.onload = (e) => {
 
       const data = e.target?.result;
-      const workbook = xlsx.read(data, { type: "array" });
+      const workbook = xlsx.read(data, { type: "array", cellText: true, cellDates: true });
 
       const identificationSheet = workbook.SheetNames.find(x => x === sheetNames[0]);
       const analyseDeTexteSheet = workbook.SheetNames.find(x => x === sheetNames[1]);
@@ -105,31 +105,6 @@ function Laws() {
 
       const formattedIdentificationData:any[] = transformData(identificationData);
       const translatedIdentificationData:any[] = replaceParentsWithObjects(formattedIdentificationData);
-
-      // const analyseDuTexteWorksheet = workbook.Sheets[analyseDeTexteSheet];
-      // const analyseDuTexteData = xlsx.utils.sheet_to_json(analyseDuTexteWorksheet);
-      //
-      // const newAnalyseDuTexteData = analyseDuTexteData.map((obj: any) => {
-      //
-      //   if(obj.PREUVES) {
-      //     let name = obj.PREUVES.split(',');
-      //     let img_url = obj.__EMPTY.split(',');
-      //
-      //     const maxLength = Math.min(name.length, img_url.length);
-      //
-      //     if(name.length > img_url.length) name.slice(0, maxLength);
-      //     if(name.length < img_url.length) img_url.slice(0, maxLength);
-      //
-      //     obj['PREUVES'] = name.map((x:string, index:number) => ({name: x, img_url: img_url[index]}));
-      //
-      //     delete obj.__EMPTY;
-      //   }
-      //   return obj;
-      // })
-      //
-      // const formattedAnalyseDuTextData:any[] = transformData(newAnalyseDuTexteData);
-      //
-      // const finalData: any[] = formatAnalysisData(translatedIdentificationData, formattedAnalyseDuTextData);
 
       console.log(translatedIdentificationData);
       createLaw(translatedIdentificationData as unknown as ILaws).then(res => {

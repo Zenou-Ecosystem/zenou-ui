@@ -111,40 +111,6 @@ export default function DataDetails() {
     }
   }, []);
 
-  // const calculateKPI = () => {
-  //
-  //   const textAnalysisTotal = props?.text_analysis?.length;
-  //
-  //   const filterCriteria = (condition: any) => {
-  //     return  props
-  //       ?.text_analysis.filter(condition)
-  //   }
-  //
-  //   const requirementsByApplicability = {
-  //     total: filterCriteria((obj:any) => obj.applicability === 'yes')?.length,
-  //   }
-  //
-  //   const conformity = {
-  //     total: filterCriteria((obj:any) => obj.complaint === true)?.length / requirementsByApplicability.total
-  //   }
-  //
-  //   const requirementsByImpact = {
-  //     weak: filterCriteria((obj:any) => obj.impact === 'weak')?.length,
-  //     medium: filterCriteria((obj:any) => obj.impact === 'medium')?.length,
-  //     major: filterCriteria((obj:any) => obj.impact === 'major')?.length,
-  //     critical: filterCriteria((obj:any) => obj.impact === 'critical')?.length
-  //   }
-  //
-  //   const requirementsByNatureOfImpact = {
-  //     financial: filterCriteria((obj:any) => obj.nature_of_impact === 'financial')?.length,
-  //     image: filterCriteria((obj:any) => obj.nature_of_impact === 'image')?.length,
-  //     organisation: filterCriteria((obj:any) => obj.nature_of_impact === 'organisation')?.length,
-  //     products: filterCriteria((obj:any) => obj.nature_of_impact === 'products')?.length
-  //   }
-  //
-  //   return {requirementsByApplicability, textAnalysisTotal, conformity, requirementsByNatureOfImpact, requirementsByImpact}
-  // }
-
   const showPropDetail = (props: object) => {
     let elements: any = [];
     let detailElements: any = {};
@@ -359,34 +325,6 @@ export default function DataDetails() {
           </div>
         </div>
 
-        {/*<div hidden={activeTab.value?.label !== 'Decrees'}>*/}
-        {/*  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>*/}
-        {/*    { showPropDetail(props)?.detailElements?.decree &&*/}
-        {/*      showPropDetail(props)?.detailElements?.decree?.length?*/}
-        {/*        showPropDetail(props)?.detailElements.decree?.map((data: any) => <div key={data}>{data}</div> ):*/}
-        {/*        <div className='col-span-2 flex items-center h-48 w-full justify-center'>No decree</div>*/}
-        {/*    }*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        {/*<div hidden={activeTab.value?.label !== 'Orders'}>*/}
-        {/*  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>*/}
-        {/*    { showPropDetail(props)?.detailElements?.order &&*/}
-        {/*    showPropDetail(props)?.detailElements?.order?.length ?*/}
-        {/*        showPropDetail(props)?.detailElements.order?.map((data: any) => <div key={data}>{data}</div> ):*/}
-        {/*        <div className='col-span-2 flex items-center h-48 w-full justify-center'>No order</div>*/}
-        {/*    }*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        {/*<div hidden={activeTab.value?.label !== 'Decisions'}>*/}
-        {/*  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>*/}
-        {/*    { showPropDetail(props)?.detailElements?.decision &&*/}
-        {/*      showPropDetail(props)?.detailElements?.decision?.length ?*/}
-        {/*        showPropDetail(props)?.detailElements.decision?.map((data: any) => <div key={data}>{data}</div> ):*/}
-        {/*        <div className='col-span-2 flex items-center h-48 w-full justify-center'>No decision</div>*/}
-        {/*    }*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
         {/*sector of activity*/}
         <div hidden={activeTab.value?.label !== translationService(currentLanguage,'LAW.ADD.FORM.SECTORS_OF_ACTIVITY')}>
           <div className='p-6'>
@@ -427,85 +365,6 @@ export default function DataDetails() {
                     </div>
                   </div>
                 </div>
-
-                {/*  requirements by nature of impact*/}
-                {/*<div className='py-8'>*/}
-                {/*  <h1 className='text-3xl font-medium'>Exigences par nature</h1>*/}
-                {/*  <p className='text-gray-400 font-normal'>Statistiques des exigence par nature de l'impact du texte</p>*/}
-                {/*</div>*/}
-                {/*<dl className="grid py-16  border rounded-md grid-cols-1 gap-x-8 gap-y-8 text-center md:grid-cols-4">*/}
-                {/*  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">*/}
-                {/*    <dt className="text-base leading-7 text-gray-600">Financier</dt>*/}
-                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
-                {/*      { calculateKPI().requirementsByNatureOfImpact?.financial } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
-                {/*    </dd>*/}
-                {/*  </div>*/}
-                {/*  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">*/}
-                {/*    <dt className="text-base leading-7 text-gray-600">Organisation</dt>*/}
-                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
-                {/*      { calculateKPI().requirementsByNatureOfImpact?.organisation } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
-                {/*    </dd>*/}
-                {/*  </div>*/}
-                {/*  <div className="mx-auto px-24 border-r flex max-w-xs flex-col gap-y-4">*/}
-                {/*    <dt className="text-base leading-7 text-gray-600">Produit</dt>*/}
-                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
-                {/*      { calculateKPI().requirementsByNatureOfImpact?.products } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
-                {/*    </dd>*/}
-                {/*  </div>*/}
-                {/*  <div className="mx-auto px-24 flex max-w-xs flex-col gap-y-4">*/}
-                {/*    <dt className="text-base leading-7 text-gray-600">Image</dt>*/}
-                {/*    <dd className="order-first text-4xl font-medium tracking-tight text-gray-900">*/}
-                {/*      { calculateKPI().requirementsByNatureOfImpact?.image } <sub>/{calculateKPI().textAnalysisTotal}</sub>*/}
-                {/*    </dd>*/}
-                {/*  </div>*/}
-                {/*</dl>*/}
-
-            {/*total applicable text*/}
-            {/*<div className='py-8'>*/}
-            {/*  <h1 className='text-3xl font-medium'>Taux</h1>*/}
-            {/*  <p className='text-gray-400 font-normal'>Section statistique des des taux du texte</p>*/}
-            {/*</div>*/}
-            {/*total applicable text*/}
-            {/*<div className="flex flex-wrap -mx-3">
-              <div className="w-full md:w-1/2 px-3 mb-6">
-                <div className="px-8 border md:px-12 lg:px-16 pt-14 pb-12 sm:pb-16 rounded-md">
-                  <h3 className="mb-3 font-heading font-medium text-indigo-600">
-                    Total conforme</h3>
-                  <div className="flex items-center mb-4">
-                    <span className="text-3xl font-heading font-medium">{calculateKPI().conformity.total}</span>
-
-                  </div>
-                  <div className="relative w-full h-1 mb-3 bg-green-100 rounded-full">
-                    <div className={`absolute top-0 left-0 w-[${(calculateKPI().conformity.total * calculateKPI().textAnalysisTotal)/100 + 10}%] h-full bg-green-500 rounded-full`}></div>
-                  </div>
-                  <span
-                    className="inline-block px-2 py-1 mr-2 text-xxs leading-4 text-green-500 font-bold bg-green-200 bg-opacity-70 rounded-full">
-                      {(calculateKPI().conformity.total * calculateKPI().textAnalysisTotal)/100}%
-                    </span>
-                  <span className="text-sm text-darkBlueGray-400 font-heading"
-                        >Pourcentage</span>
-                </div>
-              </div>
-              <div className="w-full md:w-1/2 px-3 mb-6">
-                <div className="px-8 border md:px-12 lg:px-16 pt-14 pb-12 sm:pb-16 rounded-md">
-                  <h3 className="mb-3 font-heading font-medium text-indigo-600">
-                    Total  non-conforme</h3>
-                  <div className="flex items-center mb-4">
-                    <span className="text-3xl font-heading font-medium">{calculateKPI().textAnalysisTotal  - calculateKPI().conformity.total}</span>
-
-                  </div>
-                  <div className="relative w-full h-1 mb-3 bg-green-100 rounded-full">
-                    <div className={`absolute top-0 left-0 w-[25%] h-full bg-green-500 rounded-full`}></div>
-                  </div>
-                  <span
-                    className="inline-block px-2 py-1 mr-2 text-xxs leading-4 text-green-500 font-bold bg-green-200 bg-opacity-70 rounded-full">
-                      {((calculateKPI().textAnalysisTotal - calculateKPI().conformity.total) * calculateKPI().textAnalysisTotal)}%
-                    </span>
-                  <span className="text-sm text-darkBlueGray-400 font-heading"
-                  >Pourcentage</span>
-                </div>
-              </div>
-            </div>*/}
           </div>
         </div>
       </div>

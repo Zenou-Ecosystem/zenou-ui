@@ -9,15 +9,9 @@ function Filter(props: { fields: any[]; title: string }) {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
-
-  // Icon={{
-  //     classes: 'absolute top-3 left-3',
-  //     Name: HiOutlineBeaker
-  // }}
-
   const constructFilter = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const menu =  useRef<Menu>(null);
+    const menu = useRef<Menu>(null);
 
     return (
       <form className="w-full">
@@ -42,10 +36,6 @@ function Filter(props: { fields: any[]; title: string }) {
             <Menu model={fields} popup ref={menu} id="popup_menu" />
             </span>
         </div>
-        {/*{fields.map((element: any, index: number) => {*/}
-        {/*  let inputElement = <Input {...element} />;*/}
-        {/*  return <div key={index}>{inputElement}</div>;*/}
-        {/*})}*/}
       </form>
     );
   };
