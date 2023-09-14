@@ -58,18 +58,6 @@ function Dashboard() {
 
       setStatisticsState(kpiData);
 
-      const statisticsLawsBySectorOfActivity = {
-        air: data.filter((x:any) => x.sectors_of_activity.includes("air"))?.length,
-        terre: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
-        transport: data?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length,
-        environnement: data?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length,
-        eau: data?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length,
-        education: data?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length,
-        sante: data?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length,
-        agriculture: data?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length,
-        business: data?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length,
-      }
-
       const countItemsBySector = (array:any) => {
         const counts = array.reduce((accumulator:any, item:any) => {
           const parent = item.parent_of_text;
@@ -93,22 +81,63 @@ function Dashboard() {
 
       const countItems = (array:any, condition: Function) => {
         return array.reduce((accumulator:any, item:any) => {
+          // hold the text analysis
           const textAnalysis = item?.text_analysis ?? [];
+
+          // the sectors of activity
           const sector = item.sectors_of_activity;
 
-          // if(!textAnalysis.length) return 0;
-
+          // loop through the sectors of activity
           sector.forEach((sectorItem:any) => {
             if (!accumulator[sectorItem]) {
               accumulator[sectorItem] = 0;
             }
             accumulator[sectorItem] += textAnalysis.filter(condition)?.length;
-
           });
 
           return accumulator;
         }, {});
 
+      }
+
+      const compliance = countItems(data, (x:any) => x?.compliant === true);
+
+      const result = countItemsBySector(data);
+
+      const statisticsLawsBySectorOfActivity = {
+        air: data.filter((x:any) => x.sectors_of_activity.includes("air"))?.length,
+        terre: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
+        transport: data?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length,
+        environnement: data?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length,
+        eau: data?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length,
+        education: data?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length,
+        sante: data?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length,
+        agriculture: data?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length,
+        business: data?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length,
+      }
+
+      const LawsBySectorOfActivityParentOfText = {
+        air: result?.air ?? 0,
+        terre: result?.land ?? 0,
+        transport: result?.transport ?? 0,
+        environnement: result?.environment ?? 0,
+        eau: result?.water ?? 0,
+        education: result?.education ?? 0,
+        sante: result?.health ?? 0,
+        agriculture: result?.agriculture ?? 0,
+        business: result?.business ?? 0,
+      }
+
+      const LawsBySectorOfActivityCompliance = {
+        air: compliance?.air ?? 0,
+        terre: compliance?.land ?? 0,
+        transport: compliance?.transport ?? 0,
+        environnement: compliance?.environment ?? 0,
+        eau: compliance?.water ?? 0,
+        education: compliance?.education ?? 0,
+        sante: compliance?.health ?? 0,
+        agriculture: compliance?.agriculture ?? 0,
+        business: compliance?.business ?? 0,
       }
 
       const applicable = {
@@ -175,34 +204,6 @@ function Dashboard() {
           }
         ],
       };
-
-      const compliance = countItems(data, (x:any) => x?.compliant === true);
-
-      const result = countItemsBySector(data);
-
-      const LawsBySectorOfActivityParentOfText = {
-        air: result?.air ?? 0,
-        terre: result?.land ?? 0,
-        transport: result?.transport ?? 0,
-        environnement: result?.environment ?? 0,
-        eau: result?.water ?? 0,
-        education: result?.education ?? 0,
-        sante: result?.health ?? 0,
-        agriculture: result?.agriculture ?? 0,
-        business: result?.business ?? 0,
-      }
-
-      const LawsBySectorOfActivityCompliance = {
-        air: compliance?.air ?? 0,
-        terre: compliance?.land ?? 0,
-        transport: compliance?.transport ?? 0,
-        environnement: compliance?.environment ?? 0,
-        eau: compliance?.water ?? 0,
-        education: compliance?.education ?? 0,
-        sante: compliance?.health ?? 0,
-        agriculture: compliance?.agriculture ?? 0,
-        business: compliance?.business ?? 0,
-      }
 
       const generalLawData = {
         labels: Object.keys(statisticsLawsBySectorOfActivity),
