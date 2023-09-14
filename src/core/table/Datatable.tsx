@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { DataTable } from "primereact/datatable";
+import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
 import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
@@ -11,6 +11,7 @@ import "./index.scss";
 import { classNames } from 'primereact/utils';
 import { AppUserActions } from '../../constants/user.constants';
 import { Menu } from 'primereact/menu';
+import { FilterMatchMode } from 'primereact/api';
 
 function Datatable(props: {
   data: any[];
@@ -20,6 +21,7 @@ function Datatable(props: {
   context: React.Context<any>;
   noPagination?: Boolean;
   translationKey?: string;
+  filterKeys?:DataTableFilterMeta
 }) {
   const { data, fields, actionTypes, context, accessControls } = props;
   const [tableColumns, setTableColumns] = useState<string[]>([]);
@@ -31,6 +33,7 @@ function Datatable(props: {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const menu = React.useRef<Menu | any>(null);
   const [currentData, setCurrentData] = React.useState<any>(null);
+  const [filters, setFilters] = useState<DataTableFilterMeta>(props?.filterKeys ?? {});
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
@@ -64,9 +67,6 @@ function Datatable(props: {
         (actionItem) &&  requestDeleteConfirmation(actionItem, currentData);
       }  },
   ];
-  // if(can(AppUserActions.VIEW_COMPANY)){
-  //   items.splice(2, 0, { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.COMPANIES'), icon: "pi pi-building",  command:() => navigate('/dashboard/company')  })
-  // }
 
   const acceptDeletion = (action: string, payload: any) => {
     dispatch({ type: action, payload: payload?.id });
@@ -142,6 +142,8 @@ function Datatable(props: {
         paginator={!props.noPagination}
         rows={5}
         stripedRows
+        filters={filters}
+        filterDisplay="row"
         showGridlines
         rowsPerPageOptions={[5, 10, 25, 50]}
         sortMode="multiple"
@@ -182,6 +184,8 @@ function Datatable(props: {
                     field={key}
                     header={props.translationKey ? translationService(currentLanguage,`${props.translationKey}.${key.toUpperCase()}`): key}
                     sortable
+                    filter
+                    filterPlaceholder={`Filtré par ${key}`}
                     body={
                     ['department', 'sector_of_activity'].includes(key) ? simpleArrayBodyTemplate('department' || 'sector_of_activity')
                       : key === 'is_analysed' ? simpleTranslation('is_analysed', 'OPTIONS') :

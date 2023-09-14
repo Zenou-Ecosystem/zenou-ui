@@ -16,6 +16,21 @@
         }
     }
 }
+.p-column-filter-row .p-column-filter-element {
+    width: 100% !important;
+}
+.p-fluid .p-inputtext {
+    width: 100%;
+    height: 40px !important;
+}
+.p-column-filter-row .p-column-filter-menu-button, .p-column-filter-row .p-column-filter-clear-button {
+    color: white !important;
+    width: 45px !important;
+    height: 30px !important;
+    //margin-left: 1.5rem;
+    border: 1px solid #eeeeee !important;
+    padding: 0.35rem !important;
+}
 .p-datatable {
     .p-sortable-column{
         &:focus{

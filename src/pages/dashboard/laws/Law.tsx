@@ -19,6 +19,7 @@ import { currentLanguageValue, translationService } from '../../../services/tran
 import { TabMenu } from 'primereact/tabmenu';
 import { MenuItem } from 'primereact/menuitem';
 import { useNavigate } from 'react-router-dom';
+import { FilterMatchMode } from 'primereact/api';
 
 function Laws() {
   const [laws, setLaws] = useState<ILaws[]>([]);
@@ -260,6 +261,15 @@ function Laws() {
                     DELETE: AppUserActions.DELETE_LAW,
                     VIEW: AppUserActions.VIEW_LAW,
                   }}
+                  filterKeys={
+                    {
+                      "title_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
+                      "type_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
+                      "date_of_issue": {value: null, matchMode: FilterMatchMode.DATE_AFTER},
+                      "is_analysed": {value: null, matchMode: FilterMatchMode.EQUALS},
+                      "nature_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
+                    }
+                  }
                 />
               </div>
 
