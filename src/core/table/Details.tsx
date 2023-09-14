@@ -121,7 +121,8 @@ export default function DataDetails() {
     for (let [key, value] of Object.entries(props)) {
       key = key === "id" || key === "_id" ? "Signature" : key;
       // @ts-ignore
-      key === 'password' && delete props[key];
+      ['created_at', 'updated_at', 'password'].includes(key) && delete props[key];
+
       if (typeof value === "object" || ["action_plans"].includes(key)) {
         if (!Array.isArray(value)) {
           detailElements = { ...detailElements, ...value };
@@ -160,7 +161,10 @@ export default function DataDetails() {
                   }`}
               >
                 <div className='py-2'>
-                  <p className='border-b pb-2'>{ params.context && translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.ADD.FORM.${key.toUpperCase()}`) !== 'no such key' ? translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.ADD.FORM.${key.toUpperCase()}`): key}:</p>
+                  <p className='border-b pb-2'>{ params.context &&
+                  translationService(currentLanguage,`${singularize(params?.context).toUpperCase()}.ADD.FORM.${key.toUpperCase()}`)
+                  }:
+                  </p>
                   <p className='py-2 text-gray-400 mt-2'>{
                     optionsTranslation.includes(value?.toString().toLowerCase())? translationService(currentLanguage,`OPTIONS.${value?.toString().toUpperCase()}`) :
                     value?.toString()?.replaceAll('_', ' ') || 'N/A'}</p>
@@ -177,7 +181,7 @@ export default function DataDetails() {
         }
       }
     }
-    // console.log(detailElements);
+    // console.log(elements);
     return { elements, detailElements };
   };
 
@@ -208,10 +212,6 @@ export default function DataDetails() {
     </ol>
   }
 
-  const requirementsTemplate = (rowData: any) => {
-    return <div className='truncate w-72' dangerouslySetInnerHTML={{ __html: rowData?.requirements?.name.slice(0, 60)+"..." }}></div>
-  }
-
   const servicesBodyTemplate = (rowData:any) => {
     return <ul>
       {
@@ -221,6 +221,7 @@ export default function DataDetails() {
       }
     </ul>
   }
+
   return (
     <section>
       <Toast ref={toast as any} />
@@ -256,27 +257,20 @@ export default function DataDetails() {
                   </ul>
                 </div>
               ): ""}
-            {showPropDetail(props)?.detailElements?.id ?
+            {showPropDetail(props)?.detailElements?.parent_of_text?.length ?
               (
                 <div className='flex gap-2 items-center'>
-                  <i className='pi pi-external-link text-orange-500'></i>
-                  <button className='text-blue-500 underline' onClick={(e) => {
-                    e.preventDefault();
-                   fetchLaws().then(result => {
-                     const currentLaw = result.find((x:any) => x.id === showPropDetail(props)?.detailElements?.id);
-                     if(currentLaw) {
-                      LocalStore.set('VIEW_DATA', currentLaw);
-                      setProps(currentLaw);
-                      navigate(`/dashboard/laws/${showPropDetail(props)?.detailElements?.id}`);
-                      return;
-                     }
-                      toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-                   }).catch(() => {
-                     toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-                   })
-                  }}>
-                    {translationService(currentLanguage, 'LAW.ADD.FORM.PARENT_OF_TEXT')}
-                  </button>
+                  {(showPropDetail(props)?.detailElements?.parent_of_text as []).map((item:any, index) =>
+                    <a key={index} className='cursor-pointer text-blue-500 pb-1 border-b border-blue-500' onClick={(e) => {
+                      e.preventDefault();
+                      console.log(item);
+                      // LocalStore.set('VIEW_DATA', item);
+                      // setProps(item);
+                      // navigate(`/dashboard/laws/${item?.id}`)
+                    }}>
+                      {item?.title_of_text?.slice(0, 10)+"..."}
+                    </a>
+                  )}
                 </div>
               )
               : ''}

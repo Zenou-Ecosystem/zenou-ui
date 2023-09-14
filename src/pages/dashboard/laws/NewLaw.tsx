@@ -53,7 +53,7 @@ let initialFormState: Record<string, any> = {
     required: true,
   },
   parent_of_text: {
-    value: {},
+    value: [],
     error: true,
     error_message: "",
     required: true,
@@ -417,9 +417,9 @@ export default function InteractiveDemo() {
             </div>
 
             {/*parent_of_text*/}
-            <div>
+            <div className='col-span-2'>
               <label htmlFor="parent_of_text">{translationService(currentLanguage,'LAW.ADD.FORM.PARENT_OF_TEXT')}</label>
-              <Dropdown
+              <MultiSelect
                 filter
                 value={formValues.parent_of_text.value}
                 id="parent_of_text"
@@ -430,13 +430,17 @@ export default function InteractiveDemo() {
                 className="w-full md:w-14rem"
                 options={laws || []}
                 defaultValue={formValues.parent_of_text.value}
-                valueTemplate={(options) => options?.title_of_text ? options?.title_of_text?.slice(0,40) + "..." : translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.TITLE_OF_TEXT')}
+                selectedItemTemplate={(options: any) => options?.title_of_text ?
+                  <span className='text-xs mr-2 text-white rounded-md addTextToAnalysisTable p-1 w-20'>
+                    {options?.title_of_text?.slice(0,10)}
+                  </span>:
+                  translationService(currentLanguage,'LAW.ADD.FORM.PLACEHOLDER.TITLE_OF_TEXT')}
                 itemTemplate={(options) => options?.title_of_text?.slice(0,40) + "..."}
               />
             </div>
 
             {/*sectors_of_activity*/}
-            <div>
+            <div className='col-span-2'>
               <label htmlFor="sectors_of_activity">{translationService(currentLanguage,'LAW.ADD.FORM.SECTORS_OF_ACTIVITY')}</label>
               <MultiSelect
                 filter
@@ -471,6 +475,7 @@ export default function InteractiveDemo() {
                      value={formValues.products_or_services_concerned.value}
                      className="w-full"
                      onChange={handleChange} />
+              <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle ressource</small>
             </div>
 
             {/*purpose_and_scope_of_text*/}

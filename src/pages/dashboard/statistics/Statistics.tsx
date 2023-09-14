@@ -1,8 +1,4 @@
 import React from 'react'
-import JoinLineChartComponent from '../../../core/charts/Line/JoinLineChart';
-import CustomBarChartComponent from '../../../core/charts/Bar/Custom';
-import SimpleAreaChartComponent from '../../../core/charts/Area/Simple';
-import LineChartComponent from '../../../core/charts/Line/SimpleLineChart';
 import { fetchAllKpis, filterAndSummarizeDateRange } from '../../../services/kpi.service';
 import { LocalStore } from '../../../utils/storage.utils';
 import { Chart } from 'primereact/chart';

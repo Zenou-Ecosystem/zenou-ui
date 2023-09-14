@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../../../core/Button/Button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import useActionsContext from "../../../hooks/useActionsContext";
@@ -11,219 +11,322 @@ import { fetchControls } from "../../../services/control.service";
 import { fetchLaws } from "../../../services/laws.service";
 import { ILaws } from "../../../interfaces/laws.interface";
 import { fetchDepartments } from "../../../services/department.service";
+import { Chips } from 'primereact/chips';
+import { Calendar } from 'primereact/calendar';
+import { InputNumber } from 'primereact/inputnumber';
+import useControlContext from '../../../hooks/useControlContext';
+import { ControlActionTypes } from '../../../store/action-types/control.actions';
+
+let initialFormState = {
+  type: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  duration: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  theme: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  department: {
+    value: [],
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  responsible_for: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  resources: {
+    value: [],
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  evaluation_criteria: {
+    value: [],
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  evidence_of_actions: {
+    value: [],
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  text_of_the_law: {
+    value: {},
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  control_plan: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+  number: {
+    value: "",
+    error: true,
+    error_message: "",
+    required: true,
+  },
+};
 
 function AddAction() {
-  const [type, setType] = useState("");
-  const [duration, setDuration] = useState("");
-  const [theme, setTheme] = useState("");
-  const [department, setDepartment] = useState("");
-  const [resources, setResources] = useState("");
-  const [evaluation_criteria, setEvaluationCriteria] = useState("");
-  const [evidence_of_actions, setEvidenceOfActions] = useState("");
-  const [text_of_the_law, setTextOfLaw] = useState("");
-  const [responsible_for, setResponsibleFor] = useState("");
-  const [control_plan, setControlPlan] = useState("");
-  const [departments, setDepartments] = useState<string[]>([]);
-
-  const [controls, setControls] = useState<any[]>([]);
-  const [laws, setLaws] = useState<ILaws[]>([]);
-
-  const getType = (type: string) => setType(type);
-  const getDuration = (duration: string) => setDuration(duration);
-  const getTheme = (theme: string) => setTheme(theme);
-  const getDepartment = (department: string) => setDepartment(department);
-  const getResources = (resources: string) => setResources(resources);
-  const getEvaluationCriteria = (evaluation_criteria: string) =>
-    setEvaluationCriteria(evaluation_criteria);
-  const getTextOfLaw = (text_of_the_law: string) =>
-    setTextOfLaw(text_of_the_law);
-  const getControlPlan = (action_plan: string) => setControlPlan(action_plan);
-  const getResponsibleFor = (responsible_for: string) =>
-    setResponsibleFor(responsible_for);
-  const getEvidenceOfActions = (evidence_of_actions: string) =>
-    setEvidenceOfActions(evidence_of_actions);
+  const [formValues, setFormValues] =
+    useState<Record<string, any>>(initialFormState);
   const [loader, setLoader] = useState(false);
-  const { state, dispatch } = useActionsContext();
+  const { state, dispatch } = useControlContext();
+  const [laws, setLaws] = useState<any[]>([]);
 
   const handleSubmission = () => {
     setLoader(true);
     dispatch({
-      type: ActionsActionTypes.ADD_ACTION,
-      payload: {
-        type,
-        duration,
-        theme,
-        department,
-        responsible_for,
-        resources,
-        evaluation_criteria,
-        evidence_of_actions,
-        text_of_the_law,
-        control_plan,
-      },
+      type: ControlActionTypes.ADD_CONTROL,
+      payload: formData(),
     });
   };
 
   useEffect(() => {
     (async () => {
       const resolvedState = await state;
-
       if (resolvedState.hasCreated) {
         setLoader(false);
       }
-
-      const allControls = await fetchControls();
-      setControls(allControls);
-
-      let department = await fetchDepartments();
-      if (department) {
-        setDepartments(department.map((dept) => dept.name));
-      }
-
+      //  Fetch laws
       setLaws(await fetchLaws());
     })();
   }, [state]);
 
+  let formData = () => {
+    let formData: Record<string, any>={};
+    Object.entries(formValues).forEach(([key, value]) => {
+      formData[key] =
+        key === "duration"
+          ? new Date(String(value.value)).toLocaleDateString()
+          : value?.value;
+    });
+    return formData;
+  }
+
+  /**
+   * description: handle change function. this function is used to handle on change events in an input field
+   * default form state
+   * @returns { void }
+   * **/
+  const handleChange = (e: any) => {
+    let { name, value }: Record<any, string> = e.target;
+
+    const targetProperty = formValues[name];
+
+    let error = targetProperty?.validator
+      ? !targetProperty.validator.test(String(value))
+      : false;
+
+    if (
+      targetProperty !== undefined &&
+      targetProperty.required &&
+      !String(value).trim().length
+    )
+      error = true;
+
+    setFormValues({
+      ...formValues,
+      [name]: {
+        ...formValues[name],
+        value,
+        error,
+      },
+    });
+
+  };
+
   const addForm = () => {
     return (
       <form className="w-full">
-        <div className="form-elements grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+
           {/*type*/}
           <div className="control-type">
-            <label htmlFor="controlType">Type</label>
+            <label htmlFor="type">Type</label>
             <InputText
-              type="text"
-              id="controlType"
-              name="controlType"
-              className="p-inputtext-md w-full"
-              placeholder="Enter control type"
-              onChange={(e) => getType(e.target.value)}
-            />
-          </div>
-
-          {/*resources*/}
-          <div className="control-resources">
-            <label htmlFor="resources">Resources</label>
-            <InputText
-              type="text"
-              name="resources"
-              id="resources"
-              className="p-inputtext-md w-full"
-              placeholder="Enter control resources"
-              onChange={(e) => getResources(e.target.value)}
+              value={formValues.type.value}
+              id="type"
+              onChange={handleChange}
+              name="type"
+              placeholder="Saisissez le type de control"
+              className="w-full"
             />
           </div>
 
           {/*responsible for*/}
           <div className="control-responsibleFor">
-            <label htmlFor="responsibleFor">Responsible for</label>
+
+            <label htmlFor="responsible_for">Responsable pour?</label>
             <InputText
-              type="text"
-              name="responsibleFor"
-              id="responsibleFor"
-              className="p-inputtext-md w-full"
-              placeholder="Is responsible for"
-              onChange={(e) => getResponsibleFor(e.target.value)}
+              value={formValues.responsible_for.value}
+              id="responsible_for"
+              onChange={handleChange}
+              name="responsible_for"
+              placeholder="Est responsable pour?"
+              className="w-full"
             />
+          </div>
+
+          {/*resources*/}
+          <div className="col-span-2">
+            <label htmlFor="resources">Resources</label>
+            <Chips name="resources"
+                   id="resources"
+                   value={formValues.resources.value}
+                   className="w-full"
+                   placeholder="Entree la liste des resources"
+                   onChange={handleChange} />
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle ressource</small>
           </div>
 
           {/*evaluation*/}
-          <div className="control-evaluation-criteria">
-            <label htmlFor="evaluation">Evaluation criteria</label>
-            <InputText
-              type="text"
-              name="evaluation"
-              id="evaluation"
-              className="p-inputtext-md w-full"
-              placeholder="Is responsible for"
-              onChange={(e) => getEvaluationCriteria(e.target.value)}
+          <div className="col-span-2">
+            <label htmlFor="evaluation_criteria">Critaire d'evaluation</label>
+            <Chips
+              value={formValues.evaluation_criteria.value}
+              id="evaluation_criteria"
+              onChange={handleChange}
+              name="evaluation_criteria"
+              placeholder="Entree les critaire d'evaluation"
+              className="w-full"
             />
-          </div>
-
-          {/*evidence of action*/}
-          <div className="control-ProofOfSuccess">
-            <label htmlFor="evidence">Evidence of action</label>
-            <InputText
-              type="text"
-              name="evidence"
-              id="evidence"
-              className="p-inputtext-md w-full"
-              placeholder="Enter evidence of action"
-              onChange={(e) => getEvidenceOfActions(e.target.value)}
-            />
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle evaluation</small>
           </div>
 
           {/*duration*/}
           <div className="control-Duration">
-            <label htmlFor="duration">Duration</label>
-            <InputText
-              type="text"
+            <label htmlFor="duration">Delias</label>
+            <Calendar
               name="duration"
               id="duration"
-              className="p-inputtext-md w-full"
-              placeholder="Enter control duration"
-              onChange={(e) => getDuration(e.target.value)}
+              placeholder="Entre le delais"
+              className="w-full"
+              showIcon
+              value={formValues.duration.value}
+              onChange={handleChange}
             />
           </div>
 
           {/*theme*/}
           <div>
-            <label htmlFor="description">Theme</label>
+            <label htmlFor="theme">Theme</label>
             <InputText
+              value={formValues.theme.value}
               id="theme"
-              onChange={(e) => getTheme(e.target.value)}
+              onChange={handleChange}
               name="theme"
-              placeholder="Action theme"
+              placeholder="Entrer le theme"
               className="w-full"
             />
           </div>
 
-          {/*department*/}
-          <div className="control-Department">
-            <label htmlFor="department">Department</label>
-            <Dropdown
-              name="department"
-              id="department"
-              value={department}
-              onChange={(e) => getDepartment(e.target.value)}
-              options={departments}
-              placeholder="Select various departments"
-              className="w-full md:w-14rem"
+          {/*Evidence of action*/}
+          <div className="">
+            <label htmlFor="evidence_of_action">Evidences des action</label>
+            <InputText
+              value={formValues.evidence_of_action.value}
+              id="evidence_of_action"
+              onChange={handleChange}
+              name="evidence_of_action"
+              placeholder="Entrer l'evidence de l'action"
+              className="w-full"
+            />
+            {/*<Chips*/}
+            {/*  value={formValues.proof_of_success.value}*/}
+            {/*  id="proof_of_success"*/}
+            {/*  onChange={handleChange}*/}
+            {/*  name="proof_of_success"*/}
+            {/*  placeholder="Entrer les Preuves de success"*/}
+            {/*  className="w-full"*/}
+            {/*/>*/}
+            {/*<small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle preuves</small>*/}
+          </div>
+
+
+          {/*Number*/}
+          <div>
+            <label htmlFor="number">Numeros d'identification</label>
+            <InputNumber
+              value={formValues.number.value}
+              id="number"
+              type="text"
+              name="number"
+              placeholder="Entrer le numeros d'identification"
+              onValueChange={handleChange}
+              className='w-full'
             />
           </div>
 
-          {/*control plan*/}
+          {/*department*/}
+          <div className="col-span-2">
+            <label htmlFor="department">Department</label>
+            <Chips
+              value={formValues.department.value}
+              id="department"
+              onChange={handleChange}
+              name="department"
+              placeholder="Entrer les department"
+              className="w-full"
+            />
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter un departement</small>
+          </div>
+
+          {/*control plan section*/}
           <div>
-            <label htmlFor="control_plan">Control plan</label>
-            <MultiSelect
-              value={control_plan}
-              onChange={(e) => getControlPlan(e.value)}
-              options={controls}
-              optionLabel="theme"
-              name="control_plan"
+            <label htmlFor="control_plan">Numeros de control</label>
+            <InputNumber
+              value={formValues.control_plan.value}
               id="control_plan"
-              placeholder="Select control plan"
-              maxSelectedLabels={3}
-              className="w-full md:w-20rem"
+              type="text"
+              name="control_plan"
+              placeholder="Entrer le numeros de control"
+              onValueChange={handleChange}
+              className='w-full'
             />
           </div>
 
           {/*text of law*/}
-          <div>
-            <label htmlFor="textOfLaw">Select a text of law</label>
+          <div className=''>
+            <label htmlFor="text_of_the_law">Select a text of law</label>
             <Dropdown
-              value={text_of_the_law}
-              onChange={(e) => getTextOfLaw(e.value)}
-              options={laws?.filter((x) => (x.title as string) === "law")||[]}
-              id="textOfLaw"
-              name="textOfLaw"
-              optionLabel="title"
-              placeholder="Select an text of law"
-              className="w-full md:w-20rem"
+              value={formValues.text_of_the_law.value}
+              onChange={handleChange}
+              id="text_of_the_law"
+              filter
+              name="text_of_the_law"
+              optionLabel="title_of_text"
+              placeholder="Selectionner le texte"
+              className="w-full"
+              options={laws || []}
+              defaultValue={formValues.text_of_the_law.value}
+              valueTemplate={(options) => options?.title_of_text ? options?.title_of_text?.slice(0,40) + "..." : "Selectionner le texte"}
+              itemTemplate={(options) => options?.title_of_text?.slice(0,40) + "..."}
             />
           </div>
         </div>
-        <div className="mt-6 py-4">
+
+        {/*submit button*/}
+        <div className="w-full my-4 py-2">
           <div className="">
             {loader ? (
               <ProgressSpinner style={{ width: "50px", height: "50px" }} />
@@ -231,7 +334,7 @@ function AddAction() {
               ""
             )}
           </div>
-          <Button title="Create action" styles="flex-row-reverse float-right px-10 py-3 items-center rounded-md" onClick={handleSubmission} />
+          <Button title="Créer un nouveau contrôle" styles="flex-row-reverse float-right px-6 py-3 items-center rounded-md" onClick={handleSubmission} />
         </div>
       </form>
     );

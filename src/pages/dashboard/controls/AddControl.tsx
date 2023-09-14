@@ -4,18 +4,11 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import useControlContext from "../../../hooks/useControlContext";
 import { ControlActionTypes } from "../../../store/action-types/control.actions";
 import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
-import { MultiSelect } from "primereact/multiselect";
-import { fetchActions } from "../../../services/actions.service";
-import { ILaws } from "../../../interfaces/laws.interface";
 import { fetchLaws } from "../../../services/laws.service";
-import { fetchDepartments } from "../../../services/department.service";
-import { translationService } from '../../../services/translation.service';
 import { Chips } from 'primereact/chips';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
-
 
 let initialFormState = {
   type: {

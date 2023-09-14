@@ -106,7 +106,7 @@ function Laws() {
       const formattedIdentificationData:any[] = transformData(identificationData);
       const translatedIdentificationData:any[] = replaceParentsWithObjects(formattedIdentificationData);
 
-      console.log(translatedIdentificationData);
+      // console.log(translatedIdentificationData);
       createLaw(translatedIdentificationData as unknown as ILaws).then(res => {
         if(res) {
           toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS.ACTION') });
@@ -144,13 +144,13 @@ function Laws() {
         lookup[obj.number] = obj;
       });
 
+
       // Then, iterate through the array and replace "parent_of_text" values with the corresponding objects
       array.forEach(obj => {
-        if (obj.parent_of_text !== undefined && lookup[obj.parent_of_text] !== undefined) {
-          obj.parent_of_text = lookup[obj.parent_of_text];
+        if (obj.parent_of_text.length) {
+          obj.parent_of_text = obj.parent_of_text.map((id:string) => lookup[id]);
         }
       });
-
       return array;
     }
 
@@ -161,9 +161,17 @@ function Laws() {
           if(key === 'TYPE_DE_TEXTE'|| key === 'IMPACT' || key === 'APPLICABLE' || key === 'NATURE' || key === 'CONFORME'){
             acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = translationService(currentLanguage, `OPTIONS.${value[key].toUpperCase()}`);
           }
-          else if(key === 'SECTEURS_ACTIVITE' || key === 'PROCESSUS_OU_DIRECTION' || key === 'PRODUITS_OU_SERVICES_CONCERNES'){
-            let newValue = value[key].split(',');
-            newValue = newValue.map((i: string) => key === 'PRODUITS_OU_SERVICES_CONCERNES' ? i :translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`));
+          else if(key === 'SECTEURS_ACTIVITE' || key === 'PROCESSUS_OU_DIRECTION' || key === 'PRODUITS_OU_SERVICES_CONCERNES' || key === 'PARENT_DU_TEXTE'){
+            let newValue = typeof value[key] === "number"? `${value[key]}`.split(',') : value[key].split(',');
+            newValue = newValue.map((i: string) => {
+              switch (key) {
+                case 'PRODUITS_OU_SERVICES_CONCERNES':
+                  return i;
+                case 'PARENT_DU_TEXTE':
+                  return Number(i)
+                default:
+                  return translationService(currentLanguage, `OPTIONS.${i.toUpperCase()}`)
+            }});
 
             acc[translationService(currentLanguage, `FILE_${key.toUpperCase()}`).toLowerCase()] = newValue;
           }
@@ -173,6 +181,7 @@ function Laws() {
           }
           acc["requirements"] = [];
           acc["is_analysed"] = false;
+          !acc['parent_of_text'] && (acc['parent_of_text'] = [])
 
           return acc;
         }, {})

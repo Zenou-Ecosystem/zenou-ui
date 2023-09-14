@@ -163,7 +163,6 @@ export default function TextAnalysis() {
     }
 
     setFormValues(currentValue);
-
   };
 
 
@@ -213,7 +212,7 @@ export default function TextAnalysis() {
 
       setVisible(false);
 
-      // LocalStore.remove("UPLOADED_FILES");
+      LocalStore.remove("UPLOADED_FILES");
 
       // navigate("review");
     }
@@ -556,8 +555,9 @@ export default function TextAnalysis() {
   const editForm = (formData:Record<string, any>) => {
 
     const index = LocalStore.get("CURRENT_EDIT_DATA")?.index;
+    const proof_of_conformity = LocalStore.get("UPLOADED_FILES") ?? false;
 
-    draftLaw.storeData["text_analysis"][index] = formData;
+    draftLaw.storeData["text_analysis"][index] = { ...formData, proof_of_conformity };
 
     console.log(index, draftLaw.storeData);
 

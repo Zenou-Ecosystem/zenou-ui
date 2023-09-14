@@ -24,7 +24,7 @@ export default function ReviewLaw(){
   const draftItems = LocalStore.get("EDIT_DATA");
 
   const draftInfo = () => {
-    const { text_analysis, created_at, updated_at, requirements, parent_of_text, ...others } = draftItems;
+    const { text_analysis, created_at, updated_at, is_analysed,  number, requirements, parent_of_text, ...others } = draftItems;
 
     return {text_analysis, created_at, updated_at, requirements, parent_of_text, text_analysis_keys:Object.keys(text_analysis[0]), others}
   };

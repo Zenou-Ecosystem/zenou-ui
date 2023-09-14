@@ -15,6 +15,7 @@ import { fecthCompanies } from '../../../services/companies.service';
 import { Chart } from 'primereact/chart';
 import { LocalStore } from '../../../utils/storage.utils';
 import { fetchAllKpis } from '../../../services/kpi.service';
+import { Dropdown } from 'primereact/dropdown';
 
 function Dashboard() {
   const [laws, setLaws] = useState<ILaws[]>([]);
@@ -27,7 +28,20 @@ function Dashboard() {
   const [chartData, setChartData] = React.useState({}) as any;
   const [chartOptions, setChartOptions] = React.useState({});
   const [statisticsState, setStatisticsState] = React.useState<any>(null);
-
+  const filters = [ {
+    name: "General",
+    code: "general"
+  }, {
+    name: "Par Impact",
+    code: "impact"
+  }, {
+    name: "Par Nature de l'impact",
+    code: "natureOfImpact"
+  }, {
+    name: "Par applicabilité",
+    code: "applicable"
+  } ]
+  const [filterState, setFilterState] =React.useState(filters[0]);
   useEffect(() => {
     (async () => {
       const res = await state;
@@ -56,12 +70,155 @@ function Dashboard() {
         business: data?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length,
       }
 
+      const countItemsBySector = (array:any) => {
+        const counts = array.reduce((accumulator:any, item:any) => {
+          const parent = item.parent_of_text;
+          const sector = item.sectors_of_activity;
+
+          sector.forEach((sectorItem:any) => {
+            if (!accumulator[sectorItem]) {
+              accumulator[sectorItem] = 0;
+            }
+
+            if (parent) {
+              accumulator[sectorItem] += parent.length;
+            }
+          });
+
+          return accumulator;
+        }, {});
+
+        return counts;
+      };
+
+      const countItems = (array:any, condition: Function) => {
+        return array.reduce((accumulator:any, item:any) => {
+          const textAnalysis = item?.text_analysis ?? [];
+          const sector = item.sectors_of_activity;
+
+          // if(!textAnalysis.length) return 0;
+
+          sector.forEach((sectorItem:any) => {
+            if (!accumulator[sectorItem]) {
+              accumulator[sectorItem] = 0;
+            }
+            accumulator[sectorItem] += textAnalysis.filter(condition)?.length;
+
+          });
+
+          return accumulator;
+        }, {});
+
+      }
+
+      const applicable = {
+        labels: Object.keys(statisticsLawsBySectorOfActivity),
+        datasets: [
+          {
+            type: 'bar',
+            label: "Oui",
+            data: Object.values(countItems(data, (x:any) => x?.applicability === 'yes')),
+          },{
+            type: 'bar',
+            label: "Non",
+            data: Object.values(countItems(data, (x:any) => x?.applicability === 'no')),
+          },{
+            type: 'bar',
+            label: "Information",
+            data: Object.values(countItems(data, (x:any) => x?.applicability === 'information')),
+          }
+        ]
+      };
+
+      const natureOfImpact = {
+        labels: Object.keys(statisticsLawsBySectorOfActivity),
+        datasets: [
+          {
+            type: 'bar',
+            label: "Financier",
+            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'financial')),
+          },{
+            type: 'bar',
+            label: "Organisation",
+            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'organisation')),
+          },{
+            type: 'bar',
+            label: "Produit",
+            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'products')),
+          },{
+            type: 'bar',
+            label: "Image",
+            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'image')),
+          }
+        ]
+      };
+
+      const impact = {
+        labels: Object.keys(statisticsLawsBySectorOfActivity),
+        datasets: [
+          {
+            type: 'bar',
+            label: "Faible",
+            data: Object.values(countItems(data, (x:any) => x?.impact === 'weak')),
+          },{
+            type: 'bar',
+            label: "Moyen",
+            data: Object.values(countItems(data, (x:any) => x?.impact === 'medium')),
+          },{
+            type: 'bar',
+            label: "Majeur",
+            data: Object.values(countItems(data, (x:any) => x?.impact === 'major')),
+          },{
+            type: 'bar',
+            label: "Critique",
+            data: Object.values(countItems(data, (x:any) => x?.impact === 'critical')),
+          }
+        ],
+      };
+
+      const compliance = countItems(data, (x:any) => x?.compliant === true);
+
+      const result = countItemsBySector(data);
+
+      const LawsBySectorOfActivityParentOfText = {
+        air: result?.air ?? 0,
+        terre: result?.land ?? 0,
+        transport: result?.transport ?? 0,
+        environnement: result?.environment ?? 0,
+        eau: result?.water ?? 0,
+        education: result?.education ?? 0,
+        sante: result?.health ?? 0,
+        agriculture: result?.agriculture ?? 0,
+        business: result?.business ?? 0,
+      }
+
+      const LawsBySectorOfActivityCompliance = {
+        air: compliance?.air ?? 0,
+        terre: compliance?.land ?? 0,
+        transport: compliance?.transport ?? 0,
+        environnement: compliance?.environment ?? 0,
+        eau: compliance?.water ?? 0,
+        education: compliance?.education ?? 0,
+        sante: compliance?.health ?? 0,
+        agriculture: compliance?.agriculture ?? 0,
+        business: compliance?.business ?? 0,
+      }
+
       const generalLawData = {
         labels: Object.keys(statisticsLawsBySectorOfActivity),
         datasets: [
           {
+            type: 'bar',
             label: "Secteur d'activiter",
             data: Object.values(statisticsLawsBySectorOfActivity),
+          },{
+            type: 'bar',
+            label: "Nombre de texte par sectuer d'activiter",
+            data: Object.values(LawsBySectorOfActivityParentOfText),
+          },{
+            type: 'bar',
+            label: "Texte conforme par sectuer d'activiter",
+            data: Object.values(LawsBySectorOfActivityCompliance),
           }
         ]
       }
@@ -90,10 +247,10 @@ function Dashboard() {
               usePointStyle: true
             }
           }
-        }
+        },
       };
 
-      setChartData({ generalLawData, generalConformityAnalysis, analysisData });
+      setChartData({ general: generalLawData, generalConformityAnalysis, analysisData, impact, natureOfImpact, applicable });
       setChartOptions(options);
 
   })();
@@ -171,17 +328,17 @@ function Dashboard() {
             </div>
 
             <div className='border my-4 rounded-md p-4'>
-              <h1
-                className="font-medium text-xl pl-3 mb-4"
-              >
-                Loi par secteur d'activite
-              </h1>
-              <Chart type="bar" data={chartData?.generalLawData} options={{
-                scales: {
-                  y: {
-                    beginAtZero: true
-                  }
-                }
+              <div className='flex items-center justify-between mb-3'>
+                <h1
+                  className="font-medium text-xl pl-3 mb-4"
+                >
+                  Loi par secteur d'activite
+                </h1>
+                <Dropdown value={filterState} size={2} onChange={(e) =>  setFilterState(e.value)
+                } options={filters} optionLabel="name"
+                          placeholder="Filtre par options" className="w-56" />
+              </div>
+              <Chart type="bar" data={chartData?.[filterState?.code]} options={{
               }} className="w-full" />
             </div>
 
