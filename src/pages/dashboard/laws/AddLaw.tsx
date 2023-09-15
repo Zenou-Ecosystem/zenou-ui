@@ -177,8 +177,6 @@ function AddLaw(props: { close: Function, setNewLaw: Function }) {
 
     setLoader(true);
 
-    console.log(formData);
-
     createLaw(formData).then(res => {
       if(res){
         props.setNewLaw();

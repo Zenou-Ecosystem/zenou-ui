@@ -53,50 +53,6 @@ function Actions() {
 
     }, [state, actionstate]);
 
-
-    const cardProps = {
-        content: `Statistics for the month of February. This is really making
-        sense in all areas`,
-        title: 'Action Reports'
-    }
-    const handleNameFilter = (query: string) => {
-        console.log("The name typed is ", query);
-
-    }
-    const handleCountryFilter = (query: string) => {
-        console.log("The country typed is ", query);
-
-    }
-    const handleCategoryFilter = (query: string) => {
-        console.log("The category typed is ", query);
-
-    }
-
-    const handleCertificationFilter = (query: string) => {
-        console.log("The certificate typed is ", query);
-
-    }
-    const filterProps = [{
-        type: "text",
-        onChange: handleNameFilter,
-        label: "Name"
-    },
-    {
-        type: "text",
-        onChange: handleCountryFilter,
-        label: "Country"
-    }, {
-        type: "text",
-        onChange: handleCategoryFilter,
-        label: "Category"
-    },
-    {
-        type: "text",
-        onChange: handleCertificationFilter,
-        label: "Certification"
-    }
-    ];
-
     const toast = useRef<Toast>(null);
     const onUpload = () => {
         toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
@@ -107,13 +63,16 @@ function Actions() {
         <ActionsContextProvider>
             <div className="w-full px-4">
                 <Toast ref={toast}></Toast>
-                <BasicCard title={translationService(currentLanguage,'ACTIONS.LIST.TITLE')}
+                <BasicCard title={''}
                            headerStyles="font-medium text-3xl py-4"
                     content={() => (
                         <>
-                            <div className="filter my-8 w-full m-auto flex items-end">
+                            <div className="my-6 w-full m-auto flex justify-between items-center">
                                 <div className="filter w-6/12">
-                                    <Filter fields={filterProps} title={translationService(currentLanguage,'ACTIONS.FILTER')} />
+                                    <h2 className='text-left text-2xl font-medium'>
+                                        {translationService(currentLanguage,'ACTIONS.LIST.TITLE')}
+                                    </h2>
+                                    {/*<Filter fields={filterProps} title={translationService(currentLanguage,'ACTIONS.FILTER')} />*/}
                                 </div>
                                 {!can(AppUserActions.ADD_ACTIONS) ? null : (
                                   <div className="flex justify-end gap-2 w-6/12">
@@ -157,8 +116,14 @@ function Actions() {
                             {/*</div>*/}
 
                             <div className="add-form my-10">
-                                <Dialog headerClassName="" contentClassName="pt-4" header={translationService(currentLanguage,'BUTTON.NEW')} visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
-                                    <AddAction />
+                                <Dialog headerClassName=""
+                                        contentClassName="pt-4"
+                                        header={translationService(currentLanguage,'BUTTON.NEW')}
+                                        visible={visible} style={{ width: '680px', maxWidth: '100%' }}
+                                        onHide={() => setVisible(false)}>
+                                    <AddAction hideAction={ () => setVisible(false)} stateGetter={() => {
+                                        fetchActions().then(setActions)
+                                    }} />
                                 </Dialog>
                             </div>
                             <Datatable

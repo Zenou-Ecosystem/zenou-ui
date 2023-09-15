@@ -145,7 +145,6 @@ function Laws() {
         lookup[obj.number] = obj;
       });
 
-
       // Then, iterate through the array and replace "parent_of_text" values with the corresponding objects
       array.forEach(obj => {
         if (obj.parent_of_text.length) {
@@ -199,9 +198,11 @@ function Laws() {
           content={() => (
             <>
               <Toast ref={toast}></Toast>
-              <div className="filter my-8 w-full m-auto flex items-end">
-                <div className="filter w-6/12">
-                  <Filter fields={filterProps} title={translationService(currentLanguage,'LAWS.FILTER')} />
+              <div className="my-6 w-full m-auto flex justify-between items-center">
+                <div className="w-6/12">
+                  <h2 className='text-left text-2xl font-medium'>
+                    {translationService(currentLanguage,'LAW.LIST.TITLE')}
+                  </h2>
                 </div>
                 {!can(AppUserActions.ADD_LAW) ? null : (
                   <div className="flex justify-end gap-2 w-6/12">
@@ -260,12 +261,13 @@ function Laws() {
                     EDIT: AppUserActions.EDIT_LAW,
                     DELETE: AppUserActions.DELETE_LAW,
                     VIEW: AppUserActions.VIEW_LAW,
+                    ARCHIVE: 'ARCHIVE_LAW'
                   }}
                   filterKeys={
                     {
                       "title_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
                       "type_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
-                      "date_of_issue": {value: null, matchMode: FilterMatchMode.DATE_AFTER},
+                      "date_of_issue": {value: null, matchMode: FilterMatchMode.CONTAINS},
                       "is_analysed": {value: null, matchMode: FilterMatchMode.EQUALS},
                       "nature_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
                     }

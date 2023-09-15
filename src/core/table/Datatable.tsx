@@ -17,7 +17,7 @@ function Datatable(props: {
   data: any[];
   fields: string[];
   actionTypes: React.ReducerAction<any>;
-  accessControls: { EDIT: string; VIEW: string; DELETE: string };
+  accessControls?: { EDIT?: string; VIEW?: string; DELETE?: string, ARCHIVE?: string };
   context: React.Context<any>;
   noPagination?: Boolean;
   translationKey?: string;
@@ -53,12 +53,6 @@ function Datatable(props: {
         navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/edit/${currentData?.id || currentData?._id}`);
         // console.log(actionItem, currentData);
       }  },
-    { label: 'Archive', icon: "pi pi-briefcase",  command:() => {
-        const actionItem = actions.find((value) =>
-          value.startsWith("ARCHIVE_LAW")
-        );
-        (actionItem) &&  requestDeleteConfirmation(actionItem, data);
-      }  },
     { separator: true },
     { label: 'Delete', icon: "pi pi-fw pi-trash",  command:() => {
         const actionItem = actions.find((value) =>
@@ -67,6 +61,13 @@ function Datatable(props: {
         (actionItem) &&  requestDeleteConfirmation(actionItem, currentData);
       }  },
   ];
+
+  accessControls?.ARCHIVE && items.splice(2,0, { label: 'Archive', icon: "pi pi-briefcase",  command:() => {
+      const actionItem = actions.find((value) =>
+        value.startsWith("ARCHIVE_LAW")
+      );
+      (actionItem) &&  requestDeleteConfirmation(actionItem, data);
+    }  });
 
   const acceptDeletion = (action: string, payload: any) => {
     dispatch({ type: action, payload: payload?.id });
@@ -91,7 +92,7 @@ function Datatable(props: {
   };
 
   const requestDeleteConfirmation = (action: string, payload: any) => {
-    // remove the action in localstore to avoid remembering state in rowClickedHandler
+    // remove the action in localStore to avoid remembering state in rowClickedHandler
     LocalStore.remove("action");
     confirmDialog({
       message: "Do you want to delete this record?",
@@ -110,7 +111,6 @@ function Datatable(props: {
   }, [data]);
 
   const rowClickedHandler = (e: any) => {
-
     if("originalEvent" in e && "data" in e){
       const data = e.data;
       LocalStore.set("EDIT_DATA", {data, index: e.index})
@@ -121,8 +121,11 @@ function Datatable(props: {
   const simpleArrayBodyTemplate = (key:string) => (rowData:any) => {
     return <ul>
       {
-        rowData[key].map((item: string) => {
-          return <li key={item}>{translationService(currentLanguage, `OPTIONS.SECTORS_OF_ACTIVITIES.${item.toUpperCase()}`)}</li>
+        rowData[key].map((item: string, index:number) => {
+          return <li key={index}>{
+            translationService(currentLanguage, `OPTIONS.SECTORS_OF_ACTIVITIES.${item.toUpperCase()}`) === 'no such key' ? item :
+              translationService(currentLanguage, `OPTIONS.SECTORS_OF_ACTIVITIES.${item.toUpperCase()}`)
+          }</li>
         } )
       }
     </ul>
@@ -184,7 +187,7 @@ function Datatable(props: {
                     field={key}
                     header={props.translationKey ? translationService(currentLanguage,`${props.translationKey}.${key.toUpperCase()}`): key}
                     sortable
-                    filter
+                    filter={!!props?.filterKeys}
                     filterPlaceholder={`Filtré par ${key}`}
                     body={
                     ['department', 'sector_of_activity'].includes(key) ? simpleArrayBodyTemplate('department' || 'sector_of_activity')

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './controls.scss'
-import Filter from "../../../components/filter/Filter";
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
@@ -15,13 +14,11 @@ import { IControl } from "../../../interfaces/controls.interface";
 import { fetchControls } from "../../../services/control.service";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
-import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
 function Controls() {
-
-    const [companies, setControls] = useState<IControl[]>([]);
+    const [controls, setControls] = useState<IControl[]>([]);
     const [visible, setVisible] = useState(false);
     const { state, dispatch } = useAppContext();
 
@@ -31,7 +28,6 @@ function Controls() {
 
     React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
-
     const openAddControlForm = () => {
         setVisible(true);
     }
@@ -40,6 +36,7 @@ function Controls() {
         (async () => {
             const res = await state;
             let data = res?.data;
+            data = await fetchControls()
             if (!data || data.length < 1) {
                 data = await fetchControls();
             }
@@ -56,69 +53,24 @@ function Controls() {
 
     }, [state, ControlState]);
 
-
-    const cardProps = {
-        content: `Statistics for the month of February. This is really making
-        sense in all areas`,
-        title: 'Control Statistics'
-    }
-    const handleNameFilter = (query: string) => {
-        console.log("The name typed is ", query);
-
-    }
-    const handleCountryFilter = (query: string) => {
-        console.log("The country typed is ", query);
-
-    }
-    const handleCategoryFilter = (query: string) => {
-        console.log("The category typed is ", query);
-
-    }
-
-    const handleCertificationFilter = (query: string) => {
-        console.log("The certificate typed is ", query);
-
-    }
-    const filterProps = [{
-        type: "text",
-        onChange: handleNameFilter,
-        label: "Name"
-    },
-    {
-        type: "text",
-        onChange: handleCountryFilter,
-        label: "Country"
-    }, {
-        type: "text",
-        onChange: handleCategoryFilter,
-        label: "Category"
-    },
-    {
-        type: "text",
-        onChange: handleCertificationFilter,
-        label: "Certification"
-    }
-    ];
-
     const toast = useRef<Toast>(null);
     const onUpload = () => {
         toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
         fetchControls().then(setControls);
     };
 
-
     return (
         <ControlContextProvider>
             <div className="w-full px-4">
                 <Toast ref={toast}></Toast>
-                <BasicCard title={translationService(currentLanguage,'CONTROLS.LIST.TITLE')}
+                <BasicCard title={""}
                            headerStyles="font-medium text-3xl py-4"
                     content={() => (
                         <>
-                            <div className="filter my-8 w-full m-auto flex items-end">
-                                <div className="filter w-6/12">
-                                    <Filter fields={filterProps} title={translationService(currentLanguage,'CONTROLS.FILTER')}/>
-                                </div>
+                            <div className="my-6 w-full m-auto flex justify-between items-center ">
+                                <div className="w-6/12">
+                                    <h2 className='text-left text-3xl font-medium'>{translationService(currentLanguage,'CONTROLS.LIST.TITLE')}</h2>
+                                 </div>
                                 {!can(AppUserActions.ADD_CONTROL) ? null : (
                                   <div className="flex justify-end gap-2 w-6/12">
                                       {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-blue-500 rounded-md'>*/}
@@ -145,13 +97,16 @@ function Controls() {
                             </div>
 
                             <div className="add-form my-10">
-                                <Dialog header={translationService(currentLanguage,'BUTTON.NEW')} visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
+                                <Dialog header={translationService(currentLanguage,'BUTTON.NEW')}
+                                        visible={visible}
+                                        style={{ width: '680px', maxWidth: '100%' }}
+                                        onHide={() => setVisible(false)}>
                                     <AddControl />
                                 </Dialog>
                             </div>
 
                             <Datatable
-                                data={companies}
+                                data={controls}
                                 fields={['type', 'duration', 'department', 'theme', 'resources', 'Actions']}
                                 actionTypes={ControlActionTypes}
                                 context={ControlContext}

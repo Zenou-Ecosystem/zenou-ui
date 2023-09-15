@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import Button from "../../../core/Button/Button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import useActionsContext from "../../../hooks/useActionsContext";
@@ -16,6 +16,8 @@ import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
 import useControlContext from '../../../hooks/useControlContext';
 import { ControlActionTypes } from '../../../store/action-types/control.actions';
+import { createAction } from '../../../services/actions.service';
+import { Toast } from 'primereact/toast';
 
 let initialFormState = {
   type: {
@@ -86,19 +88,22 @@ let initialFormState = {
   },
 };
 
-function AddAction() {
+function AddAction(props: {hideAction: Function, stateGetter: Function}) {
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialFormState);
   const [loader, setLoader] = useState(false);
   const { state, dispatch } = useControlContext();
   const [laws, setLaws] = useState<any[]>([]);
+  const toast = useRef<Toast>(null);
 
   const handleSubmission = () => {
     setLoader(true);
-    dispatch({
-      type: ControlActionTypes.ADD_CONTROL,
-      payload: formData(),
-    });
+    createAction(formData() as any).then(result => {
+      toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
+      props.stateGetter()
+    }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
+      props.hideAction();
+    })
   };
 
   useEffect(() => {
@@ -175,7 +180,6 @@ function AddAction() {
 
           {/*responsible for*/}
           <div className="control-responsibleFor">
-
             <label htmlFor="responsible_for">Responsable pour?</label>
             <InputText
               value={formValues.responsible_for.value}
@@ -244,22 +248,13 @@ function AddAction() {
           <div className="">
             <label htmlFor="evidence_of_action">Evidences des action</label>
             <InputText
-              value={formValues.evidence_of_action.value}
-              id="evidence_of_action"
+              value={formValues.evidence_of_actions.value}
+              id="evidence_of_actions"
               onChange={handleChange}
-              name="evidence_of_action"
+              name="evidence_of_actions"
               placeholder="Entrer l'evidence de l'action"
               className="w-full"
             />
-            {/*<Chips*/}
-            {/*  value={formValues.proof_of_success.value}*/}
-            {/*  id="proof_of_success"*/}
-            {/*  onChange={handleChange}*/}
-            {/*  name="proof_of_success"*/}
-            {/*  placeholder="Entrer les Preuves de success"*/}
-            {/*  className="w-full"*/}
-            {/*/>*/}
-            {/*<small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle preuves</small>*/}
           </div>
 
 
@@ -347,6 +342,7 @@ function AddAction() {
 
   return (
     <section>
+      <Toast ref={toast}></Toast>
       {/* <BasicCard {...cardProps} /> */}
       {addForm()}
     </section>
