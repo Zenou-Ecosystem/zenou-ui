@@ -131,27 +131,27 @@ function Dashboard() {
       }
 
       const LawsBySectorOfActivityCompliance = {
-        air: kpiData?.domain?.complaint?.air ?? 0,
-        terre: kpiData?.domain?.complaint?.land ?? 0,
-        transport: kpiData?.domain?.complaint?.transport ?? 0,
-        environnement: kpiData?.domain?.complaint?.environment ?? 0,
-        eau: kpiData?.domain?.complaint?.water ?? 0,
-        education: kpiData?.domain?.complaint?.education ?? 0,
-        sante: kpiData?.domain?.complaint?.health ?? 0,
-        agriculture: kpiData?.domain?.complaint?.agriculture ?? 0,
-        business: kpiData?.domain?.complaint?.business ?? 0,
+        air: kpiData?.domains?.complaint?.air ?? 0,
+        terre: kpiData?.domains?.complaint?.land ?? 0,
+        transport: kpiData?.domains?.complaint?.transport ?? 0,
+        environnement: kpiData?.domains?.complaint?.environment ?? 0,
+        eau: kpiData?.domains?.complaint?.water ?? 0,
+        education: kpiData?.domains?.complaint?.education ?? 0,
+        sante: kpiData?.domains?.complaint?.health ?? 0,
+        agriculture: kpiData?.domains?.complaint?.agriculture ?? 0,
+        business: kpiData?.domains?.complaint?.business ?? 0,
       }
 
       const LawsBySectorOfActivityApplicable = {
-        air: kpiData?.domain?.applicable?.air ?? 0,
-        terre: kpiData?.domain?.applicable?.land ?? 0,
-        transport: kpiData?.domain?.applicable?.transport ?? 0,
-        environnement: kpiData?.domain?.applicable?.environment ?? 0,
-        eau: kpiData?.domain?.applicable?.water ?? 0,
-        education: kpiData?.domain?.applicable?.education ?? 0,
-        sante: kpiData?.domain?.applicable?.health ?? 0,
-        agriculture: kpiData?.domain?.applicable?.agriculture ?? 0,
-        business: kpiData?.domain?.applicable?.business ?? 0,
+        air: kpiData?.domains?.applicability?.air ?? 0,
+        terre: kpiData?.domains?.applicability?.land ?? 0,
+        transport: kpiData?.domains?.applicability?.transport ?? 0,
+        environnement: kpiData?.domains?.applicability?.environment ?? 0,
+        eau: kpiData?.domains?.applicability?.water ?? 0,
+        education: kpiData?.domains?.applicability?.education ?? 0,
+        sante: kpiData?.domains?.applicability?.health ?? 0,
+        agriculture: kpiData?.domains?.applicability?.agriculture ?? 0,
+        business: kpiData?.domains?.applicability?.business ?? 0,
       }
 
       const applicable = {
@@ -203,18 +203,22 @@ function Dashboard() {
             type: 'bar',
             label: "Faible",
             data: Object.values(countItems(data, (x:any) => x?.impact === 'weak')),
+            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(247,179,34,0.4)'),
           },{
             type: 'bar',
             label: "Moyen",
             data: Object.values(countItems(data, (x:any) => x?.impact === 'medium')),
+            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(254,140,28,0.62)'),
           },{
             type: 'bar',
             label: "Majeur",
             data: Object.values(countItems(data, (x:any) => x?.impact === 'major')),
+            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(232,97,3,0.91)'),
           },{
             type: 'bar',
             label: "Critique",
             data: Object.values(countItems(data, (x:any) => x?.impact === 'critical')),
+            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgb(255,7,7)'),
           }
         ],
       };
