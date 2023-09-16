@@ -17,11 +17,13 @@ import { AppUserActions } from "../../../constants/user.constants";
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import EditAction from './EditAction';
 
 function Actions() {
 
     const [companies, setActions] = useState<IActions[]>([]);
     const [visible, setVisible] = useState(false);
+    const [showEdit, setShowEdit]= useState(false);
     const { state, dispatch } = useAppContext();
 
     const { state: actionstate, dispatch: ActionDispatch } = useActionsContext();
@@ -68,7 +70,7 @@ function Actions() {
                     content={() => (
                         <>
                             <div className="my-6 w-full m-auto flex justify-between items-center">
-                                <div className="filter w-6/12">
+                                <div className="w-6/12">
                                     <h2 className='text-left text-2xl font-medium'>
                                         {translationService(currentLanguage,'ACTIONS.LIST.TITLE')}
                                     </h2>
@@ -116,8 +118,7 @@ function Actions() {
                             {/*</div>*/}
 
                             <div className="add-form my-10">
-                                <Dialog headerClassName=""
-                                        contentClassName="pt-4"
+                                <Dialog contentClassName="pt-4"
                                         header={translationService(currentLanguage,'BUTTON.NEW')}
                                         visible={visible} style={{ width: '680px', maxWidth: '100%' }}
                                         onHide={() => setVisible(false)}>
@@ -125,12 +126,25 @@ function Actions() {
                                         fetchActions().then(setActions)
                                     }} />
                                 </Dialog>
+
+                              <Dialog contentClassName="pt-4"
+                                      header={translationService(currentLanguage,'BUTTON.NEW')}
+                                      visible={showEdit} style={{ width: '680px', maxWidth: '100%' }}
+                                      onHide={() => setShowEdit(false)}>
+                                <EditAction hideAction={ () => setShowEdit(false)}
+                                            stateGetter={() => {
+                                              fetchActions().then(setActions)
+                                            }}
+                                />
+                              </Dialog>
                             </div>
                             <Datatable
                                 data={companies}
-                                fields={['type', 'duration', 'department', 'theme', 'resources', 'Actions']}
+                                fields={['type', 'duration', 'department', 'theme', 'Actions']}
                                 actionTypes={ActionsActionTypes}
                                 context={ActionsContext}
+                                translationKey={"FORM"}
+                                actions={{edit: ()=> setShowEdit(true)}}
                                 accessControls={{
                                     EDIT: AppUserActions.EDIT_ACTIONS,
                                     DELETE: AppUserActions.DELETE_ACTIONS,

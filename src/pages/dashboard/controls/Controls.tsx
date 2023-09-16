@@ -16,10 +16,12 @@ import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import EditControl from './EditControl';
 
 function Controls() {
     const [controls, setControls] = useState<IControl[]>([]);
     const [visible, setVisible] = useState(false);
+    const [editVisible, setEditVisible] = useState(false);
     const { state, dispatch } = useAppContext();
 
     const { state: ControlState, dispatch: ControlDispatch } = useControlContext();
@@ -101,8 +103,18 @@ function Controls() {
                                         visible={visible}
                                         style={{ width: '680px', maxWidth: '100%' }}
                                         onHide={() => setVisible(false)}>
-                                    <AddControl />
+                                    <AddControl stateGetter={() => fetchControls().then(setControls)}
+                                                hideAction={()=>setVisible(false)}
+                                    />
                                 </Dialog>
+                              <Dialog header={translationService(currentLanguage,'BUTTON.NEW')}
+                                      visible={editVisible}
+                                      style={{ width: '680px', maxWidth: '100%' }}
+                                      onHide={() => setEditVisible(false)}>
+                                <EditControl stateGetter={() => fetchControls().then(setControls)}
+                                            hideAction={()=>setVisible(false)}
+                                />
+                              </Dialog>
                             </div>
 
                             <Datatable
@@ -110,6 +122,8 @@ function Controls() {
                                 fields={['type', 'duration', 'department', 'theme', 'resources', 'Actions']}
                                 actionTypes={ControlActionTypes}
                                 context={ControlContext}
+                                translationKey={"FORM"}
+                                actions={{edit: () => setEditVisible(true)}}
                                 accessControls={{
                                     EDIT: AppUserActions.EDIT_CONTROL,
                                     DELETE: AppUserActions.DELETE_CONTROL,

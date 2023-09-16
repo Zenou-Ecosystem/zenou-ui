@@ -5,7 +5,7 @@ import "./index.scss";
 import { Toast } from "primereact/toast";
 import { LocalStore } from "../../../utils/storage.utils";
 import { UserTypes } from "../../../constants/user.constants";
-import { createCompany } from "../../../services/companies.service";
+import { createCompany, updateCompany } from '../../../services/companies.service';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { TabMenu } from "primereact/tabmenu";
 import { Dropdown } from "primereact/dropdown";
@@ -13,62 +13,51 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import CountryList from "country-list-with-dial-code-and-flag";
 import { MultiSelect } from "primereact/multiselect";
-import { Password } from "primereact/password";
 import Button from "../../../core/Button/Button";
 import { HiArrowSmRight, HiCheck } from 'react-icons/hi';
 
-const initialState = {
-  company_name: {
-    value: "",
-  },
-  language: {
-    value: "",
-  },
-  domains: {
-    value: "",
-  },
-  contact: {
-    value: "",
-  },
-  country: {
-    value: "",
-  },
-  address: {
-    value: "",
-  },
-  legal_status: {
-    value: "",
-  },
-  category: {
-    value: "",
-  },
-  certification: {
-    value: "",
-  },
-  number_of_employees: {
-    value: "",
-  },
-  capital: {
-    value: "",
-  },
-  function: {
-    value: "",
-  },
-  username: {
-    value: "",
-  },
-  email: {
-    value: "",
-  },
-  password: {
-    value: "",
-  },
-  cPassword: {
-    value: "",
-  },
-};
+export default function EditCompany(props: {hideAction: Function, stateGetter: Function}) {
+  const editItems = LocalStore.get("EDIT_DATA");
 
-export default function AddCompany(props: {hideAction: Function, stateGetter: Function}) {
+  const initialState = {
+    company_name: {
+      value: editItems?.name ?? "",
+    },
+    language: {
+      value: editItems?.language ?? "",
+    },
+    domains: {
+      value: editItems?.sector ?? "",
+    },
+    contact: {
+      value: editItems?.contact ?? "",
+    },
+    country: {
+      value: editItems?.country ?? "",
+    },
+    address: {
+      value: editItems?.address ?? "",
+    },
+    legal_status: {
+      value: editItems?.legal_status ?? "",
+    },
+    category: {
+      value: editItems?.category ?? "",
+    },
+    certification: {
+      value: editItems?.certification ?? "",
+    },
+    number_of_employees: {
+      value: editItems?.number_of_employees ?? "",
+    },
+    capital: {
+      value: editItems?.capital ?? "",
+    },
+    function: {
+      value: editItems?.function ?? "",
+    },
+  };
+
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialState);
 
@@ -95,24 +84,20 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
   const items = [
     {label: translationService(currentLanguage,'REGISTRATION.TAB.PRIMARY'), icon: 'pi pi-eraser'},
     {label: translationService(currentLanguage,'REGISTRATION.TAB.SECONDARY'), icon: 'pi pi-file-edit'},
-    {label: translationService(currentLanguage,'REGISTRATION.TAB.INFORMATION'), icon: 'pi pi-user-plus'}
   ];
 
   const [activeTab, setActiveTab] = useState<any>(0);
 
   const signInHandler = async () => {
 
-    let payload: any = {
-      role: UserTypes.COMPANY_OWNER,
-    };
+    let payload: any = {};
 
     Object.entries(formValues).forEach(([key, value]) => {
       key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
     });
 
-    const newCompany = await createCompany({
+    await updateCompany(editItems?.id, {
       name: payload.company_name,
-      admin_email: payload.email,
       contact: payload.contact,
       sector: payload.domains,
       language: payload.language,
@@ -124,59 +109,43 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
       legal_status: payload.legal_status,
       number_of_employees: payload.number_of_employees,
       address: payload.address,
-    });
-
-    if (newCompany) {
-      const data = await register({
-        username: payload.username,
-        email: payload.email,
-        password: payload.password,
-        company_id: newCompany.id,
-        address: payload.address,
-        role: payload.role,
-        sector: payload.domains,
+    }).then(() => {
+      (toast.current as any).show({
+        severity: "success",
+        summary: "success",
+        detail: "Action reussi",
+        life: 3000,
       });
+      props.stateGetter()
+    }).catch(() => {
+      (toast.current as any).show({
+        severity: "error",
+        summary: "Erruer",
+        detail: "Une erruer cette produit",
+        life: 5000,
+      });
+    }).finally(() => props.hideAction());
 
-      if (data) {
-        (toast.current as any).show({
-          severity: "success",
-          summary: "success",
-          detail: "Action reussi",
-          life: 3000,
-        });
-
-        props.stateGetter()
-        props.hideAction()
-
-      } else {
-        (toast.current as any).show({
-          severity: "error",
-          summary: "Erruer",
-          detail: "Une erruer cette produit",
-          life: 5000,
-        });
-      }
-    }
   };
 
   return (
     <section className="">
       <Toast ref={toast as any} />
       {/*form section*/}
-        <form className="w-full">
+      <form className="w-full">
 
-          <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
-            setActiveTab(e.index);
-          }} />
+        <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
+          setActiveTab(e.index);
+        }} />
 
-          {/*primary information*/}
-          <div hidden={activeTab !== 0}>
-            <br/>
+        {/*primary information*/}
+        <div hidden={activeTab !== 0}>
+          <br/>
 
-            {/*company name*/}
-            <div className="w-full flex my-4 flex-col form-control">
-              <label htmlFor="company_name">{translationService(currentLanguage,'REGISTRATION.FORM.NAME')}</label>
-              <span className="p-input-icon-left">
+          {/*company name*/}
+          <div className="w-full flex my-4 flex-col form-control">
+            <label htmlFor="company_name">{translationService(currentLanguage,'REGISTRATION.FORM.NAME')}</label>
+            <span className="p-input-icon-left">
                   <i className="pi pi-user text-gray-400" />
                   <InputText
                     id="company_name"
@@ -187,15 +156,15 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                     onChange={handleState}
                   />
                 </span>
-            </div>
+          </div>
 
-            {/*legal status / certification*/}
-            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
+          {/*legal status / certification*/}
+          <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
 
-              {/*company legal status*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="legal_status">{translationService(currentLanguage,'REGISTRATION.FORM.LEGAL_STATUS')}</label>
-                <span className="p-input-icon-left">
+            {/*company legal status*/}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="legal_status">{translationService(currentLanguage,'REGISTRATION.FORM.LEGAL_STATUS')}</label>
+              <span className="p-input-icon-left">
                       <i className="pi pi-check-circle text-gray-400" />
                       <InputText
                         id="legal_status"
@@ -206,12 +175,12 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                         onChange={handleState}
                       />
                     </span>
-              </div>
+            </div>
 
-              {/*certification*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="certification">{translationService(currentLanguage,'REGISTRATION.FORM.CERTIFICATION')}</label>
-                <span className="p-input-icon-left">
+            {/*certification*/}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="certification">{translationService(currentLanguage,'REGISTRATION.FORM.CERTIFICATION')}</label>
+              <span className="p-input-icon-left">
                       <i className="pi pi-file-pdf text-gray-400" />
                       <InputText
                         id="certification"
@@ -222,13 +191,13 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                         onChange={handleState}
                       />
                     </span>
-              </div>
             </div>
+          </div>
 
-            {/*company country*/}
-            <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="country">{translationService(currentLanguage,'REGISTRATION.FORM.COUNTRY')}</label>
-              <span className="p-input-icon-left">
+          {/*company country*/}
+          <div className="w-full flex flex-col my-4 form-control">
+            <label htmlFor="country">{translationService(currentLanguage,'REGISTRATION.FORM.COUNTRY')}</label>
+            <span className="p-input-icon-left">
                   <i className="pi pi-globe text-gray-400" />
                   <Dropdown
                     value={formValues.country.value}
@@ -244,14 +213,14 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                     className="w-full md:w-14rem"
                   />
                 </span>
-            </div>
+          </div>
 
-            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
 
-              {/*number of employees*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="number_of_employees">{translationService(currentLanguage,'REGISTRATION.FORM.NUMBER_OF_EMPLOYEES')}</label>
-                <span className="p-input-icon-left">
+            {/*number of employees*/}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="number_of_employees">{translationService(currentLanguage,'REGISTRATION.FORM.NUMBER_OF_EMPLOYEES')}</label>
+              <span className="p-input-icon-left">
                     <i className="pi pi-hashtag text-gray-400" />
                     <InputNumber
                       id="number_of_employees"
@@ -262,12 +231,12 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                       onValueChange={handleState}
                     />
                   </span>
-              </div>
+            </div>
 
-              {/*company function*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="function">{translationService(currentLanguage,'REGISTRATION.FORM.FUNCTION')}</label>
-                <span className="p-input-icon-left">
+            {/*company function*/}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="function">{translationService(currentLanguage,'REGISTRATION.FORM.FUNCTION')}</label>
+              <span className="p-input-icon-left">
                     <i className="pi pi-wrench text-gray-400" />
                     <InputText
                       id="function"
@@ -279,18 +248,18 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                       onChange={handleState}
                     />
                   </span>
-              </div>
             </div>
           </div>
+        </div>
 
-          {/*secondary information*/}
-          <div hidden={activeTab !== 1}>
-            <br/>
+        {/*secondary information*/}
+        <div hidden={activeTab !== 1}>
+          <br/>
 
-            {/*capital*/}
-            <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="capital">{translationService(currentLanguage,'REGISTRATION.FORM.CAPITAL')}</label>
-              <span className="p-input-icon-left">
+          {/*capital*/}
+          <div className="w-full flex flex-col my-4 form-control">
+            <label htmlFor="capital">{translationService(currentLanguage,'REGISTRATION.FORM.CAPITAL')}</label>
+            <span className="p-input-icon-left">
                   <i className="pi pi-flag text-gray-400" />
                   <InputText
                     id="capital"
@@ -302,14 +271,14 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                     onChange={handleState}
                   />
                 </span>
-            </div>
+          </div>
 
-            {/*contact / address*/}
-            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
-              {/*company contact*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="contact">{translationService(currentLanguage,'REGISTRATION.FORM.CONTACT')}</label>
-                <span className="p-input-icon-left">
+          {/*contact / address*/}
+          <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
+            {/*company contact*/}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="contact">{translationService(currentLanguage,'REGISTRATION.FORM.CONTACT')}</label>
+              <span className="p-input-icon-left">
                       <i className="pi pi-phone text-gray-400" />
                       <InputText
                         type="text"
@@ -321,12 +290,12 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                         onChange={handleState}
                       />
                     </span>
-              </div>
+            </div>
 
-              {/*address*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="address">{translationService(currentLanguage,'REGISTRATION.FORM.ADDRESS')}</label>
-                <span className="p-input-icon-left">
+            {/*address*/}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="address">{translationService(currentLanguage,'REGISTRATION.FORM.ADDRESS')}</label>
+              <span className="p-input-icon-left">
                       <i className="pi pi-map-marker text-gray-400" />
                       <InputText
                         id="address"
@@ -338,13 +307,13 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                         onChange={handleState}
                       />
                     </span>
-              </div>
             </div>
+          </div>
 
-            {/*Category*/}
-            <div className="w-full flex flex-col form-control">
-              <label htmlFor="category">{translationService(currentLanguage,'REGISTRATION.FORM.CATEGORY')}</label>
-              <span className="p-input-icon-left">
+          {/*Category*/}
+          <div className="w-full flex flex-col form-control">
+            <label htmlFor="category">{translationService(currentLanguage,'REGISTRATION.FORM.CATEGORY')}</label>
+            <span className="p-input-icon-left">
                   <i className="pi pi-stop-circle text-gray-400" />
                   <InputText
                     id="category"
@@ -356,14 +325,14 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                     onChange={handleState}
                   />
                 </span>
-            </div>
+          </div>
 
-            {/*domain / category*/}
-            <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
-              {/*domain */}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="domains">{translationService(currentLanguage,'REGISTRATION.FORM.DOMAIN_OF_ACTION')}</label>
-                <span className="p-input-icon-left">
+          {/*domain / category*/}
+          <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
+            {/*domain */}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="domains">{translationService(currentLanguage,'REGISTRATION.FORM.DOMAIN_OF_ACTION')}</label>
+              <span className="p-input-icon-left">
                   <i className="pi pi-chart-pie text-gray-400" />
                   <MultiSelect
                     id="domains"
@@ -388,12 +357,12 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                     placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.DOMAIN_OF_ACTION')}
                   />
                 </span>
-              </div>
+            </div>
 
-              {/*language*/}
-              <div className="w-full flex flex-col form-control">
-                <label htmlFor="language">{translationService(currentLanguage,'REGISTRATION.FORM.LANGUAGE')}</label>
-                <span className="p-input-icon-left">
+            {/*language*/}
+            <div className="w-full flex flex-col form-control">
+              <label htmlFor="language">{translationService(currentLanguage,'REGISTRATION.FORM.LANGUAGE')}</label>
+              <span className="p-input-icon-left">
                   <i className="pi pi-language text-gray-400" />
                   <Dropdown
                     id="language"
@@ -415,111 +384,39 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
                     className="w-full"
                   />
                 </span>
-              </div>
-
             </div>
+
           </div>
+        </div>
 
-
-          <div hidden={activeTab !== 2}>
-            <br/>
-            {/*username*/}
-            <div className="w-full flex flex-col my-4">
-              <label htmlFor="username">{translationService(currentLanguage,'REGISTRATION.FORM.NAME')}</label>
-              <span className="p-input-icon-left">
-                <i className="pi pi-user text-gray-400" />
-                <InputText
-                  id="username"
-                  name="username"
-                  value={formValues.username.value}
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.NAME')}
-                  type="text"
-                  className="w-full"
-                  onChange={handleState}
-                />
-              </span>
-            </div>
-
-            {/*email*/}
-            <div className="w-full flex flex-col my-4">
-              <label htmlFor="email">{translationService(currentLanguage,'REGISTRATION.FORM.EMAIL')}</label>
-              <span className="p-input-icon-left">
-                <i className="pi pi-envelope text-gray-400" />
-                <InputText
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={formValues.email.value}
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.EMAIL')}
-                  className="w-full"
-                  onChange={handleState}
-                />
-              </span>
-            </div>
-
-            {/*password*/}
-            <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="password">{translationService(currentLanguage,'REGISTRATION.FORM.PASSWORD')}</label>
-              <span className="p-input-icon-left">
-                <i className="pi pi-lock text-gray-400" />
-                <Password
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.PASSWORD')}
-                  name="password"
-                  id="password"
-                  value={formValues.password.value}
-                  className="password"
-                  onChange={handleState}
-                  toggleMask
-                />
-              </span>
-            </div>
-
-            {/*confirm password*/}
-            <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="cPassword">{translationService(currentLanguage,'REGISTRATION.FORM.CONFIRM_PASSWORD')}</label>
-              <span className="p-input-icon-left">
-                <i className="pi pi-lock-open text-gray-400" />
-                <Password
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.CONFIRM_PASSWORD')}
-                  className="password"
-                  name="cPassword"
-                  id="password"
-                  value={formValues.cPassword.value}
-                  onChange={handleState}
-                  toggleMask
-                />
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <button
-              id="return"
-              className={`py-2 ${
-                activeTab === 0 ? "hidden" : "flex"
-              } items-center gap-4 text-red-500 rounded-md  w-auto px-4 border border-red-500`}
-              onClick={(e: any) => {
-                e.preventDefault();
-                setActiveTab((prev:number) => prev - 1);
-              }}
-            >
-              <i className="pi pi-arrow-left"></i>
-              {translationService(currentLanguage,'REGISTRATION.BUTTON.BACK')}
-            </button>
-            <Button
-              title={activeTab !== 2 ? translationService(currentLanguage,'REGISTRATION.BUTTON.NEXT') : translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')}
-              Icon={{
-                classes: "",
-                Name: activeTab !== 2 ? HiArrowSmRight : HiCheck,
-                color: "white",
-              }}
-              styles={`w-full md:w-auto py-2.5 px-4 items-center justify-center ${activeTab !== 2?'':'flex-row-reverse'}`}
-              onClick={() => {
-                activeTab !== 2 ? setActiveTab((prev:number) => prev +1) : signInHandler().then(console.log);
-              }}
-            />
-          </div>
-        </form>
+        <div className="flex items-center justify-between">
+          <button
+            id="return"
+            className={`py-2 ${
+              activeTab === 0 ? "hidden" : "flex"
+            } items-center gap-4 text-red-500 rounded-md  w-auto px-4 border border-red-500`}
+            onClick={(e: any) => {
+              e.preventDefault();
+              setActiveTab((prev:number) => prev - 1);
+            }}
+          >
+            <i className="pi pi-arrow-left"></i>
+            {translationService(currentLanguage,'REGISTRATION.BUTTON.BACK')}
+          </button>
+          <Button
+            title={activeTab !== 1 ? translationService(currentLanguage,'REGISTRATION.BUTTON.NEXT') : translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')}
+            Icon={{
+              classes: "",
+              Name: activeTab !== 1 ? HiArrowSmRight : HiCheck,
+              color: "white",
+            }}
+            styles={`w-full md:w-auto py-2.5 px-4 items-center justify-center ${activeTab !== 1 ?'':'flex-row-reverse'}`}
+            onClick={() => {
+              activeTab !== 1 ? setActiveTab((prev:number) => prev +1) : signInHandler().then(console.log);
+            }}
+          />
+        </div>
+      </form>
     </section>
   );
 }

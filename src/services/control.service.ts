@@ -24,6 +24,15 @@ export const createControl = async (payload: IControl) => {
     }
 }
 
+export const updateControl = async (id: string | number, data: any) => {
+    try {
+        const response = await axios.patch(`${Config.baseUrl}/controls/${id}`, data);
+        return (await response).data;
+    } catch (error) {
+        console.log('An error occured => ', error);
+    }
+}
+
 export const deleteControl = async (id: string | number) => {
     try {
         const response = await axios.delete(`${Config.baseUrl}/controls/${id}`);

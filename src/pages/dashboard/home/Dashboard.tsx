@@ -104,6 +104,8 @@ function Dashboard() {
 
       const result = countItemsBySector(data);
 
+      console.log(kpiData);
+
       const statisticsLawsBySectorOfActivity = {
         air: data.filter((x:any) => x.sectors_of_activity.includes("air"))?.length,
         terre: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
@@ -129,15 +131,27 @@ function Dashboard() {
       }
 
       const LawsBySectorOfActivityCompliance = {
-        air: compliance?.air ?? 0,
-        terre: compliance?.land ?? 0,
-        transport: compliance?.transport ?? 0,
-        environnement: compliance?.environment ?? 0,
-        eau: compliance?.water ?? 0,
-        education: compliance?.education ?? 0,
-        sante: compliance?.health ?? 0,
-        agriculture: compliance?.agriculture ?? 0,
-        business: compliance?.business ?? 0,
+        air: kpiData?.domain?.complaint?.air ?? 0,
+        terre: kpiData?.domain?.complaint?.land ?? 0,
+        transport: kpiData?.domain?.complaint?.transport ?? 0,
+        environnement: kpiData?.domain?.complaint?.environment ?? 0,
+        eau: kpiData?.domain?.complaint?.water ?? 0,
+        education: kpiData?.domain?.complaint?.education ?? 0,
+        sante: kpiData?.domain?.complaint?.health ?? 0,
+        agriculture: kpiData?.domain?.complaint?.agriculture ?? 0,
+        business: kpiData?.domain?.complaint?.business ?? 0,
+      }
+
+      const LawsBySectorOfActivityApplicable = {
+        air: kpiData?.domain?.applicable?.air ?? 0,
+        terre: kpiData?.domain?.applicable?.land ?? 0,
+        transport: kpiData?.domain?.applicable?.transport ?? 0,
+        environnement: kpiData?.domain?.applicable?.environment ?? 0,
+        eau: kpiData?.domain?.applicable?.water ?? 0,
+        education: kpiData?.domain?.applicable?.education ?? 0,
+        sante: kpiData?.domain?.applicable?.health ?? 0,
+        agriculture: kpiData?.domain?.applicable?.agriculture ?? 0,
+        business: kpiData?.domain?.applicable?.business ?? 0,
       }
 
       const applicable = {
@@ -146,7 +160,7 @@ function Dashboard() {
           {
             type: 'bar',
             label: "Oui",
-            data: Object.values(countItems(data, (x:any) => x?.applicability === 'yes')),
+            data: Object.values(LawsBySectorOfActivityApplicable),
           },{
             type: 'bar',
             label: "Non",

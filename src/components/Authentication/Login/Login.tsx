@@ -102,7 +102,7 @@ function Login() {
 
           {/*email*/}
           <div className="w-full flex flex-col my-4">
-            <label htmlFor="email">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.EMAIL')}</label>
+            <label htmlFor="email">{translationService(currentLanguage,'REGISTRATION.FORM.EMAIL')}</label>
             <span className="p-input-icon-left">
               <i className="pi pi-envelope text-gray-400" />
               <InputText
@@ -110,7 +110,7 @@ function Login() {
                 type="email"
                 name="email"
                 value={formValues.email.value}
-                placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.EMAIL')}
+                placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.EMAIL')}
                 className="w-full"
                 onChange={handleState}
               />
@@ -119,11 +119,11 @@ function Login() {
 
           {/*password*/}
           <div className="w-full flex flex-col my-4 form-control">
-            <label htmlFor="password">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.PASSWORD')}</label>
+            <label htmlFor="password">{translationService(currentLanguage,'REGISTRATION.FORM.PASSWORD')}</label>
             <span className="p-input-icon-left">
               <i className="pi pi-lock text-gray-400" />
               <Password
-                placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.PASSWORD')}
+                placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.PASSWORD')}
                 name="password"
                 id="password"
                 value={formValues.password.value}

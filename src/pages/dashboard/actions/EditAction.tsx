@@ -1,99 +1,88 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Button from "../../../core/Button/Button";
-import { ProgressSpinner } from "primereact/progressspinner";
-import useActionsContext from "../../../hooks/useActionsContext";
-import { ActionsActionTypes } from "../../../store/action-types/action.actions";
 import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
-import { Dropdown } from "primereact/dropdown";
-import { fetchControls } from "../../../services/control.service";
 import { fetchLaws } from "../../../services/laws.service";
-import { ILaws } from "../../../interfaces/laws.interface";
-import { fetchDepartments } from "../../../services/department.service";
 import { Chips } from 'primereact/chips';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
-import useControlContext from '../../../hooks/useControlContext';
-import { ControlActionTypes } from '../../../store/action-types/control.actions';
-import { createAction } from '../../../services/actions.service';
+import { updateAction } from '../../../services/actions.service';
 import { Toast } from 'primereact/toast';
+import { LocalStore } from '../../../utils/storage.utils';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 
-let initialFormState = {
-  type: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  duration: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  theme: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  department: {
-    value: [],
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  responsible_for: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  resources: {
-    value: [],
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  evaluation_criteria: {
-    value: [],
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  evidence_of_actions: {
-    value: [],
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  text_of_the_law: {
-    value: [],
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  control_plan: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-  number: {
-    value: "",
-    error: true,
-    error_message: "",
-    required: true,
-  },
-};
-
-function AddAction(props: {hideAction: Function, stateGetter: Function}) {
+export default function EditAction(props: {hideAction: Function, stateGetter: Function}) {
+  const editItems = LocalStore.get("EDIT_DATA");
+  let initialFormState = {
+    type: {
+      value: editItems?.type ?? "",
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    duration: {
+      value: new Date(editItems?.duration),
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    theme: {
+      value: editItems?.theme,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    department: {
+      value: editItems?.department,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    responsible_for: {
+      value: editItems?.responsible_for,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    resources: {
+      value: editItems?.resources,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    evaluation_criteria: {
+      value: editItems?.evaluation_criteria,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    evidence_of_actions: {
+      value: editItems?.evidence_of_actions,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    text_of_the_law: {
+      value: editItems?.text_of_the_law,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    control_plan: {
+      value: editItems?.control_plan,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+    number: {
+      value: editItems?.number,
+      error: true,
+      error_message: "",
+      required: true,
+    },
+  };
   const [formValues, setFormValues] =
     useState<Record<string, any>>(initialFormState);
-  const [loader, setLoader] = useState(false);
-  const { state, dispatch } = useControlContext();
   const [laws, setLaws] = useState<any[]>([]);
   const toast = useRef<Toast>(null);
 
@@ -101,26 +90,21 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
+
   const handleSubmission = () => {
-    setLoader(true);
-    createAction(formData() as any).then(result => {
+    updateAction(editItems?.id, formData() as any).then(() => {
       toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
-      props?.stateGetter()
+      props.stateGetter()
     }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
-      props?.hideAction();
+      props.hideAction();
     })
   };
 
   useEffect(() => {
     (async () => {
-      const resolvedState = await state;
-      if (resolvedState.hasCreated) {
-        setLoader(false);
-      }
-      //  Fetch laws
       setLaws(await fetchLaws());
     })();
-  }, [state]);
+  }, []);
 
   let formData = () => {
     let formData: Record<string, any>={};
@@ -162,14 +146,12 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
         error,
       },
     });
-
   };
 
   const addForm = () => {
     return (
       <form className="w-full">
         <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-
           {/*type*/}
           <div className="control-type">
             <label htmlFor="type">{translationService(currentLanguage,'FORM.TYPE')}</label>
@@ -185,6 +167,7 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
           {/*responsible for*/}
           <div className="control-responsibleFor">
+
             <label htmlFor="responsible_for">{translationService(currentLanguage,'FORM.RESPONSIBLE_FOR')}</label>
             <InputText
               value={formValues.responsible_for.value}
@@ -198,37 +181,37 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
           {/*resources*/}
           <div className="col-span-2">
-            <label htmlFor="resources">{translationService(currentLanguage,'FORM.RESOURCES')}</label>
+            <label htmlFor="resources">Resources</label>
             <Chips name="resources"
                    id="resources"
                    value={formValues.resources.value}
                    className="w-full"
-                   placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.RESOURCES')}
+                   placeholder="Entree la liste des resources"
                    onChange={handleChange} />
-            <small className="text-gray-500">{translationService(currentLanguage,'FORM.CHIP.HINT')}</small>
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle ressource</small>
           </div>
 
           {/*evaluation*/}
           <div className="col-span-2">
-            <label htmlFor="evaluation_criteria">{translationService(currentLanguage,'FORM.PLACEHOLDER.EVALUATION_CRITERIA')}</label>
+            <label htmlFor="evaluation_criteria">Critaire d'evaluation</label>
             <Chips
               value={formValues.evaluation_criteria.value}
               id="evaluation_criteria"
               onChange={handleChange}
               name="evaluation_criteria"
-              placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.EVALUATION_CRITERIA')}
+              placeholder="Entree les critaire d'evaluation"
               className="w-full"
             />
-            <small className="text-gray-500">{translationService(currentLanguage,'FORM.CHIP.HINT')}</small>
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter une nouvelle evaluation</small>
           </div>
 
           {/*duration*/}
           <div className="control-Duration">
-            <label htmlFor="duration">{translationService(currentLanguage,'FORM.DURATION')}</label>
+            <label htmlFor="duration">Delias</label>
             <Calendar
               name="duration"
               id="duration"
-              placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.DURATION')}
+              placeholder="Entre le delais"
               className="w-full"
               showIcon
               value={formValues.duration.value}
@@ -238,28 +221,26 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
           {/*theme*/}
           <div>
-            <label htmlFor="theme">{translationService(currentLanguage,'FORM.THEME')}</label>
+            <label htmlFor="theme">Theme</label>
             <InputText
               value={formValues.theme.value}
               id="theme"
               onChange={handleChange}
               name="theme"
-              placeholder={translationService(currentLanguage,'FORM.THEME')}
+              placeholder="Entrer le theme"
               className="w-full"
             />
           </div>
 
           {/*Evidence of action*/}
           <div className="">
-            <label htmlFor="evidence_of_action">
-              {translationService(currentLanguage,'FORM.EVIDENCE_OF_ACTIONS')}
-            </label>
+            <label htmlFor="evidence_of_action">Evidences des action</label>
             <InputText
               value={formValues.evidence_of_actions.value}
               id="evidence_of_actions"
               onChange={handleChange}
               name="evidence_of_actions"
-              placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.EVIDENCE_OF_ACTIONS')}
+              placeholder="Entrer l'evidence de l'action"
               className="w-full"
             />
           </div>
@@ -281,27 +262,27 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
           {/*department*/}
           <div className="col-span-2">
-            <label htmlFor="department">{translationService(currentLanguage,'FORM.DEPARTMENT')}</label>
+            <label htmlFor="department">Department</label>
             <Chips
               value={formValues.department.value}
               id="department"
               onChange={handleChange}
               name="department"
-              placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.DEPARTMENT')}
+              placeholder="Entrer les department"
               className="w-full"
             />
-            <small className="text-gray-500">{translationService(currentLanguage,'FORM.CHIP.HINT')}</small>
+            <small className="text-gray-500">Saisissez et appuyez sur Entrée pour ajouter un departement</small>
           </div>
 
           {/*control plan section*/}
           <div>
-            <label htmlFor="control_plan">{translationService(currentLanguage,'FORM.CONTROL_PLAN')}</label>
+            <label htmlFor="control_plan">Numeros de control</label>
             <InputNumber
               value={formValues.control_plan.value}
               id="control_plan"
               type="text"
               name="control_plan"
-              placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.CONTROL_PLAN')}
+              placeholder="Entrer le numeros de control"
               onValueChange={handleChange}
               className='w-full'
             />
@@ -309,38 +290,35 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
           {/*text of law*/}
           <div className=''>
-            <label htmlFor="text_of_the_law">{translationService(currentLanguage,'FORM.TEXT_OF_THE_LAW')}</label>
+            <label htmlFor="text_of_the_law">Selectionner des texte</label>
             <MultiSelect
-              value={formValues.text_of_the_law.value}
-              onChange={handleChange}
-              id="text_of_the_law"
               filter
+              value={formValues.text_of_the_law.value}
+              id="text_of_the_law"
+              onChange={handleChange}
               name="text_of_the_law"
-              optionLabel="title_of_text"
-              placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.TEXT_OF_THE_LAW')}
-              className="w-full"
+              optionLabel='title_of_text'
+              placeholder="Selectionner le texte"
+              className="w-full md:w-14rem"
               options={laws || []}
               defaultValue={formValues.text_of_the_law.value}
               selectedItemTemplate={(options: any) => options?.title_of_text ?
                 <span className='text-xs mr-2 text-white rounded-md addTextToAnalysisTable p-1 w-20'>
                     {options?.title_of_text?.slice(0,10)}
                   </span>:
-                translationService(currentLanguage,'FORM.PLACEHOLDER.TEXT_OF_THE_LAW')}
+                "Selectionner le texte"}
               itemTemplate={(options) => options?.title_of_text?.slice(0,40) + "..."}
             />
           </div>
+
         </div>
 
         {/*submit button*/}
         <div className="w-full my-4 py-2">
-          <div className="">
-            {loader ? (
-              <ProgressSpinner style={{ width: "50px", height: "50px" }} />
-            ) : (
-              ""
-            )}
-          </div>
-          <Button title="Créer un nouveau contrôle" styles="flex-row-reverse float-right px-6 py-3 items-center rounded-md" onClick={handleSubmission} />
+          <Button title="Modifier contrôle"
+                  styles="flex-row-reverse font-light text-xs float-right px-6 py-3 items-center rounded-md"
+                  onClick={handleSubmission}
+          />
         </div>
       </form>
     );
@@ -354,4 +332,3 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
   );
 }
 
-export default AddAction;

@@ -471,7 +471,6 @@ export default function TextAnalysis() {
         <br/>
         {/*submit btn*/}
         <div className="w-full flex items-center justify-between">
-          {/*<Button disabled={loader} size='small' severity='warning' icon={`pi ${loader ? 'pi-spin pi-spinner': 'pi-check'}`} label={translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')} className={`px-6 py-4 text-center rounded-md ${loader?'submit':''}`} onClick={()=>{}} />*/}
           <Button icon={`pi pi-${formValues.compliant.value?'check':'times'}`} size='small'
                   label={translationService(currentLanguage,`LAW.ADD.${formState === 'edit' ? 'EDIT' :'REVIEW'}`)}
                   className={`py-4 w-full px-6 text-center rounded-md ${formValues.compliant.value?'conformity':'not-conformed'}`} onClick={(e)=>{

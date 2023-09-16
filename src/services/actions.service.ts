@@ -25,6 +25,15 @@ export const createAction = async (payload: IActions) => {
     }
 }
 
+export const updateAction = async (id: string | number, data: any) => {
+    try {
+        const response = await axios.patch(`${Config.baseUrl}/actions/${id}`, data);
+        return (await response).data;
+    } catch (error) {
+        console.log('An error occured => ', error);
+    }
+}
+
 export const deleteAction = async (id: string | number) => {
     try {
         const response = await axios.delete(`${Config.baseUrl}/actions/${id}`);

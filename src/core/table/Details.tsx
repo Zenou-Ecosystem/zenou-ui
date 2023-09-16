@@ -8,7 +8,6 @@ import { currentLanguageValue, translationService } from '../../services/transla
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Tag } from 'primereact/tag';
-import { fetchLaws } from '../../services/laws.service';
 import { Toast } from 'primereact/toast';
 import { getApplicableRequirements, getRequirementsByImpact } from '../../services/kpi.service';
 import { Chart } from 'primereact/chart';
@@ -17,6 +16,8 @@ import { Chart } from 'primereact/chart';
 export default function DataDetails() {
   const [props, setProps] = useState<any>();
   const params = useParams();
+  const data = LocalStore.get("VIEWED_DATA");
+  const userRole = LocalStore.get("user");
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const [chartData, setChartData] = React.useState({}) as any;
   const [chartOptions, setChartOptions] = React.useState({});
@@ -38,8 +39,6 @@ export default function DataDetails() {
   const [items, setItems] = useState(primaryItems)
 
   useEffect(() => {
-    const data = LocalStore.get("VIEWED_DATA");
-    const userRole = LocalStore.get("user");
     setProps(data ?? {});
     switch (true) {
       case params?.context && params?.context === 'laws':
@@ -119,7 +118,7 @@ export default function DataDetails() {
      return { elements, detailElements };
     }
     for (let [key, value] of Object.entries(props)) {
-      key = key === "id" || key === "_id" ? "Signature" : key;
+      // key = key === "id" ? "Signature" : key;
       // @ts-ignore
       ['created_at', 'updated_at', 'password'].includes(key) && delete props[key];
 
@@ -181,7 +180,7 @@ export default function DataDetails() {
         }
       }
     }
-    // console.log(elements);
+    // console.log(detailElements);
     return { elements, detailElements };
   };
 
@@ -243,7 +242,7 @@ export default function DataDetails() {
         <div hidden={activeTab.value?.label !== items[0]?.label} className='p-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {props ? showPropDetail(props).elements.map((prop:any) => prop) : ""}
-            {showPropDetail(props)?.detailElements?.products_or_services_concerned?.length ?
+            {params?.context === "laws" && showPropDetail(props)?.detailElements?.products_or_services_concerned?.length ?
               (
                 <div>
                   <p className='border-b pb-2'>
@@ -257,16 +256,12 @@ export default function DataDetails() {
                   </ul>
                 </div>
               ): ""}
-            {showPropDetail(props)?.detailElements?.parent_of_text?.length ?
+            {params?.context === "laws" && showPropDetail(props)?.detailElements?.parent_of_text?.length ?
               (
                 <div className='flex gap-2 items-center'>
                   {(showPropDetail(props)?.detailElements?.parent_of_text as []).map((item:any, index) =>
                     <a key={index} className='cursor-pointer text-blue-500 pb-1 border-b border-blue-500' onClick={(e) => {
                       e.preventDefault();
-                      console.log(item);
-                      // LocalStore.set('VIEW_DATA', item);
-                      // setProps(item);
-                      // navigate(`/dashboard/laws/${item?.id}`)
                     }}>
                       {item?.title_of_text?.slice(0, 10)+"..."}
                     </a>

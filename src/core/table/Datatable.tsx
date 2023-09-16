@@ -22,6 +22,7 @@ function Datatable(props: {
   noPagination?: Boolean;
   translationKey?: string;
   filterKeys?:DataTableFilterMeta
+  actions?:{ edit?: Function, read?: Function }
 }) {
   const { data, fields, actionTypes, context, accessControls } = props;
   const [tableColumns, setTableColumns] = useState<string[]>([]);
@@ -50,7 +51,15 @@ function Datatable(props: {
           value.startsWith("EDIT")
         );
         LocalStore.set("EDIT_DATA", currentData)
-        navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/edit/${currentData?.id || currentData?._id}`);
+
+        if(!props?.actions){
+          navigate(`/dashboard/${context[context.length  - 1].toLowerCase()}/edit/${currentData?.id || currentData?._id}`);
+          return;
+        }
+        if(props.actions.edit){
+          props.actions.edit();
+        }
+
         // console.log(actionItem, currentData);
       }  },
     { separator: true },

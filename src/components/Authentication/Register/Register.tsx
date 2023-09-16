@@ -94,9 +94,9 @@ function Register() {
   };
 
   const items = [
-    {label: translationService(currentLanguage,'REGISTRATION.TAB.COMPANY_INFORMATION.PRIMARY'), icon: 'pi pi-eraser'},
-    {label: translationService(currentLanguage,'REGISTRATION.TAB.COMPANY_INFORMATION.SECONDARY'), icon: 'pi pi-file-edit'},
-    {label: translationService(currentLanguage,'REGISTRATION.TAB.ADMINISTRATORS_INFORMATION.PRIMARY'), icon: 'pi pi-user-plus'}
+    {label: translationService(currentLanguage,'REGISTRATION.TAB.PRIMARY'), icon: 'pi pi-eraser'},
+    {label: translationService(currentLanguage,'REGISTRATION.TAB.SECONDARY'), icon: 'pi pi-file-edit'},
+    {label: translationService(currentLanguage,'REGISTRATION.TAB.INFORMATION'), icon: 'pi pi-user-plus'}
   ];
 
   const [activeTab, setActiveTab] = useState<any>(0);
@@ -192,7 +192,7 @@ function Register() {
 
             {/*company name*/}
             <div className="w-full flex my-4 flex-col form-control">
-              <label htmlFor="company_name">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.NAME')}</label>
+              <label htmlFor="company_name">{translationService(currentLanguage,'REGISTRATION.FORM.NAME')}</label>
               <span className="p-input-icon-left">
                   <i className="pi pi-user text-gray-400" />
                   <InputText
@@ -200,7 +200,7 @@ function Register() {
                     name="company_name"
                     value={formValues?.company_name?.value}
                     className="w-full"
-                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.NAME')}
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.NAME')}
                     onChange={handleState}
                   />
                 </span>
@@ -211,14 +211,14 @@ function Register() {
 
               {/*company legal status*/}
                 <div className="w-full flex flex-col form-control">
-                  <label htmlFor="legal_status">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.LEGAL_STATUS')}</label>
+                  <label htmlFor="legal_status">{translationService(currentLanguage,'REGISTRATION.FORM.LEGAL_STATUS')}</label>
                   <span className="p-input-icon-left">
                       <i className="pi pi-check-circle text-gray-400" />
                       <InputText
                         id="legal_status"
                         name="legal_status"
                         value={formValues.legal_status.value}
-                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.LEGAL_STATUS')}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.LEGAL_STATUS')}
                         className="w-full"
                         onChange={handleState}
                       />
@@ -227,14 +227,14 @@ function Register() {
 
               {/*certification*/}
                 <div className="w-full flex flex-col form-control">
-                  <label htmlFor="certification">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CERTIFICATION')}</label>
+                  <label htmlFor="certification">{translationService(currentLanguage,'REGISTRATION.FORM.CERTIFICATION')}</label>
                   <span className="p-input-icon-left">
                       <i className="pi pi-file-pdf text-gray-400" />
                       <InputText
                         id="certification"
                         name="certification"
                         value={formValues.certification.value}
-                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CERTIFICATION')}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.CERTIFICATION')}
                         className="w-full"
                         onChange={handleState}
                       />
@@ -244,7 +244,7 @@ function Register() {
 
             {/*company country*/}
             <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="country">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.COUNTRY')}</label>
+              <label htmlFor="country">{translationService(currentLanguage,'REGISTRATION.FORM.COUNTRY')}</label>
               <span className="p-input-icon-left">
                   <i className="pi pi-globe text-gray-400" />
                   <Dropdown
@@ -254,7 +254,7 @@ function Register() {
                     options={CountryList.getAll()}
                     optionLabel="name"
                     id="country"
-                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.COUNTRY')}
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COUNTRY')}
                     filter
                     valueTemplate={selectedCountryTemplate}
                     itemTemplate={countryOptionTemplate}
@@ -267,14 +267,14 @@ function Register() {
 
               {/*number of employees*/}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="number_of_employees">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.NUMBER_OF_EMPLOYEES')}</label>
+                <label htmlFor="number_of_employees">{translationService(currentLanguage,'REGISTRATION.FORM.NUMBER_OF_EMPLOYEES')}</label>
                 <span className="p-input-icon-left">
                     <i className="pi pi-hashtag text-gray-400" />
                     <InputNumber
                       id="number_of_employees"
                       name="number_of_employees"
                       value={formValues.number_of_employees.value}
-                      placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.NUMBER_OF_EMPLOYEES')}
+                      placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.NUMBER_OF_EMPLOYEES')}
                       className="w-full"
                       onValueChange={handleState}
                     />
@@ -283,7 +283,7 @@ function Register() {
 
               {/*company function*/}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="function">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.FUNCTION')}</label>
+                <label htmlFor="function">{translationService(currentLanguage,'REGISTRATION.FORM.FUNCTION')}</label>
                 <span className="p-input-icon-left">
                     <i className="pi pi-wrench text-gray-400" />
                     <InputText
@@ -291,7 +291,7 @@ function Register() {
                       type="text"
                       name="function"
                       value={formValues.function.value}
-                      placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.FUNCTION')}
+                      placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.FUNCTION')}
                       className="w-full"
                       onChange={handleState}
                     />
@@ -306,7 +306,7 @@ function Register() {
 
             {/*capital*/}
             <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="capital">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CAPITAL')}</label>
+              <label htmlFor="capital">{translationService(currentLanguage,'REGISTRATION.FORM.CAPITAL')}</label>
               <span className="p-input-icon-left">
                   <i className="pi pi-flag text-gray-400" />
                   <InputText
@@ -314,7 +314,7 @@ function Register() {
                     type="text"
                     name="capital"
                     value={formValues.capital.value}
-                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CAPITAL')}
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.CAPITAL')}
                     className="w-full"
                     onChange={handleState}
                   />
@@ -325,7 +325,7 @@ function Register() {
             <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
               {/*company contact*/}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="contact">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CONTACT')}</label>
+                <label htmlFor="contact">{translationService(currentLanguage,'REGISTRATION.FORM.CONTACT')}</label>
                 <span className="p-input-icon-left">
                       <i className="pi pi-phone text-gray-400" />
                       <InputText
@@ -334,7 +334,7 @@ function Register() {
                         name="contact"
                         className="w-full"
                         value={formValues.contact.value}
-                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CONTACT')}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.CONTACT')}
                         onChange={handleState}
                       />
                     </span>
@@ -342,7 +342,7 @@ function Register() {
 
               {/*address*/}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="address">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.ADDRESS')}</label>
+                <label htmlFor="address">{translationService(currentLanguage,'REGISTRATION.FORM.ADDRESS')}</label>
                 <span className="p-input-icon-left">
                       <i className="pi pi-map-marker text-gray-400" />
                       <InputText
@@ -350,7 +350,7 @@ function Register() {
                         type="text"
                         name="address"
                         value={formValues.address.value}
-                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.ADDRESS')}
+                        placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADDRESS')}
                         className="w-full"
                         onChange={handleState}
                       />
@@ -360,7 +360,7 @@ function Register() {
 
             {/*Category*/}
             <div className="w-full flex flex-col form-control">
-              <label htmlFor="category">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.CATEGORY')}</label>
+              <label htmlFor="category">{translationService(currentLanguage,'REGISTRATION.FORM.CATEGORY')}</label>
               <span className="p-input-icon-left">
                   <i className="pi pi-stop-circle text-gray-400" />
                   <InputText
@@ -368,7 +368,7 @@ function Register() {
                     type="text"
                     name="category"
                     value={formValues.category.value}
-                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.CATEGORY')}
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.CATEGORY')}
                     className="w-full"
                     onChange={handleState}
                   />
@@ -379,7 +379,7 @@ function Register() {
             <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
               {/*domain */}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="domains">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.DOMAIN_OF_ACTION')}</label>
+                <label htmlFor="domains">{translationService(currentLanguage,'REGISTRATION.FORM.DOMAIN_OF_ACTION')}</label>
                 <span className="p-input-icon-left">
                   <i className="pi pi-chart-pie text-gray-400" />
                   <MultiSelect
@@ -402,14 +402,14 @@ function Register() {
                         { label: translationService(currentLanguage,'OPTIONS.SECTORS_OF_ACTIVITIES.AGRICULTURE'), value: "agriculture" },
                       ]
                     }
-                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.DOMAIN_OF_ACTION')}
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.DOMAIN_OF_ACTION')}
                   />
                 </span>
               </div>
 
               {/*language*/}
               <div className="w-full flex flex-col form-control">
-                <label htmlFor="language">{translationService(currentLanguage,'REGISTRATION.FORM.COMPANY_INFORMATION.LANGUAGE')}</label>
+                <label htmlFor="language">{translationService(currentLanguage,'REGISTRATION.FORM.LANGUAGE')}</label>
                 <span className="p-input-icon-left">
                   <i className="pi pi-language text-gray-400" />
                   <Dropdown
@@ -428,7 +428,7 @@ function Register() {
                         }]
                     }
                     optionLabel="label"
-                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.COMPANY_INFORMATION.LANGUAGE')}
+                    placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.LANGUAGE')}
                     className="w-full"
                   />
                 </span>
@@ -442,14 +442,14 @@ function Register() {
             <br/>
             {/*username*/}
             <div className="w-full flex flex-col my-4">
-              <label htmlFor="username">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.NAME')}</label>
+              <label htmlFor="username">{translationService(currentLanguage,'REGISTRATION.FORM.NAME')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-user text-gray-400" />
                 <InputText
                   id="username"
                   name="username"
                   value={formValues.username.value}
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.NAME')}
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.NAME')}
                   type="text"
                   className="w-full"
                   onChange={handleState}
@@ -459,7 +459,7 @@ function Register() {
 
             {/*email*/}
             <div className="w-full flex flex-col my-4">
-              <label htmlFor="email">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.EMAIL')}</label>
+              <label htmlFor="email">{translationService(currentLanguage,'REGISTRATION.FORM.EMAIL')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-envelope text-gray-400" />
                 <InputText
@@ -467,7 +467,7 @@ function Register() {
                   type="email"
                   name="email"
                   value={formValues.email.value}
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.EMAIL')}
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.EMAIL')}
                   className="w-full"
                   onChange={handleState}
                 />
@@ -476,11 +476,11 @@ function Register() {
 
             {/*password*/}
             <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="password">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.PASSWORD')}</label>
+              <label htmlFor="password">{translationService(currentLanguage,'REGISTRATION.FORM.PASSWORD')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-lock text-gray-400" />
                 <Password
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.PASSWORD')}
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.PASSWORD')}
                   name="password"
                   id="password"
                   value={formValues.password.value}
@@ -493,11 +493,11 @@ function Register() {
 
             {/*confirm password*/}
             <div className="w-full flex flex-col my-4 form-control">
-              <label htmlFor="cPassword">{translationService(currentLanguage,'REGISTRATION.FORM.ADMIN_INFORMATION.CONFIRM_PASSWORD')}</label>
+              <label htmlFor="cPassword">{translationService(currentLanguage,'REGISTRATION.FORM.CONFIRM_PASSWORD')}</label>
               <span className="p-input-icon-left">
                 <i className="pi pi-lock-open text-gray-400" />
                 <Password
-                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.ADMIN_INFORMATION.CONFIRM_PASSWORD')}
+                  placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.CONFIRM_PASSWORD')}
                   className="password"
                   name="cPassword"
                   id="password"

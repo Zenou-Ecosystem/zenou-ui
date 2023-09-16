@@ -24,6 +24,15 @@ export const createPersonnel = async (payload: IPersonnel) => {
   }
 };
 
+export const updatePersonnel = async (id: string | number, data: any) => {
+  try {
+    const response = await axios.patch(`${Config.baseUrl}/personnel/${id}`, data);
+    return (await response).data;
+  } catch (error) {
+    console.log('An error occured => ', error);
+  }
+}
+
 export const deletePersonnel = async (id: string | number) => {
   try {
     const response = await axios.delete(`${Config.baseUrl}/law/${id}`);

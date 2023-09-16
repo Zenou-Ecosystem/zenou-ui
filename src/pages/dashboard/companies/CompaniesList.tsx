@@ -19,10 +19,12 @@ import { AppUserActions } from "../../../constants/user.constants";
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import EditCompany from './EditCompanies';
 
 function CompaniesList() {
   const [companies, setCompanies] = useState<ICompany[]>([]);
   const [visible, setVisible] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
   const { state, dispatch } = useAppContext();
 
   const { state: companyState, dispatch: companyDispatch } =
@@ -32,90 +34,37 @@ function CompaniesList() {
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
-
   const openAddCompanyForm = () => {
     setVisible(true);
   };
 
   useEffect(() => {
     (async () => {
-      const res = await state;
-      let data = res?.data;
-      if (!data || data.length < 1) {
-        data = await fecthCompanies();
-      }
-      setCompanies(data);
+      setCompanies(await fecthCompanies());
     })();
 
-    (async () => {
-      const resolvedCompanyState = await companyState;
-      if (resolvedCompanyState.hasCreated) {
-        console.log("Company state changed => ", resolvedCompanyState);
-        setVisible(false);
-      }
-    })();
-  }, [state, companyState]);
-
-  const cardProps = {
-    content: `Statistics for the month of February. This is really making
-        sense in all areas`,
-    title: "Company Statistics",
-  };
-  const handleNameFilter = (query: string) => {
-    console.log("The name typed is ", query);
-  };
-  const handleCountryFilter = (query: string) => {
-    console.log("The country typed is ", query);
-  };
-  const handleCategoryFilter = (query: string) => {
-    console.log("The category typed is ", query);
-  };
-
-  const handleCertificationFilter = (query: string) => {
-    console.log("The certificate typed is ", query);
-  };
-  const filterProps = [
-    {
-      type: "text",
-      onChange: handleNameFilter,
-      label: "Name",
-    },
-    {
-      type: "text",
-      onChange: handleCountryFilter,
-      label: "Country",
-    },
-    {
-      type: "text",
-      onChange: handleCategoryFilter,
-      label: "Category",
-    },
-    {
-      type: "text",
-      onChange: handleCertificationFilter,
-      label: "Certification",
-    },
-  ];
-
+    // (async () => {
+    //   const resolvedCompanyState = await companyState;
+    //   if (resolvedCompanyState.hasCreated) {
+    //     console.log("Company state changed => ", resolvedCompanyState);
+    //     setVisible(false);
+    //   }
+    // })();
+  }, []);
 
   return (
     <CompanyContextProvider>
-      {/*<div className="w-full px-4 my-4 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">*/}
-      {/*  <BasicCard {...cardProps} />*/}
-      {/*  <BasicCard {...cardProps} />*/}
-      {/*  <BasicCard {...cardProps} />*/}
-      {/*  <BasicCard {...cardProps} />*/}
-      {/*</div>*/}
-
       <div className="w-full px-4">
         <BasicCard
-          title={translationService(currentLanguage,'COMPANIES.LIST.TITLE')}
+          title={''}
           headerStyles="font-medium text-3xl py-4"
           content={() => (
             <>
-              <div className="filter my-8 w-full m-auto flex items-end">
-                <div className="filter w-6/12">
-                  <Filter fields={filterProps} title={translationService(currentLanguage,'COMPANIES.FILTER')} />
+              <div className="my-6 w-full m-auto flex justify-between items-center">
+                <div className="w-6/12">
+                  <h2 className='text-left text-2xl font-medium'>
+                    {translationService(currentLanguage,'COMPANIES.LIST.TITLE')}
+                  </h2>
                 </div>
                 {!can(AppUserActions.ADD_COMPANY) ? null : (
                   <div className="flex justify-end gap-2 w-6/12">
@@ -160,11 +109,27 @@ function CompaniesList() {
                 <Dialog
                   header={translationService(currentLanguage,'BUTTON.NEW')}
                   visible={visible}
-                  style={{ width: "50vw" }}
+                  style={{ width: "680px", maxWidth: "100%" }}
                   onHide={() => setVisible(false)}
                 >
-                  <AddCompany />
+                  <AddCompany
+                    hideAction={() => setVisible(false)}
+                    stateGetter={() => fecthCompanies().then(setCompanies)}
+                  />
                 </Dialog>
+
+                <Dialog
+                  header={translationService(currentLanguage,'BUTTON.NEW')}
+                  visible={editVisible}
+                  style={{ width: "680px", maxWidth: "100%" }}
+                  onHide={() => setEditVisible(false)}
+                >
+                  <EditCompany
+                    hideAction={() => setEditVisible(false)}
+                    stateGetter={() => fecthCompanies().then(setCompanies)}
+                  />
+                </Dialog>
+
               </div>
 
               <Datatable
@@ -179,6 +144,8 @@ function CompaniesList() {
                 ]}
                 actionTypes={CompanyActionTypes}
                 context={CompanyContext}
+                translationKey={"REGISTRATION.FORM"}
+                actions={{edit: () => setEditVisible(true)}}
                 accessControls={{
                   EDIT: AppUserActions.EDIT_COMPANY,
                   DELETE: AppUserActions.DELETE_COMPANY,

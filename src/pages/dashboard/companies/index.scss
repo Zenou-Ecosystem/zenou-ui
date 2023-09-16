@@ -1,0 +1,34 @@
+section {
+    form {
+      label{
+        padding-bottom: 0.35rem !important;
+        font-size: 15px;
+        color: #4f4e4e !important;
+      }
+      .p-inputtext{
+        &::placeholder{
+          font-size: 14px !important;
+          color: #9f9d9d !important;
+        }
+      }
+      .p-placeholder{
+        font-size: 14px !important;
+        color: #9f9d9d !important;
+      }
+      div.form-control {
+        i {
+          z-index: 1;
+        }
+        div.p-password {
+          width: 100% !important;
+          input {
+            width: 100% !important;
+            padding-left: 2.5rem;
+          }
+        }
+        .p-multiselect-label, .p-dropdown-label, .p-inputnumber-input {
+          padding-left: 2.5rem !important;
+        }
+      }
+    }
+}
