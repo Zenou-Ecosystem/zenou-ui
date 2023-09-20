@@ -29,4 +29,5 @@ jobs:
           script: |
             cd /var/www/html/frontend
             git pull origin main
+            source ~/.bashrc && nvm install v18.18.0
             npm install && npm run build
