@@ -15,20 +15,6 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.DEPLOYMENT_PAT }}
-      
-      - name: Set up Git credentials
-        env:
-          PAT: ${{ secrets.DEPLOYMENT_PAT }}
-        run: |
-          git config --global user.email "kambangsinclaire@gmail.com"
-          git config --global user.name "Kambang Sinclaire"
-          git config --global credential.helper store
-          git remote set-url origin https://github.com/Zenou-Ecosystem/zenou-ui.git
-
       - name: Setting up SSH keys
         run: |
           eval "$(ssh-agent -s)"
@@ -42,9 +28,5 @@ jobs:
           port: 22
           script: |
             cd /var/www/html/frontend
-            git config --global user.email "kambangsinclaire@gmail.com"
-            git config --global user.name "Kambang Sinclaire"
-            git config --global credential.helper store
-            git remote set-url origin https://github.com/Zenou-Ecosystem/zenou-ui.git
             git pull origin main
             npm install && npm run build
