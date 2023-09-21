@@ -15,7 +15,22 @@ jobs:
       packages: write
 
     steps:
-      - name: Setting up SSH keys
+     
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.18.0
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Prepare production build for Zenou
+        run: npm run build
+
+      - name: Setup keys to access the server
         run: |
           eval "$(ssh-agent -s)"
           ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
@@ -28,7 +43,4 @@ jobs:
           port: 22
           script: |
             cd /var/www/html/application-bootstrap/frontend
-            git pull origin main
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            npm install && npm run build
+            rsync -r --delete-after ./build/ ${{ secrets.SERVER_USER }}@${{secrets.SERVER_HOST}}:/var/www/html/application-bootstrap/frontend
