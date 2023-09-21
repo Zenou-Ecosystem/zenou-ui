@@ -3,6 +3,8 @@ import axios from "../utils/request.interceptor";
 
 export const login = async (payload: any) => {
     try {
+        console.log("Reached here to test => ");
+        
         const response = await axios.post(`${Config.authBaseUrl}/login`, payload, {
             headers: {
                 "Content-Type": "application/json"
