@@ -39,4 +39,5 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           source: "./build/*"
+          rm: true
           target: "/var/www/html/application-bootstrap/frontend"
