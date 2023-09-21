@@ -3,7 +3,7 @@ import axios from "../utils/request.interceptor";
 
 export const login = async (payload: any) => {
     try {
-        const response = await axios.post(`${Config.authBaseUrl}/auth/login`, payload, {
+        const response = await axios.post(`${Config.authBaseUrl}/login`, payload, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -16,7 +16,7 @@ export const login = async (payload: any) => {
 
 export const register = async (payload: any) => {
     try {
-        const response = await axios.post(`${Config.authBaseUrl}/auth/register`, payload, {
+        const response = await axios.post(`${Config.authBaseUrl}/register`, payload, {
             headers: {
                 "Content-Type": "application/json"
             }
