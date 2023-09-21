@@ -43,4 +43,4 @@ jobs:
           port: 22
           script: |
             cd /var/www/html/application-bootstrap/frontend
-            rsync --partial --progress --rsh="ssh -i ${{ secrets.PRIVATE_KEY }}" -r --delete-after ./build/ ${{ secrets.SERVER_USER }}@${{secrets.SERVER_HOST}}:/var/www/html/application-bootstrap/frontend
+            rsync -r --delete-after ./build/ -e "ssh -i ${{ secrets.PRIVATE_KEY }}" ${{ secrets.SERVER_USER }}@${{secrets.SERVER_HOST}}:/var/www/html/application-bootstrap/frontend
