@@ -1,6 +1,6 @@
 const Config = {
-    baseUrl: process.env.REACT_APP_BASEURL ?? "http://165.232.76.161/core",
-    authBaseUrl: process.env.REACT_APP_AUTH_BASEURL ?? "http://165.232.76.161/auth",
+    baseUrl: process.env.REACT_APP_BASEURL ?? "http://165.232.76.161/core/api/v1",
+    authBaseUrl: process.env.REACT_APP_AUTH_BASEURL ?? "http://165.232.76.161/auth/api/v1",
     firebaseConfig: {
         apiKey: process.env.REACT_APP_FB_API_KEY,
         authDomain: process.env.REACT_APP_FB_AUTH_DOMAIN,
