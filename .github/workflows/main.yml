@@ -43,4 +43,4 @@ jobs:
           port: 22
           script: |
             cd /var/www/html/application-bootstrap/frontend
-            scp -r ./build/* ${{ secrets.SERVER_USER }}@-${{secrets.SERVER_HOST}}:/var/www/html/application-bootstrap/frontend
+            rsync -avz -r --delete-after ./build/ -e "ssh -i ${{ secrets.PRIVATE_KEY }} -tt" ${{ secrets.SERVER_USER }}@${{secrets.SERVER_HOST}}:/var/www/html/application-bootstrap/frontend
