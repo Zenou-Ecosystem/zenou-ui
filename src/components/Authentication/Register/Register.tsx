@@ -17,6 +17,7 @@ import { TabMenu } from 'primereact/tabmenu';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import Locale from '../../locale';
 import CountryList from 'country-list-with-dial-code-and-flag';
+import { ICreateCompany } from '../../../interfaces/company.interface';
 
 const initialState = {
   company_name: {
@@ -111,51 +112,51 @@ function Register() {
       key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
     });
 
-    const newCompany = await createCompany({
-      name: payload.company_name,
-      admin_email: payload.email,
-      contact: payload.contact,
-      sector: payload.domains,
-      language: payload.language,
-      capital: payload.capital,
-      category: payload.category,
-      certification: payload.certification,
-      country: payload.country,
-      function: payload.function,
-      legal_status: payload.legal_status,
-      number_of_employees: payload.number_of_employees,
-      address: payload.address,
-    });
-
-    if (newCompany) {
-      const data = await register({
-        username: payload.username,
-        email: payload.email,
-        password: payload.password,
-        company_id: newCompany.id,
-        address: payload.address,
-        role: payload.role,
-        sector: payload.domains,
-      });
-
-      if (data) {
-        (toast.current as any).show({
-          severity: "success",
-          summary: "Signup success",
-          detail: "Account successfully created",
-          life: 3000,
-        });
-        LocalStore.set("user", data);
-        navigator("/dashboard/home");
-      } else {
-        (toast.current as any).show({
-          severity: "error",
-          summary: "Registration failed",
-          detail: "Request was unsuccessful",
-          life: 5000,
-        });
-      }
-    }
+    // const newCompany: ICreateCompany = await createCompany({
+    //   name: payload.company_name,
+    //   admin_email: payload.email,
+    //   contact: payload.contact,
+    //   domains: payload.domains,
+    //   language: payload.language,
+    //   capital: payload.capital,
+    //   category: payload.category,
+    //   certification: payload.certification,
+    //   country: payload.country,
+    //   function: payload.function,
+    //   legal_status: payload.legal_status,
+    //   number_of_employees: payload.number_of_employees,
+    //   address: payload.address,
+    // });
+    //
+    // if (newCompany) {
+    //   const data = await register({
+    //     username: payload.username,
+    //     email: payload.email,
+    //     password: payload.password,
+    //     company_id: newCompany.id,
+    //     address: payload.address,
+    //     role: payload.role,
+    //     sector: payload.domains,
+    //   });
+    //
+    //   if (data) {
+    //     (toast.current as any).show({
+    //       severity: "success",
+    //       summary: "Signup success",
+    //       detail: "Account successfully created",
+    //       life: 3000,
+    //     });
+    //     LocalStore.set("user", data);
+    //     navigator("/dashboard/home");
+    //   } else {
+    //     (toast.current as any).show({
+    //       severity: "error",
+    //       summary: "Registration failed",
+    //       detail: "Request was unsuccessful",
+    //       life: 5000,
+    //     });
+    //   }
+    // }
   };
 
   return (

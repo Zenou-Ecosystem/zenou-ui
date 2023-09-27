@@ -1,21 +1,28 @@
-import { archiveLaw, createLaw, deleteLaw } from '../../services/laws.service';
-import { LawActions } from "../action-types/laws.actions";
+import { ILawActions, LawActionTypes } from '../action-types/laws.actions';
+import { ILaws } from '../../interfaces/laws.interface';
+import { lawsState } from '../state/laws.state';
 
-export const lawReducer = async (state: any, action: LawActions) => {
+export const lawReducer = (state: ILaws[] = lawsState, action: ILawActions | any) => {
     switch (action.type) {
-        case "ADD_LAW":
-            const data = await createLaw(action.payload as any);
-            return { ...state, data, hasCreated: true };
-        case "DELETE_LAW":
-            const response = await deleteLaw(action.payload as any);
-            console.log(response, await state);
-            // const newState = (await state)?.data.filter((data: any) => data.id !== action.payload);
+        case LawActionTypes.FETCH_LAWS:
+            state = action.payload as ILaws[];
             return state;
-        case "ARCHIVE_LAW":
-            await archiveLaw(action.payload as any);
-            return state;
-        default:
-        //    console.log('Do nothing');
 
+        case LawActionTypes.ADD_LAW:
+            state = [action.payload as ILaws, ...state];
+            return state;
+
+        case LawActionTypes.EDIT_LAW:
+            const itemNumber = state.findIndex((item) => item.id === action.payload?.id);
+            state = state.filter((item) => item.id !== action.payload?.id);
+            state.splice(itemNumber, 0, action.payload as ILaws)
+            return state;
+
+        case LawActionTypes.DELETE_LAW:
+            state = state.filter((item) => item.id !== action.payload);
+            return state;
+
+        default:
+            return state;
     }
 }

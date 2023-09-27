@@ -1,17 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import Button from "../../../core/Button/Button";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
-import { fetchLaws } from "../../../services/laws.service";
 import { Chips } from 'primereact/chips';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
-import { updateAction } from '../../../services/actions.service';
-import { Toast } from 'primereact/toast';
 import { LocalStore } from '../../../utils/storage.utils';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import { initialState } from '../../../store/state';
+import { useSelector, useDispatch } from 'react-redux';
+import httpHandlerService from '../../../services/httpHandler.service';
+import { ActionsActionTypes, IActionActions } from '../../../store/action-types/action.actions';
+import { Dispatch } from 'redux';
 
 export default function EditAction(props: {hideAction: Function, stateGetter: Function}) {
+
   const editItems = LocalStore.get("EDIT_DATA");
   let initialFormState = {
     type: {
@@ -81,32 +84,36 @@ export default function EditAction(props: {hideAction: Function, stateGetter: Fu
       required: true,
     },
   };
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialFormState);
-  const [laws, setLaws] = useState<any[]>([]);
-  const toast = useRef<Toast>(null);
 
-  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const [formValues, setFormValues] = React.useState<Record<string, any>>(initialFormState);
+  const laws = useSelector((state: typeof initialState) => state.laws);
 
+  const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
+  const dispatch = useDispatch<Dispatch<IActionActions>>();
 
   const handleSubmission = () => {
-    updateAction(editItems?.id, formData() as any).then(() => {
-      toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
-      props.stateGetter()
-    }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
-      props.hideAction();
-    })
+    dispatch(
+      httpHandlerService({
+        endpoint: 'actions',
+        method: 'PATCH',
+        data: formData(),
+        id: editItems?.id,
+        showModalAfterRequest: true,
+      }, ActionsActionTypes.EDIT_ACTION) as any
+    );
+    props.hideAction();
+
+    // updateAction(editItems?.id, formData() as any).then(() => {
+    //   toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
+    //   props.stateGetter()
+    // }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
+    //   props.hideAction();
+    // })
   };
 
-  useEffect(() => {
-    (async () => {
-      setLaws(await fetchLaws());
-    })();
-  }, []);
-
-  let formData = () => {
+  let formData: any = () => {
     let formData: Record<string, any>={};
     Object.entries(formValues).forEach(([key, value]) => {
       formData[key] =
@@ -326,7 +333,6 @@ export default function EditAction(props: {hideAction: Function, stateGetter: Fu
 
   return (
     <section>
-      <Toast ref={toast}></Toast>
       {addForm()}
     </section>
   );

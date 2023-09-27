@@ -19,43 +19,54 @@ import Personnel from "./pages/dashboard/personnels";
 import ReviewLaw from './pages/dashboard/laws/ReviewLaw';
 import TextAnalysis from './pages/dashboard/laws/TextAnalysis';
 import NewLaw from './pages/dashboard/laws/NewLaw';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorComponent from './core/shared/error';
 // import Documentation from './pages/api-docs/Documentation';
 
 function App() {
   return (
-    <div className="">
-      <Routes>
-        <Route path="/" element={<Login />}></Route>
-        {/* <Route path='api/docs' element={<Documentation />}></Route> */}
-        <Route path="login" element={<Login />}></Route>
-        <Route path="register" element={<Register />}></Route>
-        <Route path="dashboard" element={<DashboardHome />}>
-          <Route index path="home" element={<Dashboard />}></Route>
-          <Route path="stats" element={<Statistics />}></Route>
-          <Route
-            path="companies"
-            loader={fecthCompanies}
-            element={<CompaniesList />}
-          ></Route>
-          <Route path="laws" element={<Outlet />}>
-            <Route index path="" element={<Law />}></Route>
-            <Route path="new" element={<NewLaw />}/>
-            <Route path="edit/:id" element={<NewLaw />}/>
-            <Route path="analysis/:id/review" element={<ReviewLaw />}></Route>
-            <Route path="analysis/:id" element={<TextAnalysis />}></Route>
-          </Route>
-          <Route path="personnel" element={<Personnel />}></Route>
-          <Route path="controls" element={<Controls />}></Route>
-          <Route path="actions" element={<Actions />}></Route>
-          <Route path="Subscriptions" element={<Subscription />}></Route>
-          <Route path=":context/:id" element={<DataDetails />}></Route>
-        </Route>
-        <Route path="user" element={<DashboardHome />}>
-          <Route path="profile" element={<Profile />}></Route>
-          <Route path="logout" element={<Logout />}></Route>
-        </Route>
-      </Routes>
-    </div>
+    <ErrorBoundary
+            FallbackComponent={ErrorComponent}
+            onReset={() => {
+              console.log('componsnet error');
+            }}
+            onError={() => {
+              console.log('some error');
+            }}
+            >
+      <div>
+        <Routes>
+                <Route path="/" element={<Login />}></Route>
+                <Route path="login" element={<Login />}></Route>
+                <Route path="register" element={<Register />}></Route>
+                <Route path="dashboard" element={<DashboardHome />}>
+                  <Route index path="home" element={<Dashboard />}></Route>
+                  <Route path="stats" element={<Statistics />}></Route>
+                  <Route
+                    path="companies"
+                    loader={fecthCompanies}
+                    element={<CompaniesList />}
+                  ></Route>
+                  <Route path="laws" element={<Outlet />}>
+                    <Route index path="" element={<Law />}></Route>
+                    <Route path="new" element={<NewLaw />}/>
+                    <Route path="edit/:id" element={<NewLaw />}/>
+                    <Route path="analysis/:id/review" element={<ReviewLaw />}></Route>
+                    <Route path="analysis/:id" element={<TextAnalysis />}></Route>
+                  </Route>
+                  <Route path="personnel" element={<Personnel />}></Route>
+                  <Route path="controls" element={<Controls />}></Route>
+                  <Route path="actions" element={<Actions />}></Route>
+                  <Route path="Subscriptions" element={<Subscription />}></Route>
+                  <Route path=":context/:id" element={<DataDetails />}></Route>
+                </Route>
+                <Route path="user" element={<DashboardHome />}>
+                  <Route path="profile" element={<Profile />}></Route>
+                  <Route path="logout" element={<Logout />}></Route>
+                </Route>
+              </Routes>
+      </div>
+    </ErrorBoundary>
   );
 }
 

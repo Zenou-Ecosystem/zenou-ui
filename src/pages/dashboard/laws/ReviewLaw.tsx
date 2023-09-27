@@ -10,14 +10,19 @@ import { Toast } from 'primereact/toast';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Tag } from 'primereact/tag';
+import { initialState } from '../../../store/state';
+import { Dispatch } from 'redux';
+import { ILawActions, LawActionTypes } from '../../../store/action-types/laws.actions';
+import { useDispatch } from 'react-redux';
+import httpHandlerService from '../../../services/httpHandler.service';
 
 export default function ReviewLaw(){
   const[activeIndex, setActiveIndex]=React.useState(0);
   const navigate = useNavigate();
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
-  const toast = useRef<Toast>(null);
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  const dispatch = useDispatch<Dispatch<ILawActions>>()
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   const { id } = useParams();
 
@@ -47,14 +52,27 @@ export default function ReviewLaw(){
       text_analysis,
       is_analysed: true,
     }
-    console.log(law);
-    updateLaw(draftItems.id, law).then(res => {
-      if(res){
-        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
-        LocalStore.remove("EDIT_DATA");
-        navigate(`/dashboard/laws`);
-      }
-    })
+
+    dispatch(
+      httpHandlerService({
+        endpoint: `law`,
+        method: 'PATCH',
+        data: law,
+        id: draftItems.id,
+        showModalAfterRequest: true,
+      }, LawActionTypes.EDIT_LAW) as any
+    );
+
+    LocalStore.remove("EDIT_DATA");
+    navigate(`/dashboard/laws`);
+
+    // updateLaw(draftItems.id, law).then(res => {
+    //   if(res){
+    //     toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
+    //     LocalStore.remove("EDIT_DATA");
+    //     navigate(`/dashboard/laws`);
+    //   }
+    // })
   }
 
   const applicableBodyTemplate = (key:string) => (rowData:any) => {
@@ -104,7 +122,6 @@ export default function ReviewLaw(){
 
   return(
     <section>
-      <Toast ref={toast}></Toast>
       <div className="header-frame h-48 items-center justify-center flex-col flex w-full">
         <h1 className='font-semibold text-2xl md:text-4xl capitalize'>{translationService(currentLanguage,'ANALYSIS_PREVIEW_TEXT_ANALYSIS')}</h1>
       </div>

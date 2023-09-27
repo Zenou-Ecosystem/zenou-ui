@@ -8,7 +8,7 @@ export enum PersonnelActionTypes {
   VIEW = "VIEW_PERSONNEL",
 }
 
-export type PersonnelActions = {
+export type IPersonnelActions = {
   type: PersonnelActionTypes;
   payload: Partial<IPersonnel> | object | string | number | [];
 };

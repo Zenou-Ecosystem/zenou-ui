@@ -1,11 +1,6 @@
-import React, { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { register } from "../../../services/auth.service";
+import React, { useState } from "react";
 import "./index.scss";
-import { Toast } from "primereact/toast";
 import { LocalStore } from "../../../utils/storage.utils";
-import { UserTypes } from "../../../constants/user.constants";
-import { createCompany, updateCompany } from '../../../services/companies.service';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { TabMenu } from "primereact/tabmenu";
 import { Dropdown } from "primereact/dropdown";
@@ -15,9 +10,14 @@ import CountryList from "country-list-with-dial-code-and-flag";
 import { MultiSelect } from "primereact/multiselect";
 import Button from "../../../core/Button/Button";
 import { HiArrowSmRight, HiCheck } from 'react-icons/hi';
+import { useDispatch } from 'react-redux';
+import httpHandlerService from '../../../services/httpHandler.service';
+import { CompanyActionTypes, ICompanyActions } from '../../../store/action-types/company.actions';
+import { Dispatch } from 'redux';
 
 export default function EditCompany(props: {hideAction: Function, stateGetter: Function}) {
   const editItems = LocalStore.get("EDIT_DATA");
+  const dispatch = useDispatch<Dispatch<ICompanyActions>>();
 
   const initialState = {
     company_name: {
@@ -58,14 +58,9 @@ export default function EditCompany(props: {hideAction: Function, stateGetter: F
     },
   };
 
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialState);
+  const [formValues, setFormValues] = React.useState<Record<string, any>>(initialState);
 
-  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
-
-  const navigator = useNavigate();
-
-  const toast = useRef({});
+  const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
@@ -88,7 +83,7 @@ export default function EditCompany(props: {hideAction: Function, stateGetter: F
 
   const [activeTab, setActiveTab] = useState<any>(0);
 
-  const signInHandler = async () => {
+  const handleSubmit = () => {
 
     let payload: any = {};
 
@@ -96,7 +91,7 @@ export default function EditCompany(props: {hideAction: Function, stateGetter: F
       key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
     });
 
-    await updateCompany(editItems?.id, {
+    const data = {
       name: payload.company_name,
       contact: payload.contact,
       sector: payload.domains,
@@ -109,29 +104,22 @@ export default function EditCompany(props: {hideAction: Function, stateGetter: F
       legal_status: payload.legal_status,
       number_of_employees: payload.number_of_employees,
       address: payload.address,
-    }).then(() => {
-      (toast.current as any).show({
-        severity: "success",
-        summary: "success",
-        detail: "Action reussi",
-        life: 3000,
-      });
-      props.stateGetter()
-    }).catch(() => {
-      (toast.current as any).show({
-        severity: "error",
-        summary: "Erruer",
-        detail: "Une erruer cette produit",
-        life: 5000,
-      });
-    }).finally(() => props.hideAction());
+    }
 
+    dispatch(
+      httpHandlerService({
+        endpoint: 'company',
+        method: 'PATCH',
+        data,
+        id: editItems.id,
+        showModalAfterRequest: true
+      }, CompanyActionTypes.EDIT_COMPANY) as any
+    );
+    props.hideAction();
   };
 
   return (
     <section className="">
-      <Toast ref={toast as any} />
-      {/*form section*/}
       <form className="w-full">
 
         <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
@@ -412,7 +400,7 @@ export default function EditCompany(props: {hideAction: Function, stateGetter: F
             }}
             styles={`w-full md:w-auto py-2.5 px-4 items-center justify-center ${activeTab !== 1 ?'':'flex-row-reverse'}`}
             onClick={() => {
-              activeTab !== 1 ? setActiveTab((prev:number) => prev +1) : signInHandler().then(console.log);
+              activeTab !== 1 ? setActiveTab((prev:number) => prev +1) : handleSubmit();
             }}
           />
         </div>

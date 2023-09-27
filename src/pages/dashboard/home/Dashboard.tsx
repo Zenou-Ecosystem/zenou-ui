@@ -3,67 +3,63 @@ import { LawActionTypes } from '../../../store/action-types/laws.actions';
 import { LawContext } from '../../../contexts/LawContext';
 import { AppUserActions } from '../../../constants/user.constants';
 import Datatable from '../../../core/table/Datatable';
-import { ILaws } from '../../../interfaces/laws.interface';
-import { fetchLaws } from '../../../services/laws.service';
-import useAppContext from '../../../hooks/useAppContext.hooks';
-import useLawContext from '../../../hooks/useLawContext';
 import { NavLink } from 'react-router-dom';
 import { currentLanguageValue } from '../../../services/translation.service';
-import { fetchControls } from '../../../services/control.service';
-import { fetchActions } from '../../../services/actions.service';
-import { fecthCompanies } from '../../../services/companies.service';
 import { Chart } from 'primereact/chart';
 import { LocalStore } from '../../../utils/storage.utils';
 import { fetchAllKpis } from '../../../services/kpi.service';
 import { Dropdown } from 'primereact/dropdown';
+import { initialState } from '../../../store/state';
+import { useSelector } from "react-redux";
 
 function Dashboard() {
-  const [laws, setLaws] = useState<ILaws[]>([]);
-  const { state } = useAppContext();
-  const { state: LawState } = useLawContext();
-  const [actionPlans, setActionPlans] = React.useState([]);
-  const [controlPlans, setControlPlans] = React.useState([]);
-  const [companies, setCompanies] = React.useState([]);
+  const laws = useSelector((state: typeof initialState) => state.laws);
+  const controlPlans = useSelector((state: typeof initialState) => state.controls);
+  const actionPlans = useSelector((state: typeof initialState) => state.actions);
+  const companies = useSelector((state: typeof initialState) => state.companies);
+
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+
   const [chartData, setChartData] = React.useState({}) as any;
   const [chartOptions, setChartOptions] = React.useState({});
+
   const [statisticsState, setStatisticsState] = React.useState<any>(null);
-  const filters = [ {
+
+  const filters = [
+    {
     name: "General",
     code: "general"
-  }, {
+  },
+    {
     name: "Par Impact",
     code: "impact"
-  }, {
+  },
+    {
     name: "Par Nature de l'impact",
     code: "natureOfImpact"
-  }, {
+  },
+    {
     name: "Par applicabilité",
     code: "applicable"
-  } ]
+  }
+  ];
+
   const [filterState, setFilterState] =React.useState(filters[0]);
+
   useEffect(() => {
     (async () => {
-      const res = await state;
-      let data = res?.data;
-      if (!data || data?.length < 1) {
-        data = await fetchLaws();
-      }
-      setControlPlans(await fetchControls());
-      setActionPlans(await fetchActions());
-      setCompanies(await fecthCompanies());
-      setLaws(data);
+
       const userRole = LocalStore.get('user');
       const kpiData = await fetchAllKpis(userRole?.role);
 
       setStatisticsState(kpiData);
 
       const countItemsBySector = (array:any) => {
-        const counts = array.reduce((accumulator:any, item:any) => {
+        return array.reduce((accumulator: any, item: any) => {
           const parent = item.parent_of_text;
           const sector = item.sectors_of_activity;
 
-          sector.forEach((sectorItem:any) => {
+          sector.forEach((sectorItem: any) => {
             if (!accumulator[sectorItem]) {
               accumulator[sectorItem] = 0;
             }
@@ -75,11 +71,9 @@ function Dashboard() {
 
           return accumulator;
         }, {});
-
-        return counts;
       };
 
-      const countItems = (array:any, condition: Function) => {
+      const countItems = (array:any[], condition: Function) => {
         return array.reduce((accumulator:any, item:any) => {
           // hold the text analysis
           const textAnalysis = item?.text_analysis ?? [];
@@ -100,22 +94,18 @@ function Dashboard() {
 
       }
 
-      const compliance = countItems(data, (x:any) => x?.compliant === true);
-
-      const result = countItemsBySector(data);
-
-      console.log(kpiData);
+      const result = laws?.length > 0  ? countItemsBySector(laws) : {};
 
       const statisticsLawsBySectorOfActivity = {
-        air: data.filter((x:any) => x.sectors_of_activity.includes("air"))?.length,
-        terre: data?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length,
-        transport: data?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length,
-        environnement: data?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length,
-        eau: data?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length,
-        education: data?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length,
-        sante: data?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length,
-        agriculture: data?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length,
-        business: data?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length,
+        air: laws?.filter((x:any) => x.sectors_of_activity.includes("air"))?.length ?? 0,
+        terre: laws?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length ?? 0,
+        transport: laws?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length ?? 0,
+        environnement: laws?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length ?? 0,
+        eau: laws?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length ?? 0,
+        education: laws?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length ?? 0,
+        sante: laws?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length ?? 0,
+        agriculture: laws?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length ?? 0,
+        business: laws?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length ?? 0,
       }
 
       const LawsBySectorOfActivityParentOfText = {
@@ -164,11 +154,11 @@ function Dashboard() {
           },{
             type: 'bar',
             label: "Non",
-            data: Object.values(countItems(data, (x:any) => x?.applicability === 'no')),
+            data: Object.values(countItems(laws, (x:any) => x?.applicability === 'no')),
           },{
             type: 'bar',
             label: "Information",
-            data: Object.values(countItems(data, (x:any) => x?.applicability === 'information')),
+            data: Object.values(countItems(laws, (x:any) => x?.applicability === 'information')),
           }
         ]
       };
@@ -179,19 +169,19 @@ function Dashboard() {
           {
             type: 'bar',
             label: "Financier",
-            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'financial')),
+            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'financial')),
           },{
             type: 'bar',
             label: "Organisation",
-            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'organisation')),
+            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'organisation')),
           },{
             type: 'bar',
             label: "Produit",
-            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'products')),
+            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'products')),
           },{
             type: 'bar',
             label: "Image",
-            data: Object.values(countItems(data, (x:any) => x?.nature_of_impact === 'image')),
+            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'image')),
           }
         ]
       };
@@ -202,22 +192,22 @@ function Dashboard() {
           {
             type: 'bar',
             label: "Faible",
-            data: Object.values(countItems(data, (x:any) => x?.impact === 'weak')),
+            data: Object.values(countItems(laws, (x:any) => x?.impact === 'weak')),
             backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(247,179,34,0.4)'),
           },{
             type: 'bar',
             label: "Moyen",
-            data: Object.values(countItems(data, (x:any) => x?.impact === 'medium')),
+            data: Object.values(countItems(laws, (x:any) => x?.impact === 'medium')),
             backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(254,140,28,0.62)'),
           },{
             type: 'bar',
             label: "Majeur",
-            data: Object.values(countItems(data, (x:any) => x?.impact === 'major')),
+            data: Object.values(countItems(laws, (x:any) => x?.impact === 'major')),
             backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(232,97,3,0.91)'),
           },{
             type: 'bar',
             label: "Critique",
-            data: Object.values(countItems(data, (x:any) => x?.impact === 'critical')),
+            data: Object.values(countItems(laws, (x:any) => x?.impact === 'critical')),
             backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgb(255,7,7)'),
           }
         ],
@@ -274,15 +264,8 @@ function Dashboard() {
 
   })();
 
-    (async () => {
-      const resolvedLawState = await LawState;
-      if (resolvedLawState.hasCreated) {
-        console.log("Law state changed => ", resolvedLawState);
-        // setVisible(false);
-      }
-    })();
     currentLanguageValue.subscribe(setCurrentLanguage);
-  }, [state, LawState, currentLanguage]);
+  }, [currentLanguage]);
 
     return (
       <div>

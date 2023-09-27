@@ -1,12 +1,13 @@
 import React, { createContext, useReducer } from 'react'
-import { CompanyActions } from '../store/action-types/company.actions';
+import { ICompanyActions } from '../store/action-types/company.actions';
 import { companyReducer } from '../store/reducers/company.reducer';
+import { companyState } from '../store/state/company.state';
 
 export const CompanyContext = createContext<{
-  state: any; dispatch: React.Dispatch<CompanyActions>;
+  state: any; dispatch: React.Dispatch<ICompanyActions>;
 }>
   ({
-    state: {},
+    state: companyState,
     dispatch: function () { }
   });
 

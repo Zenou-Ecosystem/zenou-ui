@@ -11,6 +11,11 @@ import { updateControl } from '../../../services/control.service';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { MultiSelect } from 'primereact/multiselect';
+import httpHandlerService from '../../../services/httpHandler.service';
+import { ControlActionTypes, IControlActions } from '../../../store/action-types/control.actions';
+import { initialState } from '../../../store/state';
+import { Dispatch } from 'redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function EditControl(props: {hideAction: Function, stateGetter: Function}) {
   const editItem = LocalStore.get("EDIT_DATA");
@@ -64,7 +69,7 @@ export default function EditControl(props: {hideAction: Function, stateGetter: F
       required: true,
     },
     text_of_the_law: {
-      value: editItem?.text_of_the_law?? [],
+      value: editItem?.text_of_the_law || [],
       error: true,
       error_message: "",
       required: true,
@@ -76,29 +81,15 @@ export default function EditControl(props: {hideAction: Function, stateGetter: F
       required: true,
     },
   };
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialFormState);
-  const [laws, setLaws] = useState<any[]>([]);
-  const toast = useRef<Toast>(null);
+
+  const [formValues, setFormValues] = React.useState<Record<string, any>>(initialFormState);
+
+  const laws = useSelector((state: typeof initialState) => state.laws);
+  const dispatch = useDispatch<Dispatch<IControlActions>>()
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
-
-  const handleSubmission = () => {
-    updateControl(editItem?.id, formData() as any).then(() => {
-      toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
-      props.stateGetter()
-    }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
-      props.hideAction();
-    })
-  };
-
-  useEffect(() => {
-    (async () => {
-      setLaws(await fetchLaws());
-    })();
-  }, []);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   let formData = () => {
     let formData: Record<string, any>={};
@@ -110,6 +101,25 @@ export default function EditControl(props: {hideAction: Function, stateGetter: F
     });
     return formData;
   }
+
+  const handleSubmission = () => {
+    dispatch(
+      httpHandlerService({
+        endpoint: 'controls',
+        method: 'PATCH',
+        data: formData(),
+        id: editItem?.id,
+        showModalAfterRequest: true,
+      }, ControlActionTypes.EDIT_CONTROL) as any
+    );
+    props.hideAction();
+    // updateControl(editItem?.id, formData() as any).then(() => {
+    //   toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
+    //   props.stateGetter()
+    // }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
+    //   props.hideAction();
+    // })
+  };
 
   /**
    * description: handle change function. this function is used to handle on change events in an input field
@@ -271,7 +281,9 @@ export default function EditControl(props: {hideAction: Function, stateGetter: F
 
           {/*text of law*/}
           <div className=''>
-            <label htmlFor="text_of_the_law">{translationService(currentLanguage,'FORM.TEXT_OF_THE_LAW')}</label>
+            <label htmlFor="text_of_the_law">
+              {translationService(currentLanguage,'FORM.TEXT_OF_THE_LAW')}
+            </label>
             <MultiSelect
               value={formValues.text_of_the_law.value}
               onChange={handleChange}
@@ -282,7 +294,6 @@ export default function EditControl(props: {hideAction: Function, stateGetter: F
               placeholder={translationService(currentLanguage,'FORM.PLACEHOLDER.TEXT_OF_THE_LAW')}
               className="w-full"
               options={laws || []}
-              defaultValue={formValues.text_of_the_law.value}
               selectedItemTemplate={(options: any) => options?.title_of_text ?
                 <span className='text-xs mr-2 text-white rounded-md addTextToAnalysisTable p-1 w-20'>
                     {options?.title_of_text?.slice(0,10)}
@@ -306,7 +317,6 @@ export default function EditControl(props: {hideAction: Function, stateGetter: F
 
   return (
     <section>
-      <Toast ref={toast}></Toast>
       {addForm()}
     </section>
   );

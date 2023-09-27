@@ -1,17 +1,18 @@
 import React, { createContext, useReducer } from 'react'
-import { ActionStoreActions } from '../store/action-types/action.actions';
+import { IActionActions } from '../store/action-types/action.actions';
 import { actionReducer } from '../store/reducers/actions.reducer';
+import { actionState } from '../store/state/action.state';
 
 
 export const ActionsContext = createContext<{
-    state: any; dispatch: React.Dispatch<ActionStoreActions>;
+    state: any; dispatch: React.Dispatch<IActionActions>;
 }>
     ({
-        state: {},
+        state: actionState,
         dispatch: function () { }
     });
 
-function ActionsContextProvider(props: { children: any }) {
+export default function ActionsContextProvider(props: { children: any }) {
     const { children } = props;
     const [state, dispatch] = useReducer<any>(actionReducer, {})
     return (
@@ -20,5 +21,3 @@ function ActionsContextProvider(props: { children: any }) {
         </ActionsContext.Provider>
     )
 }
-
-export default ActionsContextProvider

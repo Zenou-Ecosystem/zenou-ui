@@ -1,12 +1,13 @@
 import React, { createContext, useReducer } from "react";
-import { PersonnelActions } from "../store/action-types/personnel.actions";
+import { IPersonnelActions } from "../store/action-types/personnel.actions";
 import { personnelReducer } from "../store/reducers/personnel.reducer";
+import { personnelState } from '../store/state/personnel.state';
 
 export const PersonnelContext = createContext<{
   state: any;
-  dispatch: React.Dispatch<PersonnelActions>;
+  dispatch: React.Dispatch<IPersonnelActions>;
 }>({
-  state: {},
+  state: personnelState,
   dispatch: function () {},
 });
 

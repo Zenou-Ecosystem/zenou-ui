@@ -1,69 +1,97 @@
 import Config from "../constants/config.constants"
 import { ILaws } from "../interfaces/laws.interface";
 import axios from "../utils/request.interceptor";
+import { Dispatch } from 'redux';
+import { ActionsActionTypes, IActionActions } from '../store/action-types/action.actions';
+import { onError, onSuccess } from '../store/action-types/app.actions';
+import { IActions } from '../interfaces/actions.interface';
+import { ILawActions, LawActionTypes } from '../store/action-types/laws.actions';
+import { ModalActionsTypes } from '../store/action-types/modal.actions';
 
-export const fetchLaws = async () => {
-    try {
-        const response = axios.get(`${Config.baseUrl}/law`);
-        return (await response).data;
-    } catch (error) {
-        console.log('An error occured => ', error);
-    }
-}
-
-export const createLaw = async (payload: ILaws) => {
-    try {
-        const response = await axios.post(`${Config.baseUrl}/law`, payload, {
+export const fetchLaws = () => {
+    return (dispatch: Dispatch<ILawActions>) => {
+        axios.get(`${Config.baseUrl}/law`, {
             headers: {
                 "Content-Type": "application/json"
             }
-        });
-        return (await response).data;
-    } catch (error) {
-        console.log('An error occured => ', error);
+        }).then(
+          (response) => {
+              dispatch(onSuccess(response.data, LawActionTypes.FETCH_LAWS))
+          }
+        ).catch(
+          (error) => {
+            dispatch(onError({
+              severity: 'DANGER',
+              headerText: "An error occured!",
+              bodyText: "An unexpected error occured during. Please make sure you have active internet connection.",
+            }, ModalActionsTypes.SHOW_MODAL));
+          }
+        )
     }
 }
 
-export const updateLaw = async (id: string | number, data: any) => {
-    try {
-        const response = await axios.patch(`${Config.baseUrl}/law/${id}`, data);
-        return (await response).data;
-    } catch (error) {
-        console.log('An error occured => ', error);
+export const createLaw = (payload: ILaws) => {
+    return (dispatch: Dispatch<ILawActions>) => {
+        axios.post(`${Config.baseUrl}/law`, payload,{
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(
+          (response) => {
+              dispatch(onSuccess(response.data, LawActionTypes.ADD_LAW))
+          }
+        ).catch(
+          (error) => {
+            dispatch(onError({
+              severity: 'DANGER',
+              headerText: "An error occured!",
+              bodyText: "An unexpected error occured during. Please make sure you have active internet connection.",
+            }, ModalActionsTypes.SHOW_MODAL));
+          }
+        )
     }
 }
 
-export const deleteLaw = async (id: string | number) => {
-    try {
-        const response = await axios.delete(`${Config.baseUrl}/law/${id}`);
-        return (await response).data;
-    } catch (error) {
-        console.log('An error occured => ', error);
+export const updateLaw = (id: string | number, payload: Partial<ILaws>) => {
+    return (dispatch: Dispatch<ILawActions>) => {
+        axios.patch(`${Config.baseUrl}/law/${id}`, payload,{
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(
+          (response) => {
+              dispatch(onSuccess(response.data, LawActionTypes.EDIT_LAW))
+          }
+        ).catch(
+          (error) => {
+            dispatch(onError({
+              severity: 'DANGER',
+              headerText: "An error occured!",
+              bodyText: "An unexpected error occured during. Please make sure you have active internet connection.",
+            }, ModalActionsTypes.SHOW_MODAL));
+          }
+        )
     }
 }
 
-export const archiveLaw = async (id: string | number) => {
-    try {
-        const response = await axios.delete(`${Config.baseUrl}/law/archive/${id}`);
-        return (await response).data;
-    } catch (error) {
-        console.log('An error occured => ', error);
-    }
-}
-
-export const restoreArchivedLaw = async (id: string | number) => {
-    try {
-        const response = await axios.patch(`${Config.baseUrl}/law/archive/${id}`);
-        return (await response).data;
-    } catch (error) {
-        console.log('An error occured => ', error);
-    }
-}
-export const getArchivedLaw = async () => {
-    try {
-        const response = await axios.get(`${Config.baseUrl}/law/archive/`);
-        return response.data;
-    } catch (error) {
-        console.log('An error occured => ', error);
+export const deleteLaw = (id: string | number) => {
+    return (dispatch: Dispatch<ILawActions>) => {
+        axios.delete(`${Config.baseUrl}/law/${id}`,{
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(
+          (response) => {
+              dispatch(onSuccess(id, LawActionTypes.DELETE_LAW))
+          }
+        ).catch(
+          (error) => {
+            dispatch(onError({
+              severity: 'DANGER',
+              headerText: "An error occured!",
+              bodyText: "An unexpected error occured during. Please make sure you have active internet connection.",
+            }, ModalActionsTypes.SHOW_MODAL));
+          }
+        )
     }
 }

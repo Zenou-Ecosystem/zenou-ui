@@ -11,7 +11,7 @@ function Search() {
 
     const handleSearch = async (query: string) => {
         if (query.length >= 1) {
-            dispatch({ type: SearchActionTypes.GLOBAL_SEARCH, payload: { state, index: router.state, query } });
+            // dispatch({ type: SearchActionTypes.GLOBAL_SEARCH, payload: { state, index: router.state, query } });
         }
     }
 

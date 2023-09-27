@@ -1,25 +1,22 @@
 import React, { createContext, useReducer } from 'react'
-import { GlobalStateActions } from '../store/action-types/search.actions';
-import { globalStateReducer } from '../store/reducers/globalState.reducer';
+import { ActionTypes } from '../store/action-types';
+import { initialState } from '../store/state';
+import { Reducers } from '../store/reducers';
 
 export const ApplicationContext = createContext<{
     state: any;
-    dispatch: React.Dispatch<GlobalStateActions>;
+    dispatch: React.Dispatch<ActionTypes>;
 }>({
-    state: {},
+    state: initialState,
     dispatch: () => { },
 });
 
-function AppContext(props: { children: any }) {
+export default function AppContext(props: { children: any }) {
     const { children } = props;
-    const [state, dispatch] = useReducer<any>(globalStateReducer, {})
+    const [state, dispatch] = useReducer<any>(Reducers, {});
     return (
         <ApplicationContext.Provider value={{ state, dispatch }}>
-            {
-                children
-            }
+            { children }
         </ApplicationContext.Provider>
     );
 }
-
-export default AppContext;

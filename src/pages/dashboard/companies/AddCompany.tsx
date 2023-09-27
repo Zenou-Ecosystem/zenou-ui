@@ -1,11 +1,6 @@
-import React, { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { register } from "../../../services/auth.service";
+import React, { useState } from "react";
 import "./index.scss";
-import { Toast } from "primereact/toast";
-import { LocalStore } from "../../../utils/storage.utils";
 import { UserTypes } from "../../../constants/user.constants";
-import { createCompany } from "../../../services/companies.service";
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { TabMenu } from "primereact/tabmenu";
 import { Dropdown } from "primereact/dropdown";
@@ -16,8 +11,16 @@ import { MultiSelect } from "primereact/multiselect";
 import { Password } from "primereact/password";
 import Button from "../../../core/Button/Button";
 import { HiArrowSmRight, HiCheck } from 'react-icons/hi';
+import { Dispatch } from 'redux';
+import { ActionsActionTypes, IActionActions } from '../../../store/action-types/action.actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { CompanyActionTypes, ICompanyActions } from '../../../store/action-types/company.actions';
+import httpHandlerService from '../../../services/httpHandler.service';
+import { initialState } from '../../../store/state';
+import Config from '../../../constants/config.constants';
+import { PersonnelActionTypes } from '../../../store/action-types/personnel.actions';
 
-const initialState = {
+const initialFormState = {
   company_name: {
     value: "",
   },
@@ -69,20 +72,18 @@ const initialState = {
 };
 
 export default function AddCompany(props: {hideAction: Function, stateGetter: Function}) {
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialState);
+  const [formValues, setFormValues] = React.useState<Record<string, any>>(initialFormState);
+  const companies = useSelector((state: typeof initialState) => state.companies);
+
+  const dispatch = useDispatch<Dispatch<ICompanyActions>>();
+
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
-
-  const navigator = useNavigate();
-
-  const toast = useRef({});
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
   const handleState = (e: any) => {
     const { name, value } = e.target;
-
     setFormValues({
       ...formValues,
       [name]: {
@@ -100,7 +101,7 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
 
   const [activeTab, setActiveTab] = useState<any>(0);
 
-  const signInHandler = async () => {
+  const handleSubmit = () => {
 
     let payload: any = {
       role: UserTypes.COMPANY_OWNER,
@@ -110,11 +111,11 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
       key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
     });
 
-    const newCompany = await createCompany({
+    const newData = {
       name: payload.company_name,
       admin_email: payload.email,
       contact: payload.contact,
-      sector: payload.domains,
+      domains: payload.domains,
       language: payload.language,
       capital: payload.capital,
       category: payload.category,
@@ -124,44 +125,75 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
       legal_status: payload.legal_status,
       number_of_employees: payload.number_of_employees,
       address: payload.address,
-    });
+    }
 
-    if (newCompany) {
-      const data = await register({
+    dispatch(
+      httpHandlerService({
+        endpoint: 'company',
+        method: 'POST',
+        data: newData
+      }, CompanyActionTypes.ADD_COMPANY) as any
+    );
+
+    const currentCompany = companies.find(company => company.admin_email === newData.admin_email);
+
+    if(currentCompany) {
+      const data = {
         username: payload.username,
         email: payload.email,
         password: payload.password,
-        company_id: newCompany.id,
+        company_id: currentCompany.id,
         address: payload.address,
         role: payload.role,
         sector: payload.domains,
-      });
-
-      if (data) {
-        (toast.current as any).show({
-          severity: "success",
-          summary: "success",
-          detail: "Action reussi",
-          life: 3000,
-        });
-
-        props.stateGetter()
-        props.hideAction()
-
-      } else {
-        (toast.current as any).show({
-          severity: "error",
-          summary: "Erruer",
-          detail: "Une erruer cette produit",
-          life: 5000,
-        });
-      }
+      };
+      dispatch(
+        httpHandlerService({
+          endpoint: 'register',
+          method: 'POST',
+          baseUrl: `${Config.authBaseUrl}/register`,
+          data,
+          showModalAfterRequest: true,
+        }, PersonnelActionTypes.ADD_PERSONNEL) as any
+      )
     }
+    props.hideAction();
+
+    // if (newCompany) {
+    //   const data = await register({
+    //     username: payload.username,
+    //     email: payload.email,
+    //     password: payload.password,
+    //     company_id: newCompany.id,
+    //     address: payload.address,
+    //     role: payload.role,
+    //     sector: payload.domains,
+    //   });
+    //
+    //   if (data) {
+    //     (toast.current as any).show({
+    //       severity: "success",
+    //       summary: "success",
+    //       detail: "Action reussi",
+    //       life: 3000,
+    //     });
+    //
+    //     props.stateGetter()
+    //     props.hideAction()
+    //
+    //   } else {
+    //     (toast.current as any).show({
+    //       severity: "error",
+    //       summary: "Erruer",
+    //       detail: "Une erruer cette produit",
+    //       life: 5000,
+    //     });
+    //   }
+    // }
   };
 
   return (
     <section className="">
-      <Toast ref={toast as any} />
       {/*form section*/}
         <form className="w-full">
 
@@ -515,7 +547,7 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
               }}
               styles={`w-full md:w-auto py-2.5 px-4 items-center justify-center ${activeTab !== 2?'':'flex-row-reverse'}`}
               onClick={() => {
-                activeTab !== 2 ? setActiveTab((prev:number) => prev +1) : signInHandler().then(console.log);
+                activeTab !== 2 ? setActiveTab((prev:number) => prev +1) : handleSubmit();
               }}
             />
           </div>

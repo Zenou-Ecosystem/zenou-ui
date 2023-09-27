@@ -17,7 +17,7 @@ import { fetchActions } from '../../../services/actions.service';
 import { InputSwitch } from 'primereact/inputswitch';
 import { useNavigate, useNavigation, useParams } from 'react-router-dom';
 import { LocalStore } from '../../../utils/storage.utils';
-import AddLaw from './AddLaw';
+// import AddLaw from './AddLaw';
 import { Dialog } from 'primereact/dialog';
 import { Tag } from 'primereact/tag';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
@@ -214,7 +214,6 @@ export default function TextAnalysis() {
 
       LocalStore.remove("UPLOADED_FILES");
 
-      // navigate("review");
     }
   };
 

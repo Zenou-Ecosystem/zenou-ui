@@ -1,18 +1,27 @@
-import { createControl, deleteControl } from "../../services/control.service";
-import { ControlActions } from "../action-types/control.actions";
+import { ControlActionTypes, IControlActions } from '../action-types/control.actions';
+import { IControl } from '../../interfaces/controls.interface';
+import { controlState } from '../state/control.state';
+export const controlReducer = (state: IControl[] = controlState, action: IControlActions | any) => {
+    switch (action.type) {
+        case ControlActionTypes.FETCH_CONTROLS:
+            state = action.payload as IControl[];
+            return state;
 
-export const controlReducer = async (state: any, action: ControlActions) => {
+        case ControlActionTypes.ADD_CONTROL:
+            state = [action.payload as IControl, ...state];
+            return state;
 
-    if (action.type == "ADD_CONTROL") {
-        const data = await createControl(action.payload as any);
-        return { ...state, data, hasCreated: true };
-    }
+        case ControlActionTypes.EDIT_CONTROL:
+            const itemNumber = state.findIndex((item) => item.id === action.payload?.id);
+            state = state.filter((item) => item.id !== action.payload?.id);
+            state.splice(itemNumber, 0, action.payload as IControl)
+            return state;
 
-    if (action.type == "DELETE_CONTROL") {
-        const response = await deleteControl(action.payload as any);
-        console.log(response, state);
-        // const newState = state?.data.filter((data: any) => data.id !== action.payload);
-        return state;
+        case ControlActionTypes.DELETE_CONTROL:
+            state = state.filter((item) => item.id !== action.payload);
+            return state;
+        default:
+            return state;
     }
 
 }

@@ -11,7 +11,7 @@ export enum LawActionTypes {
     GET_ARCHIVED_LAWS="GET_ARCHIVED_LAWS"
 }
 
-export type LawActions = {
+export type ILawActions = {
     type: LawActionTypes,
     payload: Partial<ILaws> | object | string | number | []
 }

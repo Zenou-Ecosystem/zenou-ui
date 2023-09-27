@@ -1,17 +1,18 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
 import { Column } from "primereact/column";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { ConfirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 import { LocalStore } from "../../utils/storage.utils";
 import { useNavigate } from "react-router-dom";
-import { can } from "../../utils/access-control.utils";
 import { currentLanguageValue, translationService } from '../../services/translation.service';
 import "./index.scss";
-import { classNames } from 'primereact/utils';
-import { AppUserActions } from '../../constants/user.constants';
 import { Menu } from 'primereact/menu';
-import { FilterMatchMode } from 'primereact/api';
+import { onSuccess } from '../../store/action-types/app.actions';
+import { ModalActionsTypes } from '../../store/action-types/modal.actions';
+import { useDispatch } from 'react-redux';
+import httpHandlerService from '../../services/httpHandler.service';
+import { ActionsActionTypes } from '../../store/action-types/action.actions';
 
 function Datatable(props: {
   data: any[];
@@ -26,8 +27,10 @@ function Datatable(props: {
 }) {
   const { data, fields, actionTypes, context, accessControls } = props;
   const [tableColumns, setTableColumns] = useState<string[]>([]);
-  const actions = Object.keys(actionTypes as any);
-  const { dispatch } = useContext(context);
+  const actions: string[] = Object.values(actionTypes as any);
+
+  const dispatch = useDispatch();
+
   const [tableData, setTableData] = useState([{}] as any);
   const toast = useRef({});
   const navigate = useNavigate();
@@ -64,6 +67,7 @@ function Datatable(props: {
       }  },
     { separator: true },
     { label: 'Delete', icon: "pi pi-fw pi-trash",  command:() => {
+        console.log(actions);
         const actionItem = actions.find((value) =>
           value.startsWith("DELETE")
         );
@@ -79,38 +83,42 @@ function Datatable(props: {
     }  });
 
   const acceptDeletion = (action: string, payload: any) => {
-    dispatch({ type: action, payload: payload?.id });
-    const filtered = tableData.filter((item: any) => item.id !== payload.id);
-    setTableData(filtered);
+    console.log(action, payload);
+    dispatch(
+      httpHandlerService({
+        endpoint: action.split('_')[1].toLowerCase(),
+        method: 'DELETE',
+        id: payload.id,
+        showModalAfterRequest: true,
+      }, action) as any
+    );
 
-    (toast.current as any).show({
-      severity: "info",
-      summary: "Confirmed",
-      detail: "Record successfully deleted",
-      life: 3000,
-    });
-  };
-
-  const reject = () => {
-    (toast.current as any).show({
-      severity: "warn",
-      summary: "Rejected",
-      detail: "Record not deleted",
-      life: 3000,
-    });
+    // const filtered = tableData.filter((item: any) => item.id !== payload.id);
+    // setTableData(filtered);
+    //
+    // (toast.current as any).show({
+    //   severity: "info",
+    //   summary: "Confirmed",
+    //   detail: "Record successfully deleted",
+    //   life: 3000,
+    // });
   };
 
   const requestDeleteConfirmation = (action: string, payload: any) => {
     // remove the action in localStore to avoid remembering state in rowClickedHandler
     LocalStore.remove("action");
-    confirmDialog({
-      message: "Do you want to delete this record?",
-      header: "Delete Confirmation",
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-danger",
-      accept: () => acceptDeletion(action, payload),
-      reject,
-    });
+
+    dispatch(onSuccess({
+      severity: 'DANGER',
+      headerText: 'Do you want to continue?',
+      bodyText: "Are you sure you want to continue with this action? This action is not reversible",
+      actions: [
+        {
+          name: 'continue',
+          onClick: () => acceptDeletion(action, payload)
+        }
+      ]
+    }, ModalActionsTypes.SHOW_MODAL));
   };
 
   useEffect(() => {

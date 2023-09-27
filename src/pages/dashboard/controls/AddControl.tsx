@@ -10,6 +10,12 @@ import { createControl } from '../../../services/control.service';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { MultiSelect } from 'primereact/multiselect';
+import { initialState } from '../../../store/state';
+import { useSelector, useDispatch } from 'react-redux';
+import httpHandlerService from '../../../services/httpHandler.service';
+import { ActionsActionTypes, IActionActions } from '../../../store/action-types/action.actions';
+import { ControlActionTypes, IControlActions } from '../../../store/action-types/control.actions';
+import { Dispatch } from 'redux';
 
 let initialFormState = {
   type: {
@@ -75,32 +81,16 @@ let initialFormState = {
 };
 
 export default function AddControl(props: {hideAction: Function, stateGetter: Function}) {
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialFormState);
-  const [laws, setLaws] = useState<any[]>([]);
-  const toast = useRef<Toast>(null);
+  const [formValues, setFormValues] = React.useState<Record<string, any>>(initialFormState);
+  const laws = useSelector((state: typeof initialState) => state.laws);
+  const dispatch = useDispatch<Dispatch<IControlActions>>()
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
-  const handleSubmission = () => {
-    createControl(formData() as any).then(() => {
-      toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
-      props.stateGetter()
-    }).catch(() =>toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' })
-    ).finally(() => props?.hideAction());
-  };
-
-  useEffect(() => {
-    (async () => {
-      setLaws(await fetchLaws());
-    })();
-  }, []);
-
-
-  let formData = () => {
-    let formData: Record<string, any>={};
+  let formData: any = () => {
+    let formData: any = {};
     Object.entries(formValues).forEach(([key, value]) => {
       formData[key] =
         key === "duration"
@@ -109,6 +99,23 @@ export default function AddControl(props: {hideAction: Function, stateGetter: Fu
     });
     return formData;
   }
+
+  const handleSubmission = () => {
+    dispatch(
+      httpHandlerService({
+        endpoint: 'controls',
+        method: 'POST',
+        data: formData(),
+        showModalAfterRequest: true,
+      }, ControlActionTypes.ADD_CONTROL) as any
+    );
+    props.hideAction();
+    // createControl(formData() as any).then(() => {
+    //   toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
+    //   props.stateGetter()
+    // }).catch(() =>toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' })
+    // ).finally(() => props?.hideAction());
+  };
 
   /**
    * description: handle change function. this function is used to handle on change events in an input field
@@ -306,7 +313,6 @@ export default function AddControl(props: {hideAction: Function, stateGetter: Fu
 
   return (
     <section>
-      <Toast ref={toast}></Toast>
       {addForm()}
     </section>
   );

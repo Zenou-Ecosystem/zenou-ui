@@ -3,12 +3,12 @@ import { IActions } from "../../interfaces/actions.interface"
 export enum ActionsActionTypes {
     FETCH_ACTIONS = 'FETCH_ACTIONS',
     ADD_ACTION = 'ADD_ACTION',
-    DELETE_ACTION = 'DELETE_ACTION',
-    EDIT_ACTION = 'EDIT_ACTION',
-    VIEW = "VIEW_ACTION"
+    DELETE_ACTION = 'DELETE_ACTIONS',
+    EDIT_ACTION = 'EDIT_ACTIONS',
+    VIEW = "VIEW_ACTION",
 }
 
-export type ActionStoreActions = {
+export type IActionActions = {
     type: ActionsActionTypes,
-    payload: Partial<IActions> | object | string | number | []
+    payload?: Partial<IActions> | object | string | number | []
 }

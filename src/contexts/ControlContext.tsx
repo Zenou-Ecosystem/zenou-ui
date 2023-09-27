@@ -1,12 +1,13 @@
 import React, { createContext, useReducer } from 'react'
-import { ControlActions } from '../store/action-types/control.actions';
+import { IControlActions } from '../store/action-types/control.actions';
 import { controlReducer } from '../store/reducers/control.reducer';
+import { controlState } from '../store/state/control.state';
 
 export const ControlContext = createContext<{
-    state: any; dispatch: React.Dispatch<ControlActions>;
+    state: any; dispatch: React.Dispatch<IControlActions>;
 }>
     ({
-        state: {},
+        state: controlState,
         dispatch: function () { }
     });
 

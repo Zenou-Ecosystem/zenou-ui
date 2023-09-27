@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Button from "../../../core/Button/Button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import useActionsContext from "../../../hooks/useActionsContext";
-import { ActionsActionTypes } from "../../../store/action-types/action.actions";
+import { ActionsActionTypes, IActionActions } from '../../../store/action-types/action.actions';
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
@@ -15,10 +15,16 @@ import { Chips } from 'primereact/chips';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
 import useControlContext from '../../../hooks/useControlContext';
-import { ControlActionTypes } from '../../../store/action-types/control.actions';
-import { createAction } from '../../../services/actions.service';
+import { useDispatch } from 'react-redux';
+// import { createAction } from '../../../services/actions.service';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import { createActions } from '../../../services/actions.service';
+import { IActions } from '../../../interfaces/actions.interface';
+import { Dispatch } from 'redux';
+import { initialState } from '../../../store/state';
+import { useSelector } from 'react-redux';
+import httpHandlerService from '../../../services/httpHandler.service';
 
 let initialFormState = {
   type: {
@@ -90,40 +96,32 @@ let initialFormState = {
 };
 
 function AddAction(props: {hideAction: Function, stateGetter: Function}) {
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialFormState);
-  const [loader, setLoader] = useState(false);
-  const { state, dispatch } = useControlContext();
-  const [laws, setLaws] = useState<any[]>([]);
+  const [formValues, setFormValues] = React.useState<Record<string, any>>(initialFormState);
+  const laws = useSelector((state: typeof initialState) => state.laws);
+
+  const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
+
+  React.useMemo(()=> currentLanguageValue.subscribe(setCurrentLanguage), []);
+
   const toast = useRef<Toast>(null);
+  const [loader, setLoader] = useState(false);
 
-  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
-
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  const dispatch = useDispatch<Dispatch<IActionActions>>();
 
   const handleSubmission = () => {
-    setLoader(true);
-    createAction(formData() as any).then(result => {
-      toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
-      props?.stateGetter()
-    }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
-      props?.hideAction();
-    })
+    dispatch(
+      httpHandlerService({
+        endpoint: 'actions',
+        method: 'POST',
+        data: formData(),
+        showModalAfterRequest: true,
+      }, ActionsActionTypes.ADD_ACTION) as any
+    );
+    props.hideAction();
   };
 
-  useEffect(() => {
-    (async () => {
-      const resolvedState = await state;
-      if (resolvedState.hasCreated) {
-        setLoader(false);
-      }
-      //  Fetch laws
-      setLaws(await fetchLaws());
-    })();
-  }, [state]);
-
-  let formData = () => {
-    let formData: Record<string, any>={};
+  let formData: IActions | {} | any = () => {
+    let formData: IActions | {} | any = {};
     Object.entries(formValues).forEach(([key, value]) => {
       formData[key] =
         key === "duration"

@@ -14,18 +14,20 @@ import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import AppContext from './contexts/AppContext';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import ErrorBoundary from './core/shared/error';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AppContext>
-        <App />
-      </AppContext>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </BrowserRouter>
   </React.StrictMode>
 );
 

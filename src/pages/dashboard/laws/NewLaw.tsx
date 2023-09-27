@@ -14,6 +14,12 @@ import { Editor } from 'primereact/editor';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
+import { initialState } from '../../../store/state';
+import { useSelector, useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import { ControlActionTypes, IControlActions } from '../../../store/action-types/control.actions';
+import { ILawActions, LawActionTypes } from '../../../store/action-types/laws.actions';
+import httpHandlerService from '../../../services/httpHandler.service';
 
 let initialFormState: Record<string, any> = {
   title_of_text: {
@@ -84,7 +90,6 @@ let initialFormState: Record<string, any> = {
   },
 };
 
-
 export default function InteractiveDemo() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
@@ -94,9 +99,8 @@ export default function InteractiveDemo() {
 
   const [loader, setLoader] = useState(false);
 
-  const toast = useRef<Toast>(null);
-
-  const [laws, setLaws] = React.useState<any[]>([]);
+  const laws = useSelector((state: typeof initialState) => state.laws);
+  const dispatch = useDispatch<Dispatch<ILawActions>>()
 
   const {id} = useParams();
 
@@ -247,12 +251,6 @@ export default function InteractiveDemo() {
     return formData;
   }
 
-  React.useEffect(() => {
-    (async () => {
-      setLaws(await fetchLaws());
-    })()
-  }, []);
-
   const handleAnalysis = () => {
     LocalStore.set("EDIT_DATA", formData());
     navigate(`/dashboard/laws/analysis/${formData().id}`);
@@ -282,29 +280,55 @@ export default function InteractiveDemo() {
     e.preventDefault();
     e.stopPropagation();
 
-    setLoader(true);
     if(!id) {
-      createLaw(formData() as any).then(res => {
-        toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS_ACTION') });
-        is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
-      }).catch(() => {
-        toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-      })
+      dispatch(
+        httpHandlerService({
+          endpoint: 'law',
+          method: 'POST',
+          data: formData(),
+        }, LawActionTypes.ADD_LAW) as any
+      );
+      is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
+
+      // createLaw(formData() as any).then(res => {
+      //   toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS_ACTION') });
+      //   is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
+      // }).catch(() => {
+      //   toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+      // })
 
     }else {
-      updateLaw(id, formData()).then(res => {
-        if(res){
-          toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
-          if(is_analysis) {
-            let prevData= LocalStore.get("EDIT_DATA");
-            LocalStore.set("EDIT_DATA", {...prevData, ...formData()});
-            navigate(`/dashboard/laws/analysis/${id}?edit`);
-          }else {
-            LocalStore.remove("EDIT_DATA");
-            navigate(`/dashboard/laws`);
-          }
-        }
-      })
+      dispatch(
+        httpHandlerService({
+          endpoint: 'law',
+          method: 'PATCH',
+          data: formData(),
+          id,
+          showModalAfterRequest: true,
+        }, LawActionTypes.EDIT_LAW) as any
+      );
+      if(is_analysis) {
+              let prevData= LocalStore.get("EDIT_DATA");
+              LocalStore.set("EDIT_DATA", {...prevData, ...formData()});
+              navigate(`/dashboard/laws/analysis/${id}?edit`);
+      }else {
+              LocalStore.remove("EDIT_DATA");
+              navigate(`/dashboard/laws`);
+      }
+
+      // updateLaw(id, formData()).then(res => {
+      //   if(res){
+      //     toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
+      //     if(is_analysis) {
+      //       let prevData= LocalStore.get("EDIT_DATA");
+      //       LocalStore.set("EDIT_DATA", {...prevData, ...formData()});
+      //       navigate(`/dashboard/laws/analysis/${id}?edit`);
+      //     }else {
+      //       LocalStore.remove("EDIT_DATA");
+      //       navigate(`/dashboard/laws`);
+      //     }
+      //   }
+      // })
     }
 
 
@@ -326,7 +350,6 @@ export default function InteractiveDemo() {
   }
   return (
     <div className="mx-auto w-full md:w-8/12">
-      <Toast ref={toast}></Toast>
       <div className='mt-4 mb-10'>
           <h1 className="text-3xl font-semibold">Nouveaux texte</h1>
           <p className='font-normal text-gray-500'>Ajouter un nouveaux texte et finiser le process pour passer a l'etape suivante</p>
@@ -334,7 +357,6 @@ export default function InteractiveDemo() {
       <Steps className='my-4' model={items} activeIndex={activeIndex} onSelect={(e) => setActiveIndex(e.index)} readOnly={false} />
       <section hidden={activeIndex !== 0}>
         <form className="w-full">
-          <Toast ref={toast}></Toast>
           <div className="form-elements grid md:grid-cols-2 gap-6">
             {/*title_of_text*/}
             <div>

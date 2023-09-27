@@ -6,7 +6,7 @@ export enum CompanyActionTypes {
     VIEW = "VIEW_COMPANY"
 }
 
-export type CompanyActions = {
+export type ICompanyActions = {
     type: CompanyActionTypes,
     payload: object | string | number | []
 }

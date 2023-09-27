@@ -4,7 +4,7 @@ import Button from '../../../core/Button/Button';
 import BasicCard from '../../../core/card/BasicCard';
 import Datatable from '../../../core/table/Datatable';
 import { Dialog } from 'primereact/dialog';
-import AddLaw from './AddLaw';
+// import AddLaw from './AddLaw';
 import useAppContext from '../../../hooks/useAppContext.hooks';
 import LawContextProvider, { LawContext } from '../../../contexts/LawContext';
 import useLawContext from '../../../hooks/useLawContext';
@@ -20,13 +20,13 @@ import { TabMenu } from 'primereact/tabmenu';
 import { MenuItem } from 'primereact/menuitem';
 import { useNavigate } from 'react-router-dom';
 import { FilterMatchMode } from 'primereact/api';
+import { initialState } from '../../../store/state';
+import { useSelector } from 'react-redux';
 
 function Laws() {
-  const [laws, setLaws] = useState<ILaws[]>([]);
+  const laws = useSelector((state: typeof initialState) => state.laws);
   const [archives, setArchives] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
-  const { state } = useAppContext();
-  const { state: LawState } = useLawContext();
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const toast = useRef<Toast>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -38,53 +38,9 @@ function Laws() {
     navigate('/dashboard/laws/new')
   };
 
-  useEffect(() => {
-    (async () => {
-      const res = await state;
-      let data = res?.data;
-      if (!data || data?.length < 1) {
-        data = await fetchLaws();
-      }
-      // const archive = await getArchivedLaw();
-      // setArchives([]);
-      setLaws(data);
-    })();
-
-    (async () => {
-      const resolvedLawState = await LawState;
-      if (resolvedLawState.hasCreated) {
-        console.log("Law state changed => ", resolvedLawState);
-        setVisible(false);
-      }
-    })();
-  }, [state, LawState]);
-
   const items = [
     {label: translationService(currentLanguage,'ALL'), icon: 'pi pi-file'},
     {label: translationService(currentLanguage,'ARCHIVES'), icon: 'pi pi-briefcase'},
-  ];
-
-  const filterProps = [
-    {
-      command: () => {},
-      label: translationService(currentLanguage,'LAW.ADD.FORM.TITLE_OF_TEXT'),
-    },
-    {
-      onChange: () => {},
-      label: translationService(currentLanguage,'LAW.ADD.FORM.TYPE_OF_TEXT'),
-    },
-    {
-      onChange: () => {},
-      label: translationService(currentLanguage,'LAW.ADD.FORM.DATE_OF_ISSUE'),
-    },
-    {
-      onChange: () => {},
-      label: translationService(currentLanguage,'LAW.ADD.FORM.COMPLIANT'),
-    },
-    {
-      onChange: () => {},
-      label: translationService(currentLanguage,'LAW.ADD.FORM.IMPACT'),
-    },
   ];
 
   const sheetNames = ['identification', 'analyse_du_texte'];
@@ -108,14 +64,14 @@ function Laws() {
       const translatedIdentificationData:any[] = replaceParentsWithObjects(formattedIdentificationData);
 
       // console.log(translatedIdentificationData);
-      createLaw(translatedIdentificationData as unknown as ILaws).then(res => {
-        if(res) {
-          toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS.ACTION') });
-          setLaws(res?.data ?? res);
-        }else {
-          toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-        }
-      })
+      // createLaw(translatedIdentificationData as unknown as ILaws).then(res => {
+      //   if(res) {
+      //     toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS.ACTION') });
+      //     setLaws(res?.data ?? res);
+      //   }else {
+      //     toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
+      //   }
+      // })
     };
 
     reader.readAsArrayBuffer(e.target.files[0]);
@@ -189,119 +145,117 @@ function Laws() {
     }
 
   return (
-    <LawContextProvider>
-      <div className="w-full px-4">
-        {/*translationService(currentLanguage,'LAW.LIST.TITLE')*/}
-        <BasicCard
-          title={''}
-          headerStyles="font-medium text-3xl py-4"
-          content={() => (
-            <>
-              <Toast ref={toast}></Toast>
-              <div className="my-6 w-full m-auto flex justify-between items-center">
-                <div className="w-6/12">
-                  <h2 className='text-left text-2xl font-medium'>
-                    {translationService(currentLanguage,'LAW.LIST.TITLE')}
-                  </h2>
-                </div>
-                {!can(AppUserActions.ADD_LAW) ? null : (
-                  <div className="flex justify-end gap-2 w-6/12">
-                    <div className='file-container'>
-                      <label htmlFor='file-input'>
-                        <i className='pi pi-cloud-upload'></i> &nbsp;
-                        {translationService(currentLanguage,'BUTTON.IMPORT')}
-                      </label>
-                      <input type="file" onChange={onUpload} id="file-input" accept=".xlsx" />
-                    </div>
-
-                    <Button
-                      title={translationService(currentLanguage,'BUTTON.NEW')}
-                      styles="flex-row-reverse px-6 py-3.5 text-sm items-center rounded-full"
-                      onClick={openAddLawForm}
-                      Icon={{
-                        Name: () => (<i className='pi pi-plus text-white' />),
-                      }}
-                    />
+    <div className="w-full px-4">
+      {/*translationService(currentLanguage,'LAW.LIST.TITLE')*/}
+      <BasicCard
+        title={''}
+        headerStyles="font-medium text-3xl py-4"
+        content={() => (
+          <>
+            <Toast ref={toast}></Toast>
+            <div className="my-6 w-full m-auto flex justify-between items-center">
+              <div className="w-6/12">
+                <h2 className='text-left text-2xl font-medium'>
+                  {translationService(currentLanguage,'LAW.LIST.TITLE')}
+                </h2>
+              </div>
+              {!can(AppUserActions.ADD_LAW) ? null : (
+                <div className="flex justify-end gap-2 w-6/12">
+                  <div className='file-container'>
+                    <label htmlFor='file-input'>
+                      <i className='pi pi-cloud-upload'></i> &nbsp;
+                      {translationService(currentLanguage,'BUTTON.IMPORT')}
+                    </label>
+                    <input type="file" onChange={onUpload} id="file-input" accept=".xlsx" />
                   </div>
-                )}
-              </div>
 
-              <div className="add-form my-10">
-                <Dialog
-                  header={translationService(currentLanguage,'LAW.ADD.FORM.TITLE')}
-                  visible={visible}
-                  style={{ width: "800px", maxWidth: "100%" }}
-                  onHide={() => setVisible(false)}
-                >
-                  <AddLaw setNewLaw={() => {
-                    fetchLaws().then(setLaws);
-                    toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SAVE_LAW_SUCCESS') });
-                  } } close={() => setVisible(false)} />
-                </Dialog>
-              </div>
+                  <Button
+                    title={translationService(currentLanguage,'BUTTON.NEW')}
+                    styles="flex-row-reverse px-6 py-3.5 text-sm items-center rounded-full"
+                    onClick={openAddLawForm}
+                    Icon={{
+                      Name: () => (<i className='pi pi-plus text-white' />),
+                    }}
+                  />
+                </div>
+              )}
+            </div>
 
-              <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
-                setActiveTab(e.index);
-              }} />
-              <div hidden={activeTab !== 0}>
-                <Datatable
-                  data={laws}
-                  fields={[
-                    "title_of_text",
-                    "type_of_text",
-                    "date_of_issue",
-                    "is_analysed",
-                    "nature_of_text",
-                    "actions",
-                  ]}
-                  actionTypes={LawActionTypes}
-                  context={LawContext}
-                  translationKey={'LAW.ADD.FORM'}
-                  accessControls={{
-                    EDIT: AppUserActions.EDIT_LAW,
-                    DELETE: AppUserActions.DELETE_LAW,
-                    VIEW: AppUserActions.VIEW_LAW,
-                    ARCHIVE: 'ARCHIVE_LAW'
-                  }}
-                  filterKeys={
-                    {
-                      "title_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
-                      "type_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
-                      "date_of_issue": {value: null, matchMode: FilterMatchMode.CONTAINS},
-                      "is_analysed": {value: null, matchMode: FilterMatchMode.EQUALS},
-                      "nature_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
-                    }
+            {/*<div className="add-form my-10">*/}
+            {/*  <Dialog*/}
+            {/*    header={translationService(currentLanguage,'LAW.ADD.FORM.TITLE')}*/}
+            {/*    visible={visible}*/}
+            {/*    style={{ width: "800px", maxWidth: "100%" }}*/}
+            {/*    onHide={() => setVisible(false)}*/}
+            {/*  >*/}
+            {/*    <AddLaw setNewLaw={() => {*/}
+            {/*      // fetchLaws().then(setLaws);*/}
+            {/*      toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SAVE_LAW_SUCCESS') });*/}
+            {/*    } } close={() => setVisible(false)} />*/}
+            {/*  </Dialog>*/}
+            {/*</div>*/}
+
+            <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
+              setActiveTab(e.index);
+            }} />
+            <div hidden={activeTab !== 0}>
+              <Datatable
+                data={laws}
+                fields={[
+                  "title_of_text",
+                  "type_of_text",
+                  "date_of_issue",
+                  "is_analysed",
+                  "nature_of_text",
+                  "actions",
+                ]}
+                actionTypes={LawActionTypes}
+                context={LawContext}
+                translationKey={'LAW.ADD.FORM'}
+                accessControls={{
+                  EDIT: LawActionTypes.EDIT_LAW,
+                  DELETE: LawActionTypes.DELETE_LAW,
+                  VIEW: LawActionTypes.VIEW,
+                  ARCHIVE: LawActionTypes.ARCHIVE_LAW
+                }}
+                filterKeys={
+                  {
+                    "title_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
+                    "type_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
+                    "date_of_issue": {value: null, matchMode: FilterMatchMode.CONTAINS},
+                    "is_analysed": {value: null, matchMode: FilterMatchMode.EQUALS},
+                    "nature_of_text": {value: null, matchMode: FilterMatchMode.CONTAINS},
                   }
-                />
-              </div>
+                }
+              />
+            </div>
 
-              <div hidden={activeTab !== 1}>
-                {/*<Datatable*/}
-                {/*  data={laws}*/}
-                {/*  fields={[*/}
-                {/*    "title_of_text",*/}
-                {/*    "type_of_text",*/}
-                {/*    "date_of_issue",*/}
-                {/*    "applicability",*/}
-                {/*    "compliant",*/}
-                {/*    "actions",*/}
-                {/*  ]}*/}
-                {/*  actionTypes={LawActionTypes}*/}
-                {/*  context={LawContext}*/}
-                {/*  translationKey={'LAW.ADD.FORM'}*/}
-                {/*  accessControls={{*/}
-                {/*    EDIT: AppUserActions.EDIT_LAW,*/}
-                {/*    DELETE: AppUserActions.DELETE_LAW,*/}
-                {/*    VIEW: AppUserActions.VIEW_LAW,*/}
-                {/*  }}*/}
-                {/*/>*/}
-              </div>
-            </>
-          )}
-          styles="px-6"
-        />
-      </div>
-    </LawContextProvider>
+            <div hidden={activeTab !== 1}>
+              {/*<Datatable*/}
+              {/*  data={laws}*/}
+              {/*  fields={[*/}
+              {/*    "title_of_text",*/}
+              {/*    "type_of_text",*/}
+              {/*    "date_of_issue",*/}
+              {/*    "applicability",*/}
+              {/*    "compliant",*/}
+              {/*    "actions",*/}
+              {/*  ]}*/}
+              {/*  actionTypes={LawActionTypes}*/}
+              {/*  context={LawContext}*/}
+              {/*  translationKey={'LAW.ADD.FORM'}*/}
+              {/*  accessControls={{*/}
+              {/*    EDIT: AppUserActions.EDIT_LAW,*/}
+              {/*    DELETE: AppUserActions.DELETE_LAW,*/}
+              {/*    VIEW: AppUserActions.VIEW_LAW,*/}
+              {/*  }}*/}
+              {/*/>*/}
+            </div>
+          </>
+        )}
+        styles="px-6"
+      />
+    </div>
   );
 }
 

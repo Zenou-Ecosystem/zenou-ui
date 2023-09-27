@@ -1,16 +1,27 @@
-import { createCompany, deleteCompany } from "../../services/companies.service";
-import { CompanyActions } from "../action-types/company.actions";
+import { CompanyActionTypes, ICompanyActions } from '../action-types/company.actions';
+import { ICompany } from '../../interfaces/company.interface';
+import { companyState } from '../state/company.state';
 
-export const companyReducer = async (state: any, action: CompanyActions) => {
+export const companyReducer = (state: ICompany[] = companyState, action: ICompanyActions | any) => {
   switch (action.type) {
-    case "ADD_COMPANY":
-      const data = await createCompany(action.payload as any);
-      return { ...state, data, hasCreated: true };
-    case "DELETE_COMPANY":
-      const response = await deleteCompany(action.payload as any);
-      // const newState = state?.data.filter((data: any) => data.id !== action.payload);
+    case CompanyActionTypes.FETCH_COMPANIES:
+      state = action.payload as ICompany[];
       return state;
+
+    case CompanyActionTypes.ADD_COMPANY:
+      state = [action.payload as ICompany, ...state];
+      return state;
+
+    case CompanyActionTypes.EDIT_COMPANY:
+      const itemNumber = state.findIndex((item) => item.id === action.payload?.id);
+      state = state.filter((item) => item.id !== action.payload?.id);
+      state.splice(itemNumber, 0, action.payload as ICompany)
+      return state;
+
+    case CompanyActionTypes.DELETE_COMPANY:
+      // state = state.filter((item) => item.id !== action.payload);
+      break;
     default:
-      throw new Error();
+      return state;
   }
 }

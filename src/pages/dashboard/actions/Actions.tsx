@@ -1,162 +1,130 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Filter from "../../../components/filter/Filter";
+import React, { useRef, useState } from 'react';
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
 import { Dialog } from 'primereact/dialog';
 import { HiPlus } from "react-icons/hi";
-import useAppContext from "../../../hooks/useAppContext.hooks";
-import { IActions } from "../../../interfaces/actions.interface";
-import { fetchActions } from "../../../services/actions.service";
-import useActionsContext from "../../../hooks/useActionsContext";
-import ActionsContextProvider, { ActionsContext } from "../../../contexts/ActionsContext";
+import { ActionsContext } from "../../../contexts/ActionsContext";
 import AddAction from "./AddActions";
-import { ActionsActionTypes } from "../../../store/action-types/action.actions";
+import { ActionsActionTypes } from '../../../store/action-types/action.actions';
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
-import { FileUpload } from 'primereact/fileupload';
+import { useSelector } from 'react-redux';
 import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import EditAction from './EditAction';
+import { initialState } from '../../../store/state';
 
 function Actions() {
 
-    const [companies, setActions] = useState<IActions[]>([]);
+  const actions = useSelector((state: typeof initialState) => state.actions);
+
     const [visible, setVisible] = useState(false);
     const [showEdit, setShowEdit]= useState(false);
-    const { state, dispatch } = useAppContext();
 
-    const { state: actionstate, dispatch: ActionDispatch } = useActionsContext();
     const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
-    React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+    React.useMemo(() => currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
     const openAddActionForm = () => {
         setVisible(true);
     }
 
-    useEffect(() => {
-        (async () => {
-            const res = await state;
-            let data = res?.data;
-            if (!data || data.length < 1) {
-                data = await fetchActions();
-            }
-            setActions(data);
-        })();
-
-        (async () => {
-            const resolvedActionstate = await actionstate;
-            if (resolvedActionstate.hasCreated) {
-                console.log('Action state changed => ', resolvedActionstate);
-                setVisible(false);
-            }
-        })();
-
-    }, [state, actionstate]);
-
     const toast = useRef<Toast>(null);
-    const onUpload = () => {
-        toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
-        fetchActions().then(setActions);
-    };
 
     return (
-        <ActionsContextProvider>
-            <div className="w-full px-4">
-                <Toast ref={toast}></Toast>
-                <BasicCard title={''}
-                           headerStyles="font-medium text-3xl py-4"
-                    content={() => (
-                        <>
-                            <div className="my-6 w-full m-auto flex justify-between items-center">
-                                <div className="w-6/12">
-                                    <h2 className='text-left text-2xl font-medium'>
-                                        {translationService(currentLanguage,'ACTIONS.LIST.TITLE')}
-                                    </h2>
-                                    {/*<Filter fields={filterProps} title={translationService(currentLanguage,'ACTIONS.FILTER')} />*/}
-                                </div>
-                                {!can(AppUserActions.ADD_ACTIONS) ? null : (
-                                  <div className="flex justify-end gap-2 w-6/12">
-                                      {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-blue-500 rounded-md'>*/}
-                                      {/*  <i className='pi pi-file-excel'></i>*/}
-                                      {/*  Import*/}
-                                      {/*</button>*/}
-                                      {/*<FileUpload mode="basic" name="file" url="http://localhost:3001/actions/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel={translationService(currentLanguage,'BUTTON.IMPORT')} />*/}
-                                      {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
-                                      {/*    <i className='pi pi-file-import'></i>*/}
-                                      {/*    Export*/}
-                                      {/*</button>*/}
-                                      <Button
-                                        title={translationService(currentLanguage,'BUTTON.NEW')}
-                                        styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
-                                        onClick={openAddActionForm}
-                                        Icon={{
-                                            Name: HiPlus,
-                                            classes: "",
-                                            color: "white",
-                                        }}
-                                      />
-                                  </div>
-                                )}
-                            </div>
-                            {/*<div className="filter my-4 w-11/12 m-auto flex">*/}
-                            {/*    {*/}
-                            {/*        !can(AppUserActions.ADD_ACTIONS) ? null : <div className="add-btn w-2/12">*/}
-                            {/*            <Button title="New"*/}
-                            {/*                styles="flex justify-around flex-row-reverse items-center rounded-full"*/}
-                            {/*                onClick={openAddActionForm} Icon={{*/}
-                            {/*                    Name: HiPlus,*/}
-                            {/*                    classes: '',*/}
-                            {/*                    color: 'white'*/}
-                            {/*                }} />*/}
-                            {/*        </div>*/}
-                            {/*    }*/}
-                            {/*    <div className="filter w-10/12">*/}
-                            {/*        <Filter fields={filterProps} title='Filter Actions' />*/}
-                            {/*    </div>*/}
-                            {/*</div>*/}
+      <div className="w-full px-4">
+        <Toast ref={toast}></Toast>
+        <BasicCard title={''}
+                   headerStyles="font-medium text-3xl py-4"
+                   content={() => (
+                     <>
+                       <div className="my-6 w-full m-auto flex justify-between items-center">
+                         <div className="w-6/12">
+                           <h2 className='text-left text-2xl font-medium'>
+                             {translationService(currentLanguage,'ACTIONS.LIST.TITLE')}
+                           </h2>
+                         </div>
+                         {!can(AppUserActions.ADD_ACTIONS) ? null : (
+                           <div className="flex justify-end gap-2 w-6/12">
+                             {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-blue-500 rounded-md'>*/}
+                             {/*  <i className='pi pi-file-excel'></i>*/}
+                             {/*  Import*/}
+                             {/*</button>*/}
+                             {/*<FileUpload mode="basic" name="file" url="http://localhost:3001/actions/upload" onUpload={onUpload} accept=".csv, .xlsx" maxFileSize={1000000} auto chooseLabel={translationService(currentLanguage,'BUTTON.IMPORT')} />*/}
+                             {/*<button className='py-2.5 px-6 shadow-sm flex gap-3 items-center text-white bg-red-500 rounded-md'>*/}
+                             {/*    <i className='pi pi-file-import'></i>*/}
+                             {/*    Export*/}
+                             {/*</button>*/}
+                             <Button
+                               title={translationService(currentLanguage,'BUTTON.NEW')}
+                               styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
+                               onClick={openAddActionForm}
+                               Icon={{
+                                 Name: HiPlus,
+                                 classes: "",
+                                 color: "white",
+                               }}
+                             />
+                           </div>
+                         )}
+                       </div>
+                       {/*<div className="filter my-4 w-11/12 m-auto flex">*/}
+                       {/*    {*/}
+                       {/*        !can(AppUserActions.ADD_ACTIONS) ? null : <div className="add-btn w-2/12">*/}
+                       {/*            <Button title="New"*/}
+                       {/*                styles="flex justify-around flex-row-reverse items-center rounded-full"*/}
+                       {/*                onClick={openAddActionForm} Icon={{*/}
+                       {/*                    Name: HiPlus,*/}
+                       {/*                    classes: '',*/}
+                       {/*                    color: 'white'*/}
+                       {/*                }} />*/}
+                       {/*        </div>*/}
+                       {/*    }*/}
+                       {/*    <div className="filter w-10/12">*/}
+                       {/*        <Filter fields={filterProps} title='Filter Actions' />*/}
+                       {/*    </div>*/}
+                       {/*</div>*/}
 
-                            <div className="add-form my-10">
-                                <Dialog contentClassName="pt-4"
-                                        header={translationService(currentLanguage,'BUTTON.NEW')}
-                                        visible={visible} style={{ width: '680px', maxWidth: '100%' }}
-                                        onHide={() => setVisible(false)}>
-                                    <AddAction hideAction={ () => setVisible(false)} stateGetter={() => {
-                                        fetchActions().then(setActions)
-                                    }} />
-                                </Dialog>
+                       <div className="add-form my-10">
+                         <Dialog contentClassName="pt-4"
+                                 header={translationService(currentLanguage,'BUTTON.NEW')}
+                                 visible={visible} style={{ width: '680px', maxWidth: '100%' }}
+                                 onHide={() => setVisible(false)}>
+                           <AddAction hideAction={ () => setVisible(false)} stateGetter={() => {
+                             // fetchActions().then(setActions)
+                           }} />
+                         </Dialog>
 
-                              <Dialog contentClassName="pt-4"
-                                      header={translationService(currentLanguage,'BUTTON.NEW')}
-                                      visible={showEdit} style={{ width: '680px', maxWidth: '100%' }}
-                                      onHide={() => setShowEdit(false)}>
-                                <EditAction hideAction={ () => setShowEdit(false)}
-                                            stateGetter={() => {
-                                              fetchActions().then(setActions)
-                                            }}
-                                />
-                              </Dialog>
-                            </div>
-                            <Datatable
-                                data={companies}
-                                fields={['type', 'duration', 'department', 'theme', 'Actions']}
-                                actionTypes={ActionsActionTypes}
-                                context={ActionsContext}
-                                translationKey={"FORM"}
-                                actions={{edit: ()=> setShowEdit(true)}}
-                                accessControls={{
-                                    EDIT: AppUserActions.EDIT_ACTIONS,
-                                    DELETE: AppUserActions.DELETE_ACTIONS,
-                                    VIEW: AppUserActions.VIEW_ACTIONS
-                                }}
-                            />
-                        </>
-                    )}
-                    styles="px-6"
-                />
-            </div>
-        </ActionsContextProvider>
+                         <Dialog contentClassName="pt-4"
+                                 header={translationService(currentLanguage,'BUTTON.NEW')}
+                                 visible={showEdit} style={{ width: '680px', maxWidth: '100%' }}
+                                 onHide={() => setShowEdit(false)}>
+                           <EditAction hideAction={ () => setShowEdit(false)}
+                                       stateGetter={() => {
+                                         // fetchActions().then(setActions)
+                                       }}
+                           />
+                         </Dialog>
+                       </div>
+                       <Datatable
+                         data={actions}
+                         fields={['type', 'duration', 'department', 'theme', 'Actions']}
+                         actionTypes={ActionsActionTypes}
+                         context={ActionsContext}
+                         translationKey={"FORM"}
+                         actions={{edit: ()=> setShowEdit(true)}}
+                         accessControls={{
+                           EDIT: ActionsActionTypes.EDIT_ACTION,
+                           DELETE: ActionsActionTypes.DELETE_ACTION,
+                           VIEW: ActionsActionTypes.VIEW
+                         }}
+                       />
+                     </>
+                   )}
+                   styles="px-6"
+        />
+      </div>
     );
 }
 

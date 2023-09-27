@@ -26,9 +26,7 @@ function Statistics() {
         summary:true
       })
       setStatistics(filter ?? { laws: [], summary: {} });
-      console.log(filter);
       setState(data);
-
 
    const generalLawData = {
       labels: ["Poucentage analysé", 'Poucentage non-analysé'],
@@ -112,7 +110,6 @@ function Statistics() {
           }
         }
       });
-      console.log(chartData);
     }
     // @ts-ignore
   return (
@@ -143,7 +140,7 @@ function Statistics() {
                     <div className="max-w-sm h-full  p-6">
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
-                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.expected} XAF</h4>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.expected ?? "0"} XAF</h4>
                           <span className="text-gray-700 text-center font-normal">Taux de montant requi d'applicabilité</span>
                         </div>
                       </div>
@@ -153,7 +150,7 @@ function Statistics() {
                     <div className="max-w-sm h-full  p-6">
                       <div className="max-w-xs h-full">
                         <div className='flex py-4 items-center w-full h-full justify-center flex-col'>
-                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.actual} XAF</h4>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.actual ?? "0"} XAF</h4>
                           <span className="text-gray-700 text-center font-normal">Taux de montant deja verse</span>
                         </div>
                       </div>
@@ -178,7 +175,7 @@ function Statistics() {
                       <div className="max-w-sm h-full  py-10">
                         <div className="max-w-xs h-full">
                           <div className='flex items-center w-full h-full justify-center flex-col'>
-                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.total}</h4>
+                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.total ?? "0"}</h4>
                             <span className="text-gray-700 font-normal">Taux de loi</span>
                           </div>
                         </div>
@@ -188,7 +185,7 @@ function Statistics() {
                       <div className="max-w-sm h-full  p-6">
                         <div className="max-w-xs h-full">
                           <div className='flex items-center w-full h-full justify-center flex-col'>
-                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.totalConform}</h4>
+                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.totalConform ?? "0"}</h4>
                             <span className="text-gray-700 font-normal">Taux de loi conforme</span>
                           </div>
                         </div>
@@ -198,7 +195,7 @@ function Statistics() {
                       <div className="max-w-sm h-full  p-6">
                         <div className="max-w-xs h-full">
                           <div className='flex items-center w-full h-full justify-center flex-col'>
-                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.totalAnalysed}</h4>
+                            <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.totalAnalysed ?? "0"}</h4>
                             <span className="text-gray-700 font-normal">Taux de loi analyser</span>
                           </div>
                         </div>
