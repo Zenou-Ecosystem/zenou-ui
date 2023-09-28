@@ -11,7 +11,7 @@ export const fetchAllKpis = async (role:string) => {
   }
 }
 
-export const filterAndSummarizeDateRange = async (role:string, filterPayload: FilterPayload) => {
+export const filterAndSummarizeDateRange = async (role:string, filterPayload?: FilterPayload) => {
   try {
     const response = axios.get(`${Config.baseUrl}/law/filter-by-date/${role}`, {
       params: filterPayload

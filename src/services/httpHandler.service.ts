@@ -1,9 +1,7 @@
 import axios from "../utils/request.interceptor";
 import Config from '../constants/config.constants';
-import { AxiosResponse } from 'axios';
 import { onError, onSuccess } from '../store/action-types/app.actions';
 import { Dispatch } from 'redux';
-import { ActionsActionTypes, IActionActions } from '../store/action-types/action.actions';
 import { ModalActionsTypes } from '../store/action-types/modal.actions';
 import { singularize } from '../utils/singularize.util';
 import { LoaderActionTypes } from '../store/action-types/loader.actions';

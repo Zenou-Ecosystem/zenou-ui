@@ -18,8 +18,15 @@ import { currentLanguageValue, translationService } from '../../../services/tran
 import Locale from '../../locale';
 import CountryList from 'country-list-with-dial-code-and-flag';
 import { ICreateCompany } from '../../../interfaces/company.interface';
+import httpHandlerService from '../../../services/httpHandler.service';
+import { CompanyActionTypes, ICompanyActions } from '../../../store/action-types/company.actions';
+import Config from '../../../constants/config.constants';
+import { PersonnelActionTypes } from '../../../store/action-types/personnel.actions';
+import { Dispatch } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { initialState } from '../../../store/state';
 
-const initialState = {
+const initialFormState = {
   company_name: {
     value: "",
   },
@@ -71,14 +78,15 @@ const initialState = {
 };
 
 function Register() {
-  const [formValues, setFormValues] =
-    useState<Record<string, any>>(initialState);
+  const [formValues, setFormValues] = React.useState<Record<string, any>>(initialFormState);
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
   const navigator = useNavigate();
 
-  const toast = useRef({});
+  const companies = useSelector((state: typeof initialState) => state.companies);
+
+  const dispatch = useDispatch<Dispatch<ICompanyActions>>();
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
 
@@ -112,56 +120,57 @@ function Register() {
       key.toLowerCase() !== "cPassword" && (payload[key] = value.value);
     });
 
-    // const newCompany: ICreateCompany = await createCompany({
-    //   name: payload.company_name,
-    //   admin_email: payload.email,
-    //   contact: payload.contact,
-    //   domains: payload.domains,
-    //   language: payload.language,
-    //   capital: payload.capital,
-    //   category: payload.category,
-    //   certification: payload.certification,
-    //   country: payload.country,
-    //   function: payload.function,
-    //   legal_status: payload.legal_status,
-    //   number_of_employees: payload.number_of_employees,
-    //   address: payload.address,
-    // });
-    //
-    // if (newCompany) {
-    //   const data = await register({
-    //     username: payload.username,
-    //     email: payload.email,
-    //     password: payload.password,
-    //     company_id: newCompany.id,
-    //     address: payload.address,
-    //     role: payload.role,
-    //     sector: payload.domains,
-    //   });
-    //
-    //   if (data) {
-    //     (toast.current as any).show({
-    //       severity: "success",
-    //       summary: "Signup success",
-    //       detail: "Account successfully created",
-    //       life: 3000,
-    //     });
-    //     LocalStore.set("user", data);
-    //     navigator("/dashboard/home");
-    //   } else {
-    //     (toast.current as any).show({
-    //       severity: "error",
-    //       summary: "Registration failed",
-    //       detail: "Request was unsuccessful",
-    //       life: 5000,
-    //     });
-    //   }
-    // }
+    const newData = {
+      name: payload.company_name,
+      admin_email: payload.email,
+      contact: payload.contact,
+      domains: payload.domains,
+      language: payload.language,
+      capital: payload.capital,
+      category: payload.category,
+      certification: payload.certification,
+      country: payload.country,
+      function: payload.function,
+      legal_status: payload.legal_status,
+      number_of_employees: payload.number_of_employees,
+      address: payload.address,
+    }
+
+    dispatch(
+      httpHandlerService({
+        endpoint: 'company',
+        method: 'POST',
+        data: newData
+      }, CompanyActionTypes.ADD_COMPANY) as any
+    );
+
+    const currentCompany = companies.find(company => company.admin_email === newData.admin_email);
+
+    if(currentCompany) {
+      const data = {
+        username: payload.username,
+        email: payload.email,
+        password: payload.password,
+        company_id: currentCompany.id,
+        address: payload.address,
+        role: payload.role,
+        sector: payload.domains,
+      };
+      dispatch(
+        httpHandlerService({
+          endpoint: 'register',
+          method: 'POST',
+          baseUrl: `${Config.authBaseUrl}/register`,
+          data,
+        }, PersonnelActionTypes.ADD_PERSONNEL) as any
+      )
+      navigator('/dashboard/home');
+    }
+
   };
 
   return (
     <section className="block md:flex relative h-screen">
-      <Toast ref={toast as any} />
       <div className='absolute right-5 top-5'>
        <Locale />
       </div>

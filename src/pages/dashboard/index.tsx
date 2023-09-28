@@ -19,8 +19,8 @@ function DashboardHome() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { modal, loader } = useSelector((state: typeof initialState) => state);
-
+  const loader = useSelector((state: typeof initialState) => state.loader);
+  const modal = useSelector((state: typeof initialState) => state.modal);
 
   useEffect(() => {
       dispatch(

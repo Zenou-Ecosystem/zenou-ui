@@ -21,8 +21,6 @@ function Statistics() {
       const userRole = LocalStore.get('user');
       const data = await fetchAllKpis(userRole?.role);
       const filter = await filterAndSummarizeDateRange(userRole?.role, {
-        startDate: defaultDates[0],
-        endDate: defaultDates[1],
         summary:true
       })
       setStatistics(filter ?? { laws: [], summary: {} });
