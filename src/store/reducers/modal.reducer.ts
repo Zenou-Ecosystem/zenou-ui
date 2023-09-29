@@ -1,15 +1,15 @@
 import { IModal } from '../../interfaces/modal.interface';
-import { modalState } from '../state/modal.state';
 import { IModalActions, ModalActionsTypes } from '../action-types/modal.actions';
+import { modalState } from '../state/modal.state';
 
-export const modalReducer = (state: IModal | null, action: IModalActions) => {
+export const modalReducer = (state: IModal | null = modalState, action: IModalActions) => {
   switch (action.type) {
     case ModalActionsTypes.SHOW_MODAL:
       state = action.payload
-      return state;
+      break;
     case ModalActionsTypes.HIDE_MODAL:
-    default:
       state = null;
-      return state;
+      break;
   }
+  return state;
 }

@@ -5,7 +5,7 @@ import { LocalStore } from "./storage.utils";
 axios.interceptors.request.use(function (config) {
     // Do something before request is sent
     const urlPath = !config.url?.includes('/auth');
-    const token = LocalStore.get('user')?.access_token;
+    const token = LocalStore.get('USER_DATA')?.access_token;
     const headers = config.headers;
     if (urlPath && !headers.Authorization) {
         headers.Authorization = `Bearer ${token}`

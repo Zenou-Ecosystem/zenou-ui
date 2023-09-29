@@ -3,18 +3,22 @@ import { Menu } from "primereact/menu";
 import React, { useState } from 'react';
 import { InputText } from "primereact/inputtext";
 import { classNames } from "primereact/utils";
-import {LocalStore} from "../../utils/storage.utils";
 import { AppUserActions } from '../../constants/user.constants';
 import { can } from '../../utils/access-control.utils';
 import Locale from '../../components/locale';
 import { currentLanguageValue, translationService } from '../../services/translation.service';
 import { useNavigate } from 'react-router-dom';
+import { initialState } from '../../store/state';
+import { useSelector, useDispatch } from "react-redux";
+import { IUserActions, UserActionTypes } from '../../store/action-types/user.actions';
+import { Dispatch } from 'redux';
 
 const Navbar = () => {
   const menu = React.useRef<Menu | any>(null);
-  const [user, setUser] = React.useState<any>(LocalStore.get('user'));
-  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const user = useSelector((state: typeof initialState) => state.user);
+  const dispatch = useDispatch<Dispatch<IUserActions>>();
 
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const navigate = useNavigate();
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
@@ -42,13 +46,16 @@ const Navbar = () => {
       },
     },
     { separator: true },
-    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.PROFILE'), icon: "pi pi-fw pi-user", command:() => navigate('/user/profile')  },
-    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS'), icon: "pi pi-fw pi-cog",  command:() => navigate('/user/profile')  },
+    // { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.PROFILE'), icon: "pi pi-fw pi-user", command:() => navigate('/user/profile')  },
+    // { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS'), icon: "pi pi-fw pi-cog",  command:() => navigate('/user/profile')  },
     { separator: true },
-    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.LOGOUT'), icon: "pi pi-sign-out",  command:() => navigate('/')  },
+    { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.LOGOUT'), icon: "pi pi-sign-out",  command:() => {
+        dispatch({type: UserActionTypes.UN_AUTHENTICATE_USER});
+        navigate('/');
+      } },
   ];
   if(can(AppUserActions.VIEW_COMPANY)){
-    items.splice(2, 0, { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.COMPANIES'), icon: "pi pi-building",  command:() => navigate('/dashboard/company')  })
+    items.splice(2, 0, { label: translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.COMPANIES'), icon: "pi pi-building",  command:() => navigate('/dashboard/companies')  })
   }
   return (
     <>

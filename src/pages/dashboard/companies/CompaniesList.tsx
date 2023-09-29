@@ -22,7 +22,7 @@ function CompaniesList() {
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   const openAddCompanyForm = () => {
     setVisible(true);

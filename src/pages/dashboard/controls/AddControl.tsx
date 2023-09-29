@@ -1,19 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Button from "../../../core/Button/Button";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import { fetchLaws } from "../../../services/laws.service";
 import { Chips } from 'primereact/chips';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
-import { createControl } from '../../../services/control.service';
-import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { MultiSelect } from 'primereact/multiselect';
 import { initialState } from '../../../store/state';
 import { useSelector, useDispatch } from 'react-redux';
 import httpHandlerService from '../../../services/httpHandler.service';
-import { ActionsActionTypes, IActionActions } from '../../../store/action-types/action.actions';
 import { ControlActionTypes, IControlActions } from '../../../store/action-types/control.actions';
 import { Dispatch } from 'redux';
 
@@ -110,11 +105,6 @@ export default function AddControl(props: {hideAction: Function, stateGetter: Fu
       }, ControlActionTypes.ADD_CONTROL) as any
     );
     props.hideAction();
-    // createControl(formData() as any).then(() => {
-    //   toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
-    //   props.stateGetter()
-    // }).catch(() =>toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' })
-    // ).finally(() => props?.hideAction());
   };
 
   /**

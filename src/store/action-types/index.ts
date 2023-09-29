@@ -5,6 +5,7 @@ import { ILawActions } from './laws.actions';
 import { IPersonnelActions } from './personnel.actions';
 import { ModalActionsTypes } from './modal.actions';
 import { LoaderActionTypes } from './loader.actions';
+import { IUserActions } from './user.actions';
 
 export type ActionTypes = {
   actions: IActionActions,
@@ -13,5 +14,6 @@ export type ActionTypes = {
   laws: ILawActions,
   personnel: IPersonnelActions,
   modal: ModalActionsTypes,
-  loader: LoaderActionTypes
+  loader: LoaderActionTypes,
+  user: IUserActions
 }

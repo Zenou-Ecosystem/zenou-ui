@@ -62,7 +62,7 @@ export default function EditCompany(props: {hideAction: Function, stateGetter: F
 
   const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   const handleState = (e: any) => {
     const { name, value } = e.target;

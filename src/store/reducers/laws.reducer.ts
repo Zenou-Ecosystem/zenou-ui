@@ -18,6 +18,10 @@ export const lawReducer = (state: ILaws[] = lawsState, action: ILawActions | any
             state.splice(itemNumber, 0, action.payload as ILaws)
             return state;
 
+        case LawActionTypes.ADD_MULTIPLE_LAWS:
+            state = [...action.payload, ...state];
+            return state;
+
         case LawActionTypes.DELETE_LAW:
             state = state.filter((item) => item.id !== action.payload);
             return state;

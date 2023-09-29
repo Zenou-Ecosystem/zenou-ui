@@ -8,11 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { currentLanguageValue, translationService } from '../../services/translation.service';
 import "./index.scss";
 import { Menu } from 'primereact/menu';
-import { onSuccess } from '../../store/action-types/app.actions';
 import { ModalActionsTypes } from '../../store/action-types/modal.actions';
 import { useDispatch } from 'react-redux';
 import httpHandlerService from '../../services/httpHandler.service';
-import { ActionsActionTypes } from '../../store/action-types/action.actions';
 
 function Datatable(props: {
   data: any[];
@@ -83,7 +81,6 @@ function Datatable(props: {
     }  });
 
   const acceptDeletion = (action: string, payload: any) => {
-    console.log(action, payload);
     dispatch(
       httpHandlerService({
         endpoint: action.split('_')[1].toLowerCase(),
@@ -92,33 +89,30 @@ function Datatable(props: {
         showModalAfterRequest: true,
       }, action) as any
     );
-
-    // const filtered = tableData.filter((item: any) => item.id !== payload.id);
-    // setTableData(filtered);
-    //
-    // (toast.current as any).show({
-    //   severity: "info",
-    //   summary: "Confirmed",
-    //   detail: "Record successfully deleted",
-    //   life: 3000,
-    // });
   };
 
   const requestDeleteConfirmation = (action: string, payload: any) => {
     // remove the action in localStore to avoid remembering state in rowClickedHandler
     LocalStore.remove("action");
-
-    dispatch(onSuccess({
-      severity: 'DANGER',
-      headerText: 'Do you want to continue?',
-      bodyText: "Are you sure you want to continue with this action? This action is not reversible",
-      actions: [
-        {
-          name: 'continue',
-          onClick: () => acceptDeletion(action, payload)
-        }
-      ]
-    }, ModalActionsTypes.SHOW_MODAL));
+    dispatch({
+      type: ModalActionsTypes.SHOW_MODAL,
+      payload: {
+        severity: 'DANGER',
+        headerText: 'Do you want to continue?',
+        bodyText: "Are you sure you want to continue with this action? This action is not reversible",
+        actions: [
+          {
+            name: 'continue',
+            onClick: () => {
+              acceptDeletion(action, payload);
+              dispatch({
+                type: ModalActionsTypes.HIDE_MODAL
+              })
+            }
+          }
+        ]
+      }
+      });
   };
 
   useEffect(() => {

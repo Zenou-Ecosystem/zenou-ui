@@ -1,9 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Steps } from 'primereact/steps';
-import { Toast } from 'primereact/toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
-import { createLaw, fetchLaws, updateLaw } from '../../../services/laws.service';
 import { LocalStore } from '../../../utils/storage.utils';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
@@ -17,7 +15,6 @@ import { DataTable } from 'primereact/datatable';
 import { initialState } from '../../../store/state';
 import { useSelector, useDispatch } from 'react-redux';
 import { Dispatch } from 'redux';
-import { ControlActionTypes, IControlActions } from '../../../store/action-types/control.actions';
 import { ILawActions, LawActionTypes } from '../../../store/action-types/laws.actions';
 import httpHandlerService from '../../../services/httpHandler.service';
 
@@ -289,14 +286,6 @@ export default function InteractiveDemo() {
         }, LawActionTypes.ADD_LAW) as any
       );
       is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
-
-      // createLaw(formData() as any).then(res => {
-      //   toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS_ACTION') });
-      //   is_analysis ? handleAnalysis() :  navigate(`/dashboard/laws/`);
-      // }).catch(() => {
-      //   toast?.current?.show({ severity: 'error', summary: 'Error', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-      // })
-
     }else {
       dispatch(
         httpHandlerService({
@@ -315,20 +304,6 @@ export default function InteractiveDemo() {
               LocalStore.remove("EDIT_DATA");
               navigate(`/dashboard/laws`);
       }
-
-      // updateLaw(id, formData()).then(res => {
-      //   if(res){
-      //     toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESSFUL_ACTION') });
-      //     if(is_analysis) {
-      //       let prevData= LocalStore.get("EDIT_DATA");
-      //       LocalStore.set("EDIT_DATA", {...prevData, ...formData()});
-      //       navigate(`/dashboard/laws/analysis/${id}?edit`);
-      //     }else {
-      //       LocalStore.remove("EDIT_DATA");
-      //       navigate(`/dashboard/laws`);
-      //     }
-      //   }
-      // })
     }
 
 

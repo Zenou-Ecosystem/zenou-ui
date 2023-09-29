@@ -1,16 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { TabMenu } from 'primereact/tabmenu';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { useNavigate, useParams } from 'react-router-dom';
 import { LocalStore } from '../../../utils/storage.utils';
 import Button from '../../../core/Button/Button';
 import { HiArrowSmRight, HiCheck } from 'react-icons/hi';
-import { createLaw, updateLaw } from '../../../services/laws.service';
-import { Toast } from 'primereact/toast';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Tag } from 'primereact/tag';
-import { initialState } from '../../../store/state';
 import { Dispatch } from 'redux';
 import { ILawActions, LawActionTypes } from '../../../store/action-types/laws.actions';
 import { useDispatch } from 'react-redux';

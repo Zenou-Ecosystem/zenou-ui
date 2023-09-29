@@ -7,5 +7,5 @@ export enum ModalActionsTypes {
 
 export type IModalActions = {
   type: ModalActionsTypes,
-  payload: IModal
+  payload: IModal | null
 }

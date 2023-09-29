@@ -1,14 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Button from "../../../core/Button/Button";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import { fetchLaws } from "../../../services/laws.service";
 import { Chips } from 'primereact/chips';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
 import { LocalStore } from '../../../utils/storage.utils';
-import { updateControl } from '../../../services/control.service';
-import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { MultiSelect } from 'primereact/multiselect';
 import httpHandlerService from '../../../services/httpHandler.service';

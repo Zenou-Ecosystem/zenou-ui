@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from 'react-router-dom';
 import "./navigation.scss";
 import { can } from "../../utils/access-control.utils";
 import { AppUserActions } from "../../constants/user.constants";
 import { currentLanguageValue, translationService } from '../../services/translation.service';
+import { Dispatch } from 'redux';
+import { IUserActions, UserActionTypes } from '../../store/action-types/user.actions';
+import {useDispatch} from "react-redux";
 
 function SidebarComponent() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage])
+  const navigate = useNavigate();
+  const dispatch = useDispatch<Dispatch<IUserActions>>();
+
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
+
+  const handleSignOut = (e: React.MouseEvent) => {
+    e.preventDefault();
+    dispatch({type: UserActionTypes.UN_AUTHENTICATE_USER});
+    navigate('/');
+  }
 
   return (
     <aside className=" md:shadow transform -translate-x-full md:translate-x-0 transition-transform fixed h-screen top-0 w-2/12 z-50 duration-150 ease-in">
@@ -62,42 +74,12 @@ function SidebarComponent() {
             </li>
           </NavLink>
         )}
-        {/*{!can(AppUserActions.VIEW_PERSONNEL) ? null : (*/}
-        {/*  <NavLink*/}
-        {/*    to="/dashboard/personnel"*/}
-        {/*    state={"personnel"}*/}
-        {/*    className="px-4"*/}
-        {/*  >*/}
-        {/*    <li className="py-2 flex flex-wrap items-center gap-2 text-lg">*/}
-        {/*      <i className="pi pi-users"></i>*/}
-        {/*      <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.EMPLOYEES')}</span>*/}
-        {/*    </li>*/}
-        {/*  </NavLink>*/}
-        {/*)}*/}
-        {/*{!can(AppUserActions.VIEW_SUBSCRIPTION) ? null : (
-          <NavLink
-            to="/dashboard/subscriptions"
-            state={"subscriptions"}
-            className="px-4"
-          >
-            <li className="py-2 flex flex-wrap items-center gap-2 text-lg">
-              <i className="pi pi-file-edit"></i>
-              <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SUBSCRIPTION')}</span>
-            </li>
-          </NavLink>
-        )}*/}
-        {/*<NavLink to="/user/profile" state={"user"} className="px-4">*/}
-        {/*  <li className="py-2 flex flex-wrap items-center gap-2 text-lg">*/}
-        {/*    <i className="pi pi-cog"></i>*/}
-        {/*    <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.SETTINGS')}</span>*/}
-        {/*  </li>*/}
-        {/*</NavLink>*/}
       </ul>
           <li className="py-3 px-4 fixed bottom-10 lef-0 w-full flex flex-wrap bg-red-500 gap-2">
-            <NavLink to="/user/logout" className="w-full flex gap-2 items-center">
+            <button onClick={handleSignOut} className="w-full flex gap-2 items-center">
                 <i className="pi pi-sign-out"></i>
                 <span>{translationService(currentLanguage,'DASHBOARD.SIDEBAR.NAVIGATION.LOGOUT')}</span>
-            </NavLink>
+            </button>
           </li>
     </aside>
   );

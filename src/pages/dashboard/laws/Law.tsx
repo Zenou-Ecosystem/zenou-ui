@@ -1,16 +1,9 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-import Filter from '../../../components/filter/Filter';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import Button from '../../../core/Button/Button';
 import BasicCard from '../../../core/card/BasicCard';
 import Datatable from '../../../core/table/Datatable';
-import { Dialog } from 'primereact/dialog';
-// import AddLaw from './AddLaw';
-import useAppContext from '../../../hooks/useAppContext.hooks';
-import LawContextProvider, { LawContext } from '../../../contexts/LawContext';
-import useLawContext from '../../../hooks/useLawContext';
-import { ILaws } from '../../../interfaces/laws.interface';
-import { LawActionTypes } from '../../../store/action-types/laws.actions';
-import { createLaw, fetchLaws } from '../../../services/laws.service';
+import { LawContext } from '../../../contexts/LawContext';
+import { ILawActions, LawActionTypes } from '../../../store/action-types/laws.actions';
 import { can } from '../../../utils/access-control.utils';
 import { AppUserActions } from '../../../constants/user.constants';
 import * as xlsx from 'xlsx';
@@ -21,12 +14,14 @@ import { MenuItem } from 'primereact/menuitem';
 import { useNavigate } from 'react-router-dom';
 import { FilterMatchMode } from 'primereact/api';
 import { initialState } from '../../../store/state';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
+import httpHandlerService from '../../../services/httpHandler.service';
 
 function Laws() {
   const laws = useSelector((state: typeof initialState) => state.laws);
-  const [archives, setArchives] = useState<any[]>([]);
-  const [visible, setVisible] = useState(false);
+  const dispatch = useDispatch<Dispatch<ILawActions>>();
+
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const toast = useRef<Toast>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -63,15 +58,14 @@ function Laws() {
       const formattedIdentificationData:any[] = transformData(identificationData);
       const translatedIdentificationData:any[] = replaceParentsWithObjects(formattedIdentificationData);
 
-      // console.log(translatedIdentificationData);
-      // createLaw(translatedIdentificationData as unknown as ILaws).then(res => {
-      //   if(res) {
-      //     toast?.current?.show({ severity: 'success', summary: 'Success', detail: translationService(currentLanguage,'TOAST.SUCCESS.ACTION') });
-      //     setLaws(res?.data ?? res);
-      //   }else {
-      //     toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: translationService(currentLanguage,'TOAST.ERROR_ACTION') });
-      //   }
-      // })
+      dispatch(
+        httpHandlerService({
+          endpoint: 'law',
+          method: 'POST',
+          data: translatedIdentificationData,
+          showModalAfterRequest: true,
+        }, LawActionTypes.ADD_MULTIPLE_LAWS) as any
+      );
     };
 
     reader.readAsArrayBuffer(e.target.files[0]);

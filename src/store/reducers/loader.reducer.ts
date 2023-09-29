@@ -9,10 +9,11 @@ export const loaderReducer = (state: ILoader = loaderState, action: ILoaderActio
         type: action.payload.type,
         isOpened: true
       }
-      return state;
+     break;
+
     case LoaderActionTypes.HIDE_LOADER:
-    default:
       state = loaderState;
-      return state;
+      break;
   }
+  return state;
 }

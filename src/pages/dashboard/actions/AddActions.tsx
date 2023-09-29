@@ -1,25 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import Button from "../../../core/Button/Button";
-import { ProgressSpinner } from "primereact/progressspinner";
-import useActionsContext from "../../../hooks/useActionsContext";
 import { ActionsActionTypes, IActionActions } from '../../../store/action-types/action.actions';
 import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
 import { MultiSelect } from "primereact/multiselect";
-import { Dropdown } from "primereact/dropdown";
-import { fetchControls } from "../../../services/control.service";
-import { fetchLaws } from "../../../services/laws.service";
-import { ILaws } from "../../../interfaces/laws.interface";
-import { fetchDepartments } from "../../../services/department.service";
 import { Chips } from 'primereact/chips';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
-import useControlContext from '../../../hooks/useControlContext';
 import { useDispatch } from 'react-redux';
-// import { createAction } from '../../../services/actions.service';
-import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
-import { createActions } from '../../../services/actions.service';
 import { IActions } from '../../../interfaces/actions.interface';
 import { Dispatch } from 'redux';
 import { initialState } from '../../../store/state';
@@ -102,9 +90,6 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
   const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
 
   React.useMemo(()=> currentLanguageValue.subscribe(setCurrentLanguage), []);
-
-  const toast = useRef<Toast>(null);
-  const [loader, setLoader] = useState(false);
 
   const dispatch = useDispatch<Dispatch<IActionActions>>();
 
@@ -331,13 +316,6 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
         {/*submit button*/}
         <div className="w-full my-4 py-2">
-          <div className="">
-            {loader ? (
-              <ProgressSpinner style={{ width: "50px", height: "50px" }} />
-            ) : (
-              ""
-            )}
-          </div>
           <Button title="Créer un nouveau contrôle" styles="flex-row-reverse float-right px-6 py-3 items-center rounded-md" onClick={handleSubmission} />
         </div>
       </form>
@@ -346,7 +324,6 @@ function AddAction(props: {hideAction: Function, stateGetter: Function}) {
 
   return (
     <section>
-      <Toast ref={toast}></Toast>
       {addForm()}
     </section>
   );

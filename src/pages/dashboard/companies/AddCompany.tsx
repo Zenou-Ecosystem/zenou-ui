@@ -12,7 +12,6 @@ import { Password } from "primereact/password";
 import Button from "../../../core/Button/Button";
 import { HiArrowSmRight, HiCheck } from 'react-icons/hi';
 import { Dispatch } from 'redux';
-import { ActionsActionTypes, IActionActions } from '../../../store/action-types/action.actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { CompanyActionTypes, ICompanyActions } from '../../../store/action-types/company.actions';
 import httpHandlerService from '../../../services/httpHandler.service';
@@ -158,38 +157,6 @@ export default function AddCompany(props: {hideAction: Function, stateGetter: Fu
       )
     }
     props.hideAction();
-
-    // if (newCompany) {
-    //   const data = await register({
-    //     username: payload.username,
-    //     email: payload.email,
-    //     password: payload.password,
-    //     company_id: newCompany.id,
-    //     address: payload.address,
-    //     role: payload.role,
-    //     sector: payload.domains,
-    //   });
-    //
-    //   if (data) {
-    //     (toast.current as any).show({
-    //       severity: "success",
-    //       summary: "success",
-    //       detail: "Action reussi",
-    //       life: 3000,
-    //     });
-    //
-    //     props.stateGetter()
-    //     props.hideAction()
-    //
-    //   } else {
-    //     (toast.current as any).show({
-    //       severity: "error",
-    //       summary: "Erruer",
-    //       detail: "Une erruer cette produit",
-    //       life: 5000,
-    //     });
-    //   }
-    // }
   };
 
   return (

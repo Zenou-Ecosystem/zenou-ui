@@ -1,4 +1,6 @@
 const Config = {
+    // baseUrl: process.env.REACT_APP_BASEURL ?? "http://localhost:3001/core/api/v1",
+    // authBaseUrl: process.env.REACT_APP_AUTH_BASEURL ?? "http://localhost:3002/auth/api/v1",
     baseUrl: process.env.REACT_APP_BASEURL ?? "http://165.232.76.161/core/api/v1",
     authBaseUrl: process.env.REACT_APP_AUTH_BASEURL ?? "http://165.232.76.161/auth/api/v1",
     firebaseConfig: {

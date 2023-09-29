@@ -1,30 +1,26 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { HiArrowSmRight, HiCheck } from 'react-icons/hi';
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../../core/Button/Button";
-import { register } from "../../../services/auth.service";
 import "../register.scss";
-import { Toast } from "primereact/toast";
-import { LocalStore } from "../../../utils/storage.utils";
 import { UserTypes } from "../../../constants/user.constants";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { MultiSelect } from "primereact/multiselect";
-import { createCompany } from "../../../services/companies.service";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { TabMenu } from 'primereact/tabmenu';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import Locale from '../../locale';
 import CountryList from 'country-list-with-dial-code-and-flag';
-import { ICreateCompany } from '../../../interfaces/company.interface';
 import httpHandlerService from '../../../services/httpHandler.service';
 import { CompanyActionTypes, ICompanyActions } from '../../../store/action-types/company.actions';
 import Config from '../../../constants/config.constants';
-import { PersonnelActionTypes } from '../../../store/action-types/personnel.actions';
 import { Dispatch } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { initialState } from '../../../store/state';
+import { IUserActions, UserActionTypes } from '../../../store/action-types/user.actions';
+import { IModalActions, ModalActionsTypes } from '../../../store/action-types/modal.actions';
 
 const initialFormState = {
   company_name: {
@@ -85,10 +81,11 @@ function Register() {
   const navigator = useNavigate();
 
   const companies = useSelector((state: typeof initialState) => state.companies);
+  const modal = useSelector((state: typeof initialState) => state.modal);
 
-  const dispatch = useDispatch<Dispatch<ICompanyActions>>();
+  const dispatch = useDispatch<Dispatch<ICompanyActions | IUserActions | IModalActions>>();
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   const handleState = (e: any) => {
     const { name, value } = e.target;
@@ -162,12 +159,42 @@ function Register() {
           method: 'POST',
           baseUrl: `${Config.authBaseUrl}/register`,
           data,
-        }, PersonnelActionTypes.ADD_PERSONNEL) as any
+        }, UserActionTypes.AUTHENTICATE_USER) as any
       )
       navigator('/dashboard/home');
     }
 
   };
+
+  function HandleModal () {
+    if(modal) {
+      return (
+        <div className="py-4 w-full">
+          <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+            <div className="flex items-center mb-2">
+              <h3 className="text-red-800 font-medium">{modal?.headerText}</h3>
+              <button className="ml-auto" onClick={(e) => {
+                e.preventDefault();
+                dispatch({type: ModalActionsTypes.HIDE_MODAL, payload: null});
+              }}>
+                <svg className="text-red-800" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M6.93341 6.00008L11.1334 1.80008C11.4001 1.53341 11.4001 1.13341 11.1334 0.866748C10.8667 0.600081 10.4667 0.600081 10.2001 0.866748L6.00008 5.06675L1.80008 0.866748C1.53341 0.600081 1.13341 0.600081 0.866748 0.866748C0.600082 1.13341 0.600082 1.53341 0.866748 1.80008L5.06675 6.00008L0.866748 10.2001C0.733415 10.3334 0.666748 10.4667 0.666748 10.6667C0.666748 11.0667 0.933415 11.3334 1.33341 11.3334C1.53341 11.3334 1.66675 11.2667 1.80008 11.1334L6.00008 6.93341L10.2001 11.1334C10.3334 11.2667 10.4667 11.3334 10.6667 11.3334C10.8667 11.3334 11.0001 11.2667 11.1334 11.1334C11.4001 10.8667 11.4001 10.4667 11.1334 10.2001L6.93341 6.00008Z"
+                    fill="currentColor"></path>
+                </svg>
+              </button>
+            </div>
+            <div className="pr-6">
+              <p className="text-sm text-red-700">{modal?.bodyText}</p>
+            </div>
+          </div>
+        </div>
+      )
+    }else {
+      return <></>
+    }
+  }
 
   return (
     <section className="block md:flex relative h-screen">
@@ -190,6 +217,7 @@ function Register() {
 
       {/*form section*/}
       <div className="signup-section p-4 md:px-10 w-full md:w-7/12 flex items-center flex-col justify-center gap-1">
+        <HandleModal />
         <form className="w-9/12">
 
           <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {

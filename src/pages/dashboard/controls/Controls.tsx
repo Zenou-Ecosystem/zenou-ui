@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import './controls.scss'
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
@@ -6,12 +6,8 @@ import Datatable from "../../../core/table/Datatable";
 import { Dialog } from 'primereact/dialog';
 import AddControl from "./AddControl";
 import { HiPlus } from "react-icons/hi";
-import useAppContext from "../../../hooks/useAppContext.hooks";
-import ControlContextProvider, { ControlContext } from "../../../contexts/ControlContext";
-import useControlContext from "../../../hooks/useControlContext";
+import { ControlContext } from "../../../contexts/ControlContext";
 import { ControlActionTypes } from "../../../store/action-types/control.actions";
-import { IControl } from "../../../interfaces/controls.interface";
-import { fetchControls } from "../../../services/control.service";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
 import { Toast } from 'primereact/toast';
@@ -19,7 +15,6 @@ import { currentLanguageValue, translationService } from '../../../services/tran
 import EditControl from './EditControl';
 import { useSelector } from 'react-redux';
 import { initialState } from '../../../store/state';
-
 
 function Controls() {
     const controls = useSelector((state: typeof initialState) => state.controls);

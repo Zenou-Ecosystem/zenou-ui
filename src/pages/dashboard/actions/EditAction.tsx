@@ -104,13 +104,6 @@ export default function EditAction(props: {hideAction: Function, stateGetter: Fu
       }, ActionsActionTypes.EDIT_ACTION) as any
     );
     props.hideAction();
-
-    // updateAction(editItems?.id, formData() as any).then(() => {
-    //   toast?.current?.show({ severity: 'success', summary: 'Success', detail: 'Action Reussi' });
-    //   props.stateGetter()
-    // }).catch(() => toast?.current?.show({ severity: 'error', summary: 'Erruer', detail: 'Une eurrerr cette produit' })).finally(() => {
-    //   props.hideAction();
-    // })
   };
 
   let formData: any = () => {
