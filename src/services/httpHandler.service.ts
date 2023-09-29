@@ -48,8 +48,10 @@ export default function httpHandlerService(payload: IHttpPayload, actionType: an
               :`Deleted ${singularize(actionType.split('_')[1].toLowerCase())} with success`;
 
           if(payload.showModalAfterRequest) {
+            let authUrlCheck = payload.url === `${configConstants.authBaseUrl}/login`
+              || payload.url === `${configConstants.authBaseUrl}/register`;
 
-            if( payload.url === `${configConstants.authBaseUrl}/login` && response.data?.access_token) {
+            if( authUrlCheck && response.data?.access_token) {
 
             } else {
               dispatch({

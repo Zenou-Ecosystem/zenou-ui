@@ -2,11 +2,11 @@ section {
     div.welcome-container {
         position: relative;
         .welcome-image {
-            background-image: url("./../../assets/search_text.jpeg"), linear-gradient(180deg, #282828 0%, #000000 100%);
+            background-image: url("./../../assets/law.jpeg"), linear-gradient(180deg, #537895, rgba(227, 184, 100, 0.51));
             background-blend-mode: overlay;
-            background-position: center;
-            background-repeat: repeat;
-            height: 100vh;
+            background-position: right;
+            background-repeat: no-repeat;
+            background-size: cover;
             width: 100%;
         }
         .welcome-text{

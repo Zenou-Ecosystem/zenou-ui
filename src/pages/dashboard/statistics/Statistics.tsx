@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import { fetchAllKpis, filterAndSummarizeDateRange } from '../../../services/kpi.service';
 import { LocalStore } from '../../../utils/storage.utils';
 import { Chart } from 'primereact/chart';
@@ -7,7 +7,11 @@ import { LawActionTypes } from '../../../store/action-types/laws.actions';
 import { LawContext } from '../../../contexts/LawContext';
 import Datatable from '../../../core/table/Datatable';
 import { AppUserActions } from '../../../constants/user.constants';
-import { Button } from 'primereact/button';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
+import Button from '../../../core/Button/Button';
+import { initialState } from '../../../store/state';
+import {useSelector} from "react-redux";
+
 function Statistics() {
   const [state, setState] = React.useState() as any;
   const [chartData, setChartData] = React.useState({}) as any;
@@ -15,12 +19,18 @@ function Statistics() {
   const [dates, setDates] = React.useState<any>([]);
   const [lawsStatistics, setStatistics] = React.useState<any>({ laws: [], summary: {} });
 
-  const defaultDates = [new Date(Date.now()).toISOString(), new Date().toISOString()]
+  const user = useSelector((state: typeof initialState) => state.user);
+
+  const defaultDates = [new Date(Date.now()).toISOString(), new Date().toISOString()];
+
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
+
   React.useEffect(()=> {
     (async () => {
-      const userRole = LocalStore.get('user');
-      const data = await fetchAllKpis(userRole?.role);
-      const filter = await filterAndSummarizeDateRange(userRole?.role, {
+
+      const data = await fetchAllKpis(user?.role as string);
+      const filter = await filterAndSummarizeDateRange(user?.role as string, {
         summary:true
       })
       setStatistics(filter ?? { laws: [], summary: {} });
@@ -33,7 +43,8 @@ function Statistics() {
           data: [data?.percentageAnalysed ?? 0, data?.percentageNotAnalysed ?? 0],
         }
       ]
-    }
+    };
+
     const generalConformityAnalysis = {
       labels: ["Poucentage comforme", 'Poucentage non-conforme'],
       datasets: [
@@ -41,7 +52,7 @@ function Statistics() {
           data: [data?.percentageConform ?? 0, data?.percentageNotConform ?? 0],
         }
       ]
-    }
+    };
 
     const filterByDatesLawDate = {
       labels: ["Poucentage analysé", 'Poucentage non-analysé'],
@@ -50,7 +61,7 @@ function Statistics() {
           data: [filter?.summary?.percentageAnalysed ?? 0, filter?.summary?.percentageNotAnalysed ?? 0],
         }
       ]
-    }
+    };
 
     const filterByDatesConformityData = {
       labels: ["Poucentage comforme", 'Poucentage non-conforme'],
@@ -59,7 +70,7 @@ function Statistics() {
           data: [filter?.summary?.percentageConform ?? 0, filter?.summary?.percentageNotConform ?? 0],
         }
       ]
-    }
+    };
 
     const options = {
       plugins: {
@@ -75,12 +86,11 @@ function Statistics() {
     setChartOptions(options);
     })()
 
+  }, []);
 
-  }, [])
     const submitDate = async () => {
-      const userRole = LocalStore.get('user');
 
-      const filter = await filterAndSummarizeDateRange(userRole?.role, {
+      const filter = await filterAndSummarizeDateRange(user?.role as string, {
         startDate: new Date(dates[0] ?? "2023-08-30T11:36:30.350Z").toISOString(),
         endDate: new Date(dates[1] ?? "2023-08-30T11:36:30.350Z").toISOString(),
         summary:true
@@ -109,26 +119,35 @@ function Statistics() {
         }
       });
     }
+
     // @ts-ignore
   return (
         <div>
             {/*<CustomActiveShapeChartComponent />*/}
-          <div className='mb-10 px-10'>
-            <h2 className='text-3xl py-2 font-medium'>Statistique</h2>
+          <div className='mb-10 md:px-10'>
+            <h2 className='text-2xl py-2 font-medium'>Statistique</h2>
             <p className='text-gray-400 font-normal'>Section des statistique du systeme</p>
           </div>
           <div className='w-11/12 mx-auto'>
             <div className='my-8'>
-              <div className='flex border-b pb-2 mb-4 items-center justify-between'>
+              <div className='flex border-b pb-2 mb-4 md:items-center md:flex-row flex-col justify-between'>
                 <h1
                   className="font-medium text-lg"
                 >
                   Statistique lois generales
                 </h1>
-                <div>
-                  <Calendar placeholder="Range" value={dates} onChange={(e : CalendarChangeEvent) => setDates(e?.value)} selectionMode="range" readOnlyInput />
+                <div className='flex gap-4'>
+                  <Calendar placeholder="Range" className='p-inputtext-sm' value={dates} onChange={(e : CalendarChangeEvent) => setDates(e?.value)} selectionMode="range" readOnlyInput />
                   {" "}
-                  <Button label={"soumettre"} onClick={submitDate} />
+                  <Button
+                    title={translationService(currentLanguage,'BUTTON.NEW')}
+                    styles="flex-row-reverse relative bottom-0 px-4 py-2.5 text-sm items-center rounded-full"
+                    onClick={submitDate}
+                    Icon={{
+                      Name: () => (<i className='pi pi-plus text-white' />),
+                    }}
+                  />
+                  {/*<Button label={"soumettre"} onClick={submitDate} />*/}
                 </div>
               </div>
 
@@ -158,11 +177,11 @@ function Statistics() {
               </div>
 
               <div className=''>
-                <div className="flex justify-between items-center">
-                  <div className="border py-4 flex items-center justify-center w-1/2">
+                <div className="flex flex-col md:flex-row justify-between items-center">
+                  <div className="border py-4 flex items-center justify-center w-full md:w-1/2">
                     <Chart type="pie" data={chartData?.filterByDatesLawDate} options={chartOptions} className="w-72" />
                   </div>
-                  <div className="border-y border-r py-4 flex items-center justify-center w-1/2">
+                  <div className=" border md:border-y md:border-r py-4 flex items-center justify-center w-full md:w-1/2">
                     <Chart type="pie" data={chartData?.filterByDatesConformityData} options={chartOptions} className="w-72" />
                   </div>
                 </div>
@@ -218,63 +237,10 @@ function Statistics() {
                     VIEW: AppUserActions.VIEW_LAW,
                   }}
                 />
-
-                {/*<JoinLineChartComponent />*/}
               </div>
             </div>
 
-          {/*<div className='border my-8 rounded-md'>*/}
-          {/*  <div className='flex border-b pt-4 px-4 mb-4 items-center justify-between'>*/}
-          {/*    <h1*/}
-          {/*      className="font-medium text-xl pl-3 mb-4"*/}
-          {/*    >*/}
-          {/*      Action*/}
-          {/*    </h1>*/}
-          {/*    <button><i className='pi pi-ellipsis-v'></i></button>*/}
-          {/*  </div>*/}
-          {/*  <div className='p-4'>*/}
-          {/*    <CustomBarChartComponent />*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-
-          {/*<div className='border my-8 rounded-md'>*/}
-          {/*  <div className='flex border-b pt-4 px-4 mb-4 items-center justify-between'>*/}
-          {/*    <h1*/}
-          {/*      className="font-medium text-xl pl-3 mb-4"*/}
-          {/*    >*/}
-          {/*      Entreprise*/}
-          {/*    </h1>*/}
-          {/*    <button><i className='pi pi-ellipsis-v'></i></button>*/}
-          {/*  </div>*/}
-          {/*  <div className='p-4'>*/}
-          {/*    <SimpleAreaChartComponent />*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-
           </div>
-
-
-
-          {/*<div className='border rounded-md'>*/}
-          {/*  <div className='flex border-b pt-4 px-4 mb-4 items-center justify-between'>*/}
-          {/*    <h1*/}
-          {/*      className="font-medium text-xl pl-3 mb-4"*/}
-          {/*    >*/}
-          {/*      Voire les texte*/}
-          {/*    </h1>*/}
-          {/*    <button><i className='pi pi-ellipsis-v'></i></button>*/}
-          {/*  </div>*/}
-          {/*  <div className='p-4'>*/}
-          {/*    <CustomBarChartComponent />*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-
-
-
-            {/*<SimpleAreaChartComponent />*/}
-            {/*<PieWithNeedleChartComponent />*/}
-            {/*<PieWithCustomLabelChartComponent />*/}
-            {/*<LineChartComponent />*/}
         </div>
     )
 }

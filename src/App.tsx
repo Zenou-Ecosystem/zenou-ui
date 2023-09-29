@@ -16,39 +16,40 @@ import DataDetails from "./core/table/Details";
 import ReviewLaw from './pages/dashboard/laws/ReviewLaw';
 import TextAnalysis from './pages/dashboard/laws/TextAnalysis';
 import NewLaw from './pages/dashboard/laws/NewLaw';
-// import { ErrorBoundary } from 'react-error-boundary';
-// import ErrorComponent from './core/shared/error';
+import ErrorComponent from './core/shared/error';
 
 function App() {
   return (
-    <div>
-      <Routes>
-        <Route path="/" element={<Login />}></Route>
-        <Route path="login" element={<Login />}></Route>
-        <Route path="register" element={<Register />}></Route>
+      <div>
+        <Routes>
+          <Route path="/" element={<Login />}></Route>
+          <Route path="login" element={<Login />}></Route>
+          <Route path="register" element={<Register />}></Route>
 
-        <Route path="dashboard" element={<DashboardHome />}>
-          <Route index path="home" element={<Dashboard />}></Route>
-          <Route path="stats" element={<Statistics />}></Route>
-          <Route path="companies" element={<CompaniesList />}></Route>
-          <Route path="laws" element={<Outlet />}>
-            <Route index path="" element={<Law />}></Route>
-            <Route path="new" element={<NewLaw />}/>
-            <Route path="edit/:id" element={<NewLaw />}/>
-            <Route path="analysis/:id/review" element={<ReviewLaw />}></Route>
-            <Route path="analysis/:id" element={<TextAnalysis />}></Route>
+          <Route path="dashboard" element={<DashboardHome />}>
+            <Route index path="home" element={<Dashboard />}></Route>
+            <Route path="stats" element={<Statistics />}></Route>
+            <Route path="companies" element={<CompaniesList />}></Route>
+            <Route path="laws" element={<Outlet />}>
+              <Route index path="" element={<Law />}></Route>
+              <Route path="new" element={<NewLaw />}/>
+              <Route path="edit/:id" element={<NewLaw />}/>
+              <Route path="analysis/:id/review" element={<ReviewLaw />}></Route>
+              <Route path="analysis/:id" element={<TextAnalysis />}></Route>
+            </Route>
+            <Route path="controls" element={<Controls />}></Route>
+            <Route path="actions" element={<Actions />}></Route>
+            <Route path=":context/:id" element={<DataDetails />}></Route>
           </Route>
-          <Route path="controls" element={<Controls />}></Route>
-          <Route path="actions" element={<Actions />}></Route>
-          <Route path=":context/:id" element={<DataDetails />}></Route>
-        </Route>
 
-        <Route path="user" element={<DashboardHome />}>
-          <Route path="profile" element={<Profile />}></Route>
-          <Route path="logout" element={<Logout />}></Route>
-        </Route>
-      </Routes>
-    </div>
+          <Route path="*" element={<ErrorComponent/>} />
+
+          <Route path="user" element={<DashboardHome />}>
+            <Route path="profile" element={<Profile />}></Route>
+            <Route path="logout" element={<Logout />}></Route>
+          </Route>
+        </Routes>
+      </div>
   );
 }
 

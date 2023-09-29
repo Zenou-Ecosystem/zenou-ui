@@ -22,12 +22,12 @@ function Laws() {
   const laws = useSelector((state: typeof initialState) => state.laws);
   const dispatch = useDispatch<Dispatch<ILawActions>>();
 
-  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
   const toast = useRef<Toast>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
   const navigate = useNavigate();
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   const openAddLawForm = () => {
     navigate('/dashboard/laws/new')
@@ -139,7 +139,7 @@ function Laws() {
     }
 
   return (
-    <div className="w-full px-4">
+    <div className="w-full md:px-4">
       {/*translationService(currentLanguage,'LAW.LIST.TITLE')*/}
       <BasicCard
         title={''}
@@ -148,7 +148,7 @@ function Laws() {
           <>
             <Toast ref={toast}></Toast>
             <div className="my-6 w-full m-auto flex justify-between items-center">
-              <div className="w-6/12">
+              <div className="w-full md:w-6/12">
                 <h2 className='text-left text-2xl font-medium'>
                   {translationService(currentLanguage,'LAW.LIST.TITLE')}
                 </h2>
@@ -156,16 +156,18 @@ function Laws() {
               {!can(AppUserActions.ADD_LAW) ? null : (
                 <div className="flex justify-end gap-2 w-6/12">
                   <div className='file-container'>
-                    <label htmlFor='file-input'>
+                    <label htmlFor='file-input'
+                           className='block bg-[#025bee] text-white text-sm font-medium text-center px-4 py-2.5 rounded-md'
+                    >
                       <i className='pi pi-cloud-upload'></i> &nbsp;
                       {translationService(currentLanguage,'BUTTON.IMPORT')}
                     </label>
-                    <input type="file" onChange={onUpload} id="file-input" accept=".xlsx" />
+                    <input type="file" onChange={onUpload} id="file-input" className='hidden' accept=".xlsx" />
                   </div>
 
                   <Button
                     title={translationService(currentLanguage,'BUTTON.NEW')}
-                    styles="flex-row-reverse px-6 py-3.5 text-sm items-center rounded-full"
+                    styles="flex-row-reverse px-4 py-2.5 text-sm items-center rounded-full"
                     onClick={openAddLawForm}
                     Icon={{
                       Name: () => (<i className='pi pi-plus text-white' />),

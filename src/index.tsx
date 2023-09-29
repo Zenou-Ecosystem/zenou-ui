@@ -9,24 +9,27 @@ import "primereact/resources/primereact.min.css";
 
 //icons
 import "primeicons/primeicons.css";
-
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import ErrorComponent from './core/shared/error';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-        <Provider store={store}>
-      <BrowserRouter>
-          <App />
-      </BrowserRouter>
-        </Provider>
+    <ErrorBoundary FallbackComponent={ErrorComponent}>
+      <Provider store={store}>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+      </Provider>
+    </ErrorBoundary>
   </React.StrictMode>
 );
 

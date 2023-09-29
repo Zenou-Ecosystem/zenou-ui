@@ -59,7 +59,7 @@ function DashboardHome() {
     if(loader && loader.type === "PROGRESS" && loader.isOpened) {
       return <ProgressLoader />
     }else {
-      return <div className="flex flex-col flex-grow p-8">
+      return <div className="w-full md:w-10/12 flex flex-col flex-grow w-full overflow-hidden  md:ml-[17%] mt-28 md:mt-12 p-2 md:p-8">
         <Outlet />
       </div>
     }
@@ -82,12 +82,12 @@ function DashboardHome() {
   return (
     <main>
       <HandleModal />
-      <section className="flex flex-row min-h-screen">
-        <SidebarComponent />
-        <section className="w-10/12 flex flex-col flex-grow ml-[16.675%]  transition-all duration-150 ease-in">
+      <section className="flex flex-col md:flex-row min-h-screen">
           <Navbar />
+          <SidebarComponent />
           <HandleLoader />
-        </section>
+        {/*<section className="">*/}
+        {/*</section>*/}
       </section>
     </main>
   );

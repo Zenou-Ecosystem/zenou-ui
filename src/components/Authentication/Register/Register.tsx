@@ -198,13 +198,13 @@ function Register() {
 
   return (
     <section className="block md:flex relative h-screen">
-      <div className='absolute right-5 top-5'>
+      <div className='absolute right-5 top-[93%] md:top-5'>
        <Locale />
       </div>
 
       <div className="welcome-container w-full m md:w-5/12  md:flex flex-col ">
-        <div className='welcome-image'></div>
-        <div className='welcome-text register'>
+        <div className='welcome-image md:h-screen h-[5vh]'></div>
+        <div className='welcome-text register hidden flex-col md:flex'>
           <h1 className="welcome-main-text hidden md:block">
             {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.TITLE')}
           </h1>
@@ -218,7 +218,7 @@ function Register() {
       {/*form section*/}
       <div className="signup-section p-4 md:px-10 w-full md:w-7/12 flex items-center flex-col justify-center gap-1">
         <HandleModal />
-        <form className="w-9/12">
+        <form className=" w-full md:w-9/12">
 
           <TabMenu className='tab-menu truncate' model={items} activeIndex={activeTab} onTabChange={(e) => {
            setActiveTab(e.index);

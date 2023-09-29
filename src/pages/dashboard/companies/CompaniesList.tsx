@@ -30,14 +30,14 @@ function CompaniesList() {
 
 
   return (
-    <div className="w-full px-4">
+    <div className="w-full md:px-4">
       <BasicCard
         title={''}
         headerStyles="font-medium text-3xl py-4"
         content={() => (
           <>
-            <div className="my-6 w-full m-auto flex justify-between items-center">
-              <div className="w-6/12">
+            <div className="my-6 w-full m-auto flex flex-col md:flex-row justify-between md:items-center">
+              <div className="w-full md:w-6/12">
                 <h2 className='text-left text-2xl font-medium'>
                   {translationService(currentLanguage,'COMPANIES.LIST.TITLE')}
                 </h2>
@@ -50,7 +50,7 @@ function CompaniesList() {
                   {/*</button>*/}
                   <Button
                     title={translationService(currentLanguage,'BUTTON.NEW')}
-                    styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
+                    styles="flex-row-reverse px-4 py-2.5 items-center text-sm rounded-full"
                     onClick={openAddCompanyForm}
                     Icon={{
                       Name: HiPlus,

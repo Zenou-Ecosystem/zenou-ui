@@ -105,13 +105,13 @@ function Login() {
 
   return (
     <section className="block md:flex relative h-screen">
-      <div className='absolute right-5 top-5'>
+      <div className='absolute right-5 top-[93%] md:top-5'>
         <Locale />
       </div>
 
       <div className="welcome-container w-full md:w-8/12  md:flex flex-col justify-center items-center">
-        <div className='welcome-image'></div>
-        <div className='welcome-text'>
+        <div className='welcome-image md:h-screen h-[35vh]'></div>
+        <div className='welcome-text hidden flex-col md:flex'>
           <h1 className="welcome-main-text hidden md:block">
             {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.TITLE')}
           </h1>

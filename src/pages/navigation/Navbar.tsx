@@ -59,12 +59,19 @@ const Navbar = () => {
   }
   return (
     <>
-      <header className="header bg-white shadow-sm sticky top-0 z-50 border-b py-4 px-8">
+      <header className="header md:w-[84%] w-full right-0 bg-white shadow-sm fixed top-0 z-50 border-b py-4 px-4 md:px-8">
         <div className="header-content flex items-center flex-row">
-          <span className="p-input-icon-left">
-            <i className="pi pi-search" />
-            <InputText placeholder={translationService(currentLanguage,'INPUT.SEARCH')} className="p-inputtext-sm" />
-          </span>
+          <div className='flex gap-4'>
+            <button onClick={(e) => {
+              e.preventDefault();
+            }}> <i className='pi pi-arrow-left'></i> </button>
+
+            <button onClick={(e) => {
+              e.preventDefault();
+            }}> <i className='pi pi-arrow-right'></i></button>
+
+          </div>
+
           <div className="flex ml-auto">
             <Locale /> &nbsp; &nbsp; &nbsp;
             <a
@@ -88,6 +95,7 @@ const Navbar = () => {
         </div>
       </header>
     </>
+
   );
 };
 

@@ -37,15 +37,17 @@ function Controls() {
     };
 
     return (
-      <div className="w-full px-4">
+      <div className="w-full md:px-4">
         <Toast ref={toast}></Toast>
         <BasicCard title={""}
                    headerStyles="font-medium text-3xl py-4"
                    content={() => (
                      <>
                        <div className="my-6 w-full m-auto flex justify-between items-center ">
-                         <div className="w-6/12">
-                           <h2 className='text-left text-3xl font-medium'>{translationService(currentLanguage,'CONTROLS.LIST.TITLE')}</h2>
+                         <div className="w-full md:w-6/12">
+                           <h2 className='text-left text-2xl font-medium'>
+                             {translationService(currentLanguage,'CONTROLS.LIST.TITLE')}
+                           </h2>
                          </div>
                          {!can(AppUserActions.ADD_CONTROL) ? null : (
                            <div className="flex justify-end gap-2 w-6/12">
@@ -60,7 +62,7 @@ function Controls() {
                              {/*</button>*/}
                              <Button
                                title={translationService(currentLanguage,'BUTTON.NEW')}
-                               styles="flex-row-reverse px-6 py-3.5 items-center rounded-full"
+                               styles="flex-row-reverse px-4 py-2.5 items-center rounded-full"
                                onClick={openAddControlForm}
                                Icon={{
                                  Name: HiPlus,
