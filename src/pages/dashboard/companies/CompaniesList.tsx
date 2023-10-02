@@ -50,12 +50,10 @@ function CompaniesList() {
                   {/*</button>*/}
                   <Button
                     title={translationService(currentLanguage,'BUTTON.NEW')}
-                    styles="flex-row-reverse px-4 py-2.5 items-center text-sm rounded-full"
+                    styles="flex-row-reverse px-4 py-2.5 text-sm items-center rounded-full"
                     onClick={openAddCompanyForm}
                     Icon={{
-                      Name: HiPlus,
-                      classes: "",
-                      color: "white",
+                      Name: () => (<i className='pi pi-plus text-white' />),
                     }}
                   />
                 </div>

@@ -62,12 +62,10 @@ function Controls() {
                              {/*</button>*/}
                              <Button
                                title={translationService(currentLanguage,'BUTTON.NEW')}
-                               styles="flex-row-reverse px-4 py-2.5 items-center rounded-full"
+                               styles="flex-row-reverse px-4 py-2.5 text-sm items-center rounded-full"
                                onClick={openAddControlForm}
                                Icon={{
-                                 Name: HiPlus,
-                                 classes: "",
-                                 color: "white",
+                                 Name: () => (<i className='pi pi-plus text-white' />),
                                }}
                              />
                            </div>
