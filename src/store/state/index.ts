@@ -6,6 +6,7 @@ import { personnelState } from './personnel.state';
 import { modalState } from './modal.state';
 import { loaderState } from './loader.state';
 import { userState } from './user.state';
+import { statisticsState } from './statistics.state';
 
 export const initialState = {
   actions: actionState,
@@ -15,5 +16,6 @@ export const initialState = {
   users: personnelState,
   modal: modalState,
   loader: loaderState,
-  user: userState
+  user: userState,
+  statistics: statisticsState
 };

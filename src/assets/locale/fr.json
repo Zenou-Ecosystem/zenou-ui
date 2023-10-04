@@ -1,6 +1,6 @@
 {
-  "REGISTRATION.SIDE_MESSAGE.TITLE": "Solution de gestion de la conformité",
-  "REGISTRATION.SIDE_MESSAGE.SUBTITLE": "Restez en conformité et gérez efficacement vos dossiers juridiques grâce à la solution tout-en-un de Zenou. Essayez-la dès aujourd'hui !",
+  "REGISTRATION.SIDE_MESSAGE.TITLE": "Solution de Gestion de la Gouvernance et de la Conformité (GRC)",
+  "REGISTRATION.SIDE_MESSAGE.SUBTITLE": "Une culture de maitrise des obligations juridiques grâce à la solution tout-en-un de Zenou. Essayez-la dès aujourd'hui !",
   "REGISTRATION.TAB.PRIMARY": "Information Principale de L'entreprise",
   "REGISTRATION.TAB.SECONDARY": "Information Secondaire de L'entreprise",
   "REGISTRATION.TAB.INFORMATION": "Information de L'administrateur",
@@ -21,6 +21,7 @@
   "REGISTRATION.FORM.ADMIN_EMAIL": "Adresse Email",
   "REGISTRATION.FORM.EMAIL": "Adresse Email de L'administrateur",
   "REGISTRATION.FORM.PASSWORD": "Mot de Passe de L'administrateur",
+
   "REGISTRATION.FORM.CONFIRM_PASSWORD": "Saisir à Nouveau le Mot de Passe de L'administrateur",
 
   "COMPANY.ADD.FORM.COMPANY_NAME": "Nom de L'entreprise",
@@ -97,8 +98,8 @@
   "LAW.ADD.FORM.PLACEHOLDER.NATURE_OF_TEXT": "Saisir la Nature de Texte",
   "LAW.ADD.FORM.PARENT_OF_TEXT": "Parent du Texte",
   "LAW.ADD.FORM.PLACEHOLDER.PARENT_OF_TEXT": "Saisir le Parent du Texte",
-  "LAW.ADD.FORM.SECTORS_OF_ACTIVITY": "Secteurs D’activite",
-  "LAW.ADD.FORM.PLACEHOLDER.SECTORS_OF_ACTIVITY": "Choisir les Secteurs D’activite",
+  "LAW.ADD.FORM.SECTORS_OF_ACTIVITY": "Secteur d’activité",
+  "LAW.ADD.FORM.PLACEHOLDER.SECTORS_OF_ACTIVITY": "Choisir les secteur d’activité",
   "LAW.ADD.FORM.PRODUCTS_OR_SERVICES_CONCERNED": "Produits ou Services Concernes",
   "LAW.ADD.FORM.PLACEHOLDER.PRODUCTS_OR_SERVICES_CONCERNED": "Saisir les Produits ou Services Concernes",
   "LAW.ADD.FORM.PURPOSE_AND_SCOPE_OF_TEXT": "Objet et Portee du Texte",
@@ -132,6 +133,7 @@
   "OPTIONS.INFORMATION": "Information",
   "OPTIONS.WEAK": "Faible",
   "OPTIONS.MEDIUM": "Moyen",
+  "OPTIONS.STRONG": "Fort",
   "OPTIONS.MAJOR": "Majeur",
   "OPTIONS.CRITICAL": "Critique",
   "LAW.ADD.FORM.REQUIREMENTS": "Exigences ",
@@ -306,5 +308,42 @@
   "OPTIONS.FINANCIAL": "Financier",
   "OPTIONS.ORGANISATION": "Organisation",
   "OPTIONS.PRODUCTS":"Produit",
-  "OPTIONS.IMAGE": "Image"
+  "OPTIONS.IMAGE": "Image",
+
+  "HOME.WELCOME" : "Bienvenue,",
+  "HOME.WELCOME.SUBTITLE" : "Une vue d'ensemble des informations du système",
+  "NUMBER_OF_TEXT" : "Nombre de textes",
+  "NUMBER_OF_CONTROL" : "Nombre de contrôles",
+  "NUMBER_OF_ACTION_PLAN" : "Nombre de plans d'action",
+  "NUMBER_OF_COMPANY" : "Nombre d'entrprises enregistrées",
+
+  "FILTER.GENERAL" : "General",
+  "FILTER.BY_IMPACT" : "Par impact",
+  "FILTER.BY_NATURE_OF_IMPACT" : "Par nature d'impact",
+  "FILTER.BY_APPLICABILITY" : "Par applicabilité",
+  "SELECT.BY_SECTOR_OF_ACTIVITIES" : "Secteur d'activité",
+  "SELECT.TEXT_BY_SECTOR_OF_ACTIVITY" : "Texte par secteur d'activité",
+  "SELECT.CONFORMED_TEXT_BY_SECTOR_OF_ACTIVITY" : "Texte conforme par secteur d'activité",
+
+  "PERCENTAGE_CONFORM" : "Pourcentage de conformité",
+  "PERCENTAGE_NOT-CONFORM" : "Pourcentage non conforme",
+  "PERCENTAGE_ANALYSED" : "Pourcentage analysé",
+  "PERCENTAGE_NOT_ANALYSED" : "pourcentage non analysé",
+  "CONFORMITY_RATE" : "Taux de conformité",
+  "TOTAL_NUMBER_OF_TEXT_CONFORM" : "Nombre total de textes conformes",
+  "TOTAL_NUMBER_OF_ANALYSED_TEXT" : "Nombre total de textes analysés",
+
+  "STATISTICS.HOME.TITLE1" : "Statistiques sur les textes simples",
+  "STATISTICS.HOME.TITLE2" : "Statistiques générales de conformité",
+  "STATISTICS.HOME.TITLE3" : "Statistiques d'analyse générale",
+  "STATISTICS.HOME.TITLE4" : "Certaines lois",
+
+  "FILTER.EQUALS" : "Égal",
+  "FILTER.NOT_EQUALS" : "Pas égal",
+  "FILTER.CONTAINS" : "contient",
+  "FILTER.START_WITH" : "Commencer par",
+  "FILTER.ENDS_WITH" : "Finit par",
+  "FILTER.NOT_CONTAINS" : "Ne contient pas",
+  "FILTER.NO_FILTER": ""
+
 }

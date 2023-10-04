@@ -81,6 +81,7 @@ function Register() {
   const navigator = useNavigate();
 
   const companies = useSelector((state: typeof initialState) => state.companies);
+
   const modal = useSelector((state: typeof initialState) => state.modal);
 
   const dispatch = useDispatch<Dispatch<ICompanyActions | IUserActions | IModalActions>>();
@@ -520,6 +521,10 @@ function Register() {
                 <Password
                   placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.PASSWORD')}
                   name="password"
+                  mediumLabel={translationService(currentLanguage,'OPTIONS.MEDIUM')}
+                  weakLabel={translationService(currentLanguage,'OPTIONS.WEAK')}
+                  strongLabel={translationService(currentLanguage,'OPTIONS.STRONG')}
+                  promptLabel={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.PASSWORD')}
                   id="password"
                   value={formValues.password.value}
                   className="password"

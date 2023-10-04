@@ -7,6 +7,7 @@ import { personnelReducer } from './personnel.reducer';
 import { modalReducer } from './modal.reducer';
 import { loaderReducer } from './loader.reducer';
 import { userReducer } from './user.reducer';
+import { statisticsReducer } from './statistics.reducer';
 
 export const Reducers = combineReducers({
   actions: actionReducer,
@@ -16,5 +17,6 @@ export const Reducers = combineReducers({
   users: personnelReducer,
   modal: modalReducer,
   loader: loaderReducer,
-  user: userReducer
+  user: userReducer,
+  statistics: statisticsReducer
 })

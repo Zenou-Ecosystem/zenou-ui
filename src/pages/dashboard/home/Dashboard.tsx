@@ -1,279 +1,290 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { LawActionTypes } from '../../../store/action-types/laws.actions';
 import { LawContext } from '../../../contexts/LawContext';
 import { AppUserActions } from '../../../constants/user.constants';
 import Datatable from '../../../core/table/Datatable';
 import { NavLink } from 'react-router-dom';
-import { currentLanguageValue } from '../../../services/translation.service';
+import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import { Chart } from 'primereact/chart';
-import { LocalStore } from '../../../utils/storage.utils';
-import { fetchAllKpis } from '../../../services/kpi.service';
 import { Dropdown } from 'primereact/dropdown';
 import { initialState } from '../../../store/state';
 import { useSelector } from "react-redux";
 
-function Dashboard() {
+export default function Dashboard() {
   const laws = useSelector((state: typeof initialState) => state.laws);
+  const statisticsState = useSelector((state: typeof initialState) => state.statistics);
   const controlPlans = useSelector((state: typeof initialState) => state.controls);
   const actionPlans = useSelector((state: typeof initialState) => state.actions);
   const companies = useSelector((state: typeof initialState) => state.companies);
 
-  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
+  React.useMemo(() => currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   const [chartData, setChartData] = React.useState({}) as any;
   const [chartOptions, setChartOptions] = React.useState({});
 
-  const [statisticsState, setStatisticsState] = React.useState<any>(null);
-
   const filters = [
     {
-    name: "General",
+    name: translationService(currentLanguage,'FILTER.GENERAL'),
     code: "general"
   },
     {
-    name: "Par Impact",
+    name: translationService(currentLanguage,'FILTER.BY_IMPACT'),
     code: "impact"
   },
     {
-    name: "Par Nature de l'impact",
+    name: translationService(currentLanguage,'FILTER.BY_NATURE_OF_IMPACT'),
     code: "natureOfImpact"
   },
     {
-    name: "Par applicabilité",
+    name: translationService(currentLanguage,'FILTER.BY_APPLICABILITY'),
     code: "applicable"
   }
   ];
 
+  const user = useSelector((state: typeof initialState) => state.user);
+
   const [filterState, setFilterState] =React.useState(filters[0]);
 
-  useEffect(() => {
-    (async () => {
+  const countItemsBySector = (array:any) => {
+    return array.reduce((accumulator: any, item: any) => {
+      const parent = item.parent_of_text;
+      const sector = item.sectors_of_activity;
 
-      const userRole = LocalStore.get('user');
-      const kpiData = await fetchAllKpis(userRole?.role);
+      sector.forEach((sectorItem: any) => {
+        if (!accumulator[sectorItem]) {
+          accumulator[sectorItem] = 0;
+        }
 
-      setStatisticsState(kpiData);
+        if (parent) {
+          accumulator[sectorItem] += parent.length;
+        }
+      });
 
-      const countItemsBySector = (array:any) => {
-        return array.reduce((accumulator: any, item: any) => {
-          const parent = item.parent_of_text;
-          const sector = item.sectors_of_activity;
+      return accumulator;
+    }, {});
+  };
 
-          sector.forEach((sectorItem: any) => {
-            if (!accumulator[sectorItem]) {
-              accumulator[sectorItem] = 0;
-            }
+  const countItems = (array:any[], condition: Function) => {
+    return array.reduce((accumulator:any, item:any) => {
+      // hold the text analysis
+      const textAnalysis = item?.text_analysis ?? [];
 
-            if (parent) {
-              accumulator[sectorItem] += parent.length;
-            }
-          });
+      // the sectors of activity
+      const sector = item.sectors_of_activity;
 
-          return accumulator;
-        }, {});
-      };
+      // loop through the sectors of activity
+      sector.forEach((sectorItem:any) => {
+        if (!accumulator[sectorItem]) {
+          accumulator[sectorItem] = 0;
+        }
+        accumulator[sectorItem] += textAnalysis.filter(condition)?.length;
+      });
 
-      const countItems = (array:any[], condition: Function) => {
-        return array.reduce((accumulator:any, item:any) => {
-          // hold the text analysis
-          const textAnalysis = item?.text_analysis ?? [];
+      return accumulator;
+    }, {});
 
-          // the sectors of activity
-          const sector = item.sectors_of_activity;
+  };
 
-          // loop through the sectors of activity
-          sector.forEach((sectorItem:any) => {
-            if (!accumulator[sectorItem]) {
-              accumulator[sectorItem] = 0;
-            }
-            accumulator[sectorItem] += textAnalysis.filter(condition)?.length;
-          });
+  const result = laws?.length > 0  ? countItemsBySector(laws) : {};
 
-          return accumulator;
-        }, {});
+  const statisticsLawsBySectorOfActivity = {
+    air: laws?.filter((x:any) => x.sectors_of_activity.includes("air"))?.length ?? 0,
+    terre: laws?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length ?? 0,
+    transport: laws?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length ?? 0,
+    environnement: laws?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length ?? 0,
+    eau: laws?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length ?? 0,
+    education: laws?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length ?? 0,
+    sante: laws?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length ?? 0,
+    agriculture: laws?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length ?? 0,
+    business: laws?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length ?? 0,
+  };
 
+  const LawsBySectorOfActivityParentOfText = {
+    air: result?.air ?? 0,
+    terre: result?.land ?? 0,
+    transport: result?.transport ?? 0,
+    environnement: result?.environment ?? 0,
+    eau: result?.water ?? 0,
+    education: result?.education ?? 0,
+    sante: result?.health ?? 0,
+    agriculture: result?.agriculture ?? 0,
+    business: result?.business ?? 0,
+  };
+
+  const LawsBySectorOfActivityCompliance = {
+    air: statisticsState?.domains?.conformity?.air ?? 0,
+    terre: statisticsState?.domains?.conformity?.land ?? 0,
+    transport: statisticsState?.domains?.conformity?.transport ?? 0,
+    environnement: statisticsState?.domains?.conformity?.environment ?? 0,
+    eau: statisticsState?.domains?.conformity?.water ?? 0,
+    education: statisticsState?.domains?.conformity?.education ?? 0,
+    sante: statisticsState?.domains?.conformity?.health ?? 0,
+    agriculture: statisticsState?.domains?.conformity?.agriculture ?? 0,
+    business: statisticsState?.domains?.conformity?.business ?? 0,
+  };
+
+  const LawsBySectorOfActivityApplicable = {
+    air: statisticsState?.domains?.applicability?.air ?? 0,
+    terre: statisticsState?.domains?.applicability?.land ?? 0,
+    transport: statisticsState?.domains?.applicability?.transport ?? 0,
+    environnement: statisticsState?.domains?.applicability?.environment ?? 0,
+    eau: statisticsState?.domains?.applicability?.water ?? 0,
+    education: statisticsState?.domains?.applicability?.education ?? 0,
+    sante: statisticsState?.domains?.applicability?.health ?? 0,
+    agriculture: statisticsState?.domains?.applicability?.agriculture ?? 0,
+    business: statisticsState?.domains?.applicability?.business ?? 0,
+  };
+
+  const applicable = {
+    labels: Object.keys(statisticsLawsBySectorOfActivity),
+    datasets: [
+      {
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.YES'),
+        data: Object.values(LawsBySectorOfActivityApplicable),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.NO'),
+        data: Object.values(countItems(laws, (x:any) => x?.applicability === 'no')),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.INFORMATION'),
+        data: Object.values(countItems(laws, (x:any) => x?.applicability === 'information')),
       }
+    ]
+  };
 
-      const result = laws?.length > 0  ? countItemsBySector(laws) : {};
-
-      const statisticsLawsBySectorOfActivity = {
-        air: laws?.filter((x:any) => x.sectors_of_activity.includes("air"))?.length ?? 0,
-        terre: laws?.filter((x:any) => x.sectors_of_activity.includes("land"))?.length ?? 0,
-        transport: laws?.filter((x:any) => x.sectors_of_activity.includes("transport"))?.length ?? 0,
-        environnement: laws?.filter((x:any) => x.sectors_of_activity.includes("environment"))?.length ?? 0,
-        eau: laws?.filter((x:any) => x.sectors_of_activity.includes("water"))?.length ?? 0,
-        education: laws?.filter((x:any) => x.sectors_of_activity.includes("education"))?.length ?? 0,
-        sante: laws?.filter((x:any) => x.sectors_of_activity.includes("health"))?.length ?? 0,
-        agriculture: laws?.filter((x:any) => x.sectors_of_activity.includes("agriculture"))?.length ?? 0,
-        business: laws?.filter((x:any) => x.sectors_of_activity.includes("business"))?.length ?? 0,
+  const natureOfImpact = {
+    labels: Object.keys(statisticsLawsBySectorOfActivity),
+    datasets: [
+      {
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.FINANCIAL'),
+        data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'financial')),
+      },{
+        type: 'bar',
+        label: 'Organisation',
+        data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'organisation')),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.PRODUCTS'),
+        data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'products')),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.IMAGE'),
+        data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'image')),
       }
+    ]
+  };
 
-      const LawsBySectorOfActivityParentOfText = {
-        air: result?.air ?? 0,
-        terre: result?.land ?? 0,
-        transport: result?.transport ?? 0,
-        environnement: result?.environment ?? 0,
-        eau: result?.water ?? 0,
-        education: result?.education ?? 0,
-        sante: result?.health ?? 0,
-        agriculture: result?.agriculture ?? 0,
-        business: result?.business ?? 0,
+  const impact = {
+    labels: Object.keys(statisticsLawsBySectorOfActivity),
+    datasets: [
+      {
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.WEAK'),
+        data: Object.values(countItems(laws, (x:any) => x?.impact === 'weak')),
+        backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(247,179,34,0.4)'),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.MEDIUM'),
+        data: Object.values(countItems(laws, (x:any) => x?.impact === 'medium')),
+        backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(254,140,28,0.62)'),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.MAJOR'),
+        data: Object.values(countItems(laws, (x:any) => x?.impact === 'major')),
+        backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(232,97,3,0.91)'),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'OPTIONS.CRITICAL'),
+        data: Object.values(countItems(laws, (x:any) => x?.impact === 'critical')),
+        backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgb(255,7,7)'),
       }
+    ],
+  };
 
-      const LawsBySectorOfActivityCompliance = {
-        air: kpiData?.domains?.complaint?.air ?? 0,
-        terre: kpiData?.domains?.complaint?.land ?? 0,
-        transport: kpiData?.domains?.complaint?.transport ?? 0,
-        environnement: kpiData?.domains?.complaint?.environment ?? 0,
-        eau: kpiData?.domains?.complaint?.water ?? 0,
-        education: kpiData?.domains?.complaint?.education ?? 0,
-        sante: kpiData?.domains?.complaint?.health ?? 0,
-        agriculture: kpiData?.domains?.complaint?.agriculture ?? 0,
-        business: kpiData?.domains?.complaint?.business ?? 0,
+  const generalLawData = {
+    labels: Object.keys(statisticsLawsBySectorOfActivity),
+    datasets: [
+      {
+        type: 'bar',
+        label: translationService(currentLanguage,'SELECT.BY_SECTOR_OF_ACTIVITIES'),
+        data: Object.values(statisticsLawsBySectorOfActivity),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'SELECT.TEXT_BY_SECTOR_OF_ACTIVITY'),
+        data: Object.values(LawsBySectorOfActivityParentOfText),
+      },{
+        type: 'bar',
+        label: translationService(currentLanguage,'SELECT.CONFORMED_TEXT_BY_SECTOR_OF_ACTIVITY'),
+        data: Object.values(LawsBySectorOfActivityCompliance),
       }
+    ]
+  };
 
-      const LawsBySectorOfActivityApplicable = {
-        air: kpiData?.domains?.applicability?.air ?? 0,
-        terre: kpiData?.domains?.applicability?.land ?? 0,
-        transport: kpiData?.domains?.applicability?.transport ?? 0,
-        environnement: kpiData?.domains?.applicability?.environment ?? 0,
-        eau: kpiData?.domains?.applicability?.water ?? 0,
-        education: kpiData?.domains?.applicability?.education ?? 0,
-        sante: kpiData?.domains?.applicability?.health ?? 0,
-        agriculture: kpiData?.domains?.applicability?.agriculture ?? 0,
-        business: kpiData?.domains?.applicability?.business ?? 0,
-      }
-
-      const applicable = {
-        labels: Object.keys(statisticsLawsBySectorOfActivity),
-        datasets: [
-          {
-            type: 'bar',
-            label: "Oui",
-            data: Object.values(LawsBySectorOfActivityApplicable),
-          },{
-            type: 'bar',
-            label: "Non",
-            data: Object.values(countItems(laws, (x:any) => x?.applicability === 'no')),
-          },{
-            type: 'bar',
-            label: "Information",
-            data: Object.values(countItems(laws, (x:any) => x?.applicability === 'information')),
-          }
-        ]
-      };
-
-      const natureOfImpact = {
-        labels: Object.keys(statisticsLawsBySectorOfActivity),
-        datasets: [
-          {
-            type: 'bar',
-            label: "Financier",
-            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'financial')),
-          },{
-            type: 'bar',
-            label: "Organisation",
-            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'organisation')),
-          },{
-            type: 'bar',
-            label: "Produit",
-            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'products')),
-          },{
-            type: 'bar',
-            label: "Image",
-            data: Object.values(countItems(laws, (x:any) => x?.nature_of_impact === 'image')),
-          }
-        ]
-      };
-
-      const impact = {
-        labels: Object.keys(statisticsLawsBySectorOfActivity),
-        datasets: [
-          {
-            type: 'bar',
-            label: "Faible",
-            data: Object.values(countItems(laws, (x:any) => x?.impact === 'weak')),
-            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(247,179,34,0.4)'),
-          },{
-            type: 'bar',
-            label: "Moyen",
-            data: Object.values(countItems(laws, (x:any) => x?.impact === 'medium')),
-            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(254,140,28,0.62)'),
-          },{
-            type: 'bar',
-            label: "Majeur",
-            data: Object.values(countItems(laws, (x:any) => x?.impact === 'major')),
-            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgba(232,97,3,0.91)'),
-          },{
-            type: 'bar',
-            label: "Critique",
-            data: Object.values(countItems(laws, (x:any) => x?.impact === 'critical')),
-            backgroundColor: Object.keys(statisticsLawsBySectorOfActivity).map(() =>'rgb(255,7,7)'),
-          }
+  const analysisData = {
+    labels: [
+      translationService(currentLanguage,'PERCENTAGE_ANALYSED'),
+      translationService(currentLanguage,'PERCENTAGE_NOT_ANALYSED'),
+    ],
+    datasets: [
+      {
+        data: [
+          statisticsState?.percentageAnalysed ?? 0,
+          statisticsState?.percentageNotAnalysed ?? 0
         ],
-      };
-
-      const generalLawData = {
-        labels: Object.keys(statisticsLawsBySectorOfActivity),
-        datasets: [
-          {
-            type: 'bar',
-            label: "Secteur d'activiter",
-            data: Object.values(statisticsLawsBySectorOfActivity),
-          },{
-            type: 'bar',
-            label: "Nombre de texte par sectuer d'activiter",
-            data: Object.values(LawsBySectorOfActivityParentOfText),
-          },{
-            type: 'bar',
-            label: "Texte conforme par sectuer d'activiter",
-            data: Object.values(LawsBySectorOfActivityCompliance),
-          }
-        ]
       }
-      const analysisData = {
-        labels: ["Poucentage analysé", 'Poucentage non-analysé'],
-        datasets: [
-          {
-            data: [kpiData?.percentageAnalysed ?? 0, kpiData?.percentageNotAnalysed ?? 0],
-          }
-        ]
+    ]
+  };
+
+  const generalConformityAnalysis = {
+    labels: [
+      translationService(currentLanguage,'PERCENTAGE_CONFORM'),
+      translationService(currentLanguage,'PERCENTAGE_NOT-CONFORM')
+    ],
+    datasets: [
+      {
+        data: [
+          statisticsState?.percentageConform ?? 0,
+          statisticsState?.percentageNotConform ?? 0
+        ],
       }
+    ]
+  };
 
-      const generalConformityAnalysis = {
-        labels: ["Poucentage comforme", 'Poucentage non-conforme'],
-        datasets: [
-          {
-            data: [kpiData?.percentageConform ?? 0, kpiData?.percentageNotConform ?? 0],
+  React.useEffect(() => {
+
+    const options = {
+      plugins: {
+        legend: {
+          labels: {
+            usePointStyle: true
           }
-        ]
-      }
+        }
+      },
+    };
 
-      const options = {
-        plugins: {
-          legend: {
-            labels: {
-              usePointStyle: true
-            }
-          }
-        },
-      };
+    setChartData({
+      general: generalLawData,
+      generalConformityAnalysis,
+      analysisData,
+      impact,
+      natureOfImpact,
+      applicable
+    });
 
-      setChartData({ general: generalLawData, generalConformityAnalysis, analysisData, impact, natureOfImpact, applicable });
-      setChartOptions(options);
-
-  })();
-
-    currentLanguageValue.subscribe(setCurrentLanguage);
-  }, [currentLanguage]);
+    setChartOptions(options);
+  }, []);
 
     return (
       <div>
         <section className="py-3">
           <div className="container px-4 mx-auto">
           <div className='mb-10'>
-            <h2 className='text-3xl py-2 font-medium'>Welcome back, Admin</h2>
-            <p className='text-gray-400 font-normal'>An overview of the system's information</p>
+            <h2 className='text-3xl py-2 font-medium'>{translationService(currentLanguage,'HOME.WELCOME')} {user?.username ?? 'N/A'}</h2>
+            <p className='text-gray-400 font-normal'>{translationService(currentLanguage,'HOME.WELCOME.SUBTITLE')}</p>
           </div>
             <div className="mb-6">
               <div className="flex flex-wrap border rounded-md py-8">
@@ -283,7 +294,7 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{laws?.length ?? 0}</h4>
-                          <span className="text-gray-700 text-center font-normal">Taux de lois</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'NUMBER_OF_TEXT')}</span>
                         </div>
                       </div>
                     </div>
@@ -295,7 +306,7 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{controlPlans?.length ?? 0}</h4>
-                          <span className="text-gray-700 text-center font-normal">Taux des control</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'NUMBER_OF_CONTROL')}</span>
                         </div>
                       </div>
                     </div>
@@ -307,7 +318,7 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{actionPlans?.length ?? 0}</h4>
-                          <span className="text-gray-700 text-center font-normal">Taux des plan d'action</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'NUMBER_OF_ACTION_PLAN')}</span>
                         </div>
                       </div>
                     </div>
@@ -319,7 +330,7 @@ function Dashboard() {
                       <div className='flex items-center justify-center'>
                         <div>
                           <h4 className="text-2xl text-center leading-8 text-gray-700 font-bold">{companies?.length ?? 0}</h4>
-                          <span className="text-gray-700 text-center font-normal">Taux d'entreprise enregistré</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'NUMBER_OF_COMPANY')}</span>
                         </div>
 
                       </div>
@@ -334,11 +345,13 @@ function Dashboard() {
                 <h1
                   className="font-medium text-xl pl-3 mb-4"
                 >
-                  Loi par secteur d'activite
+                  {translationService(currentLanguage,'STATISTICS.HOME.TITLE1')}
                 </h1>
-                <Dropdown value={filterState} size={2} onChange={(e) =>  setFilterState(e.value)
-                } options={filters} optionLabel="name"
-                          placeholder="Filtre par options" className="w-56" />
+                <Dropdown value={filterState} size={2}
+                          onChange={(e) =>  setFilterState(e.value)}
+                          options={filters} optionLabel="name"
+                          placeholder="Filtre par options"
+                          className="w-56 p-inputtext-sm" />
               </div>
               <Chart type="bar" data={chartData?.[filterState?.code]} options={{
               }} className="w-full" />
@@ -349,7 +362,7 @@ function Dashboard() {
                 <h1
                   className="font-medium text-xl pl-3 mb-4"
                 >
-                  Statitique generale de Comformité
+                  {translationService(currentLanguage,'STATISTICS.HOME.TITLE2')}
                 </h1>
                 <br/>
                 <Chart type="pie" data={chartData?.generalConformityAnalysis} options={chartOptions} className="w-72" />
@@ -358,7 +371,7 @@ function Dashboard() {
                 <h1
                   className="font-medium text-xl pl-3 mb-4"
                 >
-                  Statitique generale de analyse
+                  {translationService(currentLanguage,'STATISTICS.HOME.TITLE3')}
                 </h1>
                 <br/>
                 <Chart type="pie" data={chartData?.analysisData} options={chartOptions} className="w-72" />
@@ -371,7 +384,7 @@ function Dashboard() {
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.complianceRate}</h4>
-                          <span className="text-gray-700 text-center font-normal">Taux de conformité</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'CONFORMITY_RATE')}</span>
                         </div>
                       </div>
                     </div>
@@ -381,7 +394,7 @@ function Dashboard() {
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalConform}</h4>
-                          <span className="text-gray-700 text-center font-normal">Total des lois conformes</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'TOTAL_NUMBER_OF_TEXT_CONFORM')}</span>
                         </div>
                       </div>
                     </div>
@@ -391,7 +404,7 @@ function Dashboard() {
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalAnalysed}</h4>
-                          <span className="text-gray-700 text-center font-normal">Total des loi analyser</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'TOTAL_NUMBER_OF_ANALYSED_TEXT')}</span>
                         </div>
                       </div>
                     </div>
@@ -405,7 +418,7 @@ function Dashboard() {
                 <h1
                   className="font-medium text-2xl"
                 >
-                  Quelques Lois
+                  {translationService(currentLanguage,'STATISTICS.HOME.TITLE4')}
                 </h1>
                 <Datatable
                   data={laws?.slice(0, 5)}
@@ -440,5 +453,3 @@ function Dashboard() {
       </div>
     )
 }
-
-export default Dashboard

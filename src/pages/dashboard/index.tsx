@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import "./dashboard.scss";
 import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "../navigation/Navbar";
-import { LocalStore } from "../../utils/storage.utils";
 import SidebarComponent from "../navigation/Sidebar";
 import ModalComponent from '../../core/shared/modal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +12,7 @@ import { CompanyActionTypes } from '../../store/action-types/company.actions';
 import { ControlActionTypes } from '../../store/action-types/control.actions';
 import { initialState } from '../../store/state';
 import ProgressLoader from '../../core/shared/loader/Progress';
+import { StatisticsActions } from '../../store/action-types/statistics.actions';
 
 function DashboardHome() {
   const navigate = useNavigate();
@@ -51,19 +51,13 @@ function DashboardHome() {
         method: 'GET'
       }, ControlActionTypes.FETCH_CONTROLS) as any
     );
-
-  }, [dispatch])
-
-
-  function HandleLoader() {
-    if(loader && loader.type === "PROGRESS" && loader.isOpened) {
-      return <ProgressLoader />
-    }else {
-      return <div className="w-full md:w-10/12 flex flex-col flex-grow w-full overflow-hidden  md:ml-[17%] mt-28 md:mt-12 p-2 md:p-8">
-        <Outlet />
-      </div>
-    }
-  }
+    dispatch(
+      httpHandlerService({
+        endpoint: `law/summary/${user?.role}`,
+        method: 'GET'
+      }, StatisticsActions.FETCH_STATISTICS) as any
+    );
+  }, [dispatch]);
 
   function HandleModal() {
     if(modal) {
@@ -85,7 +79,9 @@ function DashboardHome() {
       <section className="flex flex-col md:flex-row min-h-screen">
           <Navbar />
           <SidebarComponent />
-          <HandleLoader />
+        <div className="w-full md:w-10/12 flex flex-col flex-grow w-full overflow-hidden  md:ml-[17%] mt-28 md:mt-12 p-2 md:p-8">
+          { loader && loader.type === "PROGRESS" && loader.isOpened ? <ProgressLoader /> : <Outlet />}
+        </div>
         {/*<section className="">*/}
         {/*</section>*/}
       </section>

@@ -117,7 +117,7 @@ function Login() {
           </h1>
           <br />
 
-          <p className="text-gray-200 hidden md:block">
+          <p className="text-gray-200 text-lg hidden md:block">
             {translationService(currentLanguage,'REGISTRATION.SIDE_MESSAGE.SUBTITLE')}
           </p>
         </div>
@@ -157,6 +157,10 @@ function Login() {
               <Password
                 placeholder={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.PASSWORD')}
                 name="password"
+                mediumLabel={translationService(currentLanguage,'OPTIONS.MEDIUM')}
+                weakLabel={translationService(currentLanguage,'OPTIONS.WEAK')}
+                strongLabel={translationService(currentLanguage,'OPTIONS.STRONG')}
+                promptLabel={translationService(currentLanguage,'REGISTRATION.FORM.PLACEHOLDER.PASSWORD')}
                 id="password"
                 value={formValues.password.value}
                 className="password"

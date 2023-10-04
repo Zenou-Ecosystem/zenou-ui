@@ -28,14 +28,26 @@
     width: 45px !important;
     height: 30px !important;
     //margin-left: 1.5rem;
-    border: 1px solid #eeeeee !important;
+    //border: 1px solid #eeeeee !important;
     padding: 0.35rem !important;
+    &:hover {
+        color: #F1A208 !important;
+        background: transparent !important;
+    }
+    &:focus ,  &:hover  {
+        border: none !important;
+        box-shadow: none !important;
+    }
 }
 .p-datatable {
     .p-sortable-column{
         &:focus{
             box-shadow: none !important;
-            border: 1px dashed #fff !important;
+            //border: 1px dashed #fff !important;
+            background: transparent !important;
+        }
+        &:hover {
+            background: transparent !important;
         }
         .p-sortable-column-icon{
             color: #fff !important;
@@ -88,6 +100,13 @@
                     }
                 }
             }
+        }
+    }
+}
+.p-column-filter-row-items{
+    li{
+        &:last-child {
+            display: none !important;
         }
     }
 }

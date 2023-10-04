@@ -11,6 +11,8 @@ import { Menu } from 'primereact/menu';
 import { ModalActionsTypes } from '../../store/action-types/modal.actions';
 import { useDispatch } from 'react-redux';
 import httpHandlerService from '../../services/httpHandler.service';
+import { MultiSelect } from 'primereact/multiselect';
+import { Dropdown } from 'primereact/dropdown';
 
 function Datatable(props: {
   data: any[];
@@ -37,7 +39,7 @@ function Datatable(props: {
   const [currentData, setCurrentData] = React.useState<any>(null);
   const [filters, setFilters] = useState<DataTableFilterMeta>(props?.filterKeys ?? {});
 
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   let items = [
     { label: 'View', icon: "pi pi-fw pi-eye", command:() => {
@@ -48,9 +50,9 @@ function Datatable(props: {
       }  },
     { label: 'Edit', icon: "pi pi-fw pi-file-edit",  command:() => {
         const context = actions[0].split('_',);
-      const actionItem = actions.find((value) =>
-          value.startsWith("EDIT")
-        );
+      // const actionItem = actions.find((value) =>
+      //     value.startsWith("EDIT")
+      //   );
         LocalStore.set("EDIT_DATA", currentData)
 
         if(!props?.actions){
@@ -60,8 +62,6 @@ function Datatable(props: {
         if(props.actions.edit){
           props.actions.edit();
         }
-
-        // console.log(actionItem, currentData);
       }  },
     { separator: true },
     { label: 'Delete', icon: "pi pi-fw pi-trash",  command:() => {
@@ -90,6 +90,40 @@ function Datatable(props: {
       }, action) as any
     );
   };
+
+  const lawOptions = [
+    { label: translationService(currentLanguage,'OPTIONS.LAW'), value: "law" },
+    { label: translationService(currentLanguage,'OPTIONS.CONVENTION'), value: "convention" },
+    { label: translationService(currentLanguage,'OPTIONS.DECREE'), value: "decree" },
+    { label: translationService(currentLanguage,'OPTIONS.ORDER'), value: "order" },
+    { label: translationService(currentLanguage,'OPTIONS.DECISION'), value: "decision" }
+  ];
+  const isAnalysedOptions = [
+    { label: translationService(currentLanguage,'OPTIONS.TRUE'), value: "true" },
+    { label: translationService(currentLanguage,'OPTIONS.FALSE'), value: "false" }
+  ];
+
+  const lawFilterTemplate = (options: any) => {
+    return ( <Dropdown
+        value={options.value}
+        options={lawOptions}
+        onChange={(e) => options.filterApplyCallback(e.value)}
+        placeholder={translationService(currentLanguage, 'LAW.ADD.FORM.PLACEHOLDER.TYPE_OF_TEXT')}
+        className="p-column-filter p-inputtext-sm"
+        style={{ width: '10rem', maxWidth:"100%" }}
+      /> );
+  }
+
+  const isAnalysedFilterTemplate = (options: any) => {
+    return ( <Dropdown
+        value={options.value}
+        options={isAnalysedOptions}
+        onChange={(e) => options.filterApplyCallback(e.value)}
+        placeholder={translationService(currentLanguage, 'LAW.ADD.FORM.IS_ANALYSED')}
+        className="p-column-filter p-inputtext-sm"
+        style={{ width: '10rem', maxWidth:"100%" }}
+      /> );
+  }
 
   const requestDeleteConfirmation = (action: string, payload: any) => {
     // remove the action in localStore to avoid remembering state in rowClickedHandler
@@ -146,6 +180,36 @@ function Datatable(props: {
     return <div> {translationService(currentLanguage, `${translationKey}.${rowData[key]?.toString()?.toUpperCase()}`)}</div>
   }
 
+  const filterMatchModeOptions = [
+    {
+      value: 'equals',
+      label: translationService(currentLanguage,'FILTER.EQUALS')
+    },
+    {
+      value: 'notEquals',
+      label: translationService(currentLanguage,'FILTER.NOT_EQUALS')
+    },
+
+    {
+      value: 'startsWith',
+      label: translationService(currentLanguage,'FILTER.START_WITH')
+    },
+
+    {
+      value: 'endsWith',
+      label: translationService(currentLanguage,'FILTER.ENDS_WITH')
+    },
+    {
+      value: 'contains',
+      label: translationService(currentLanguage,'FILTER.CONTAINS')
+    },
+    {
+      value: 'notContains',
+      label: translationService(currentLanguage,'FILTER.NOT_CONTAINS')
+    }
+  ]
+
+
   return (
     <div className="">
       <Toast ref={toast as any} />
@@ -200,6 +264,10 @@ function Datatable(props: {
                     sortable
                     filter={!!props?.filterKeys}
                     filterPlaceholder={`Filtré par ${key}`}
+                    filterClear={key === "type_of_text" ? <> </> : <i className='pi pi-filter'></i> }
+                    showFilterMenu={!["type_of_text", "is_analysed"].includes(key)}
+                    filterElement={key === "type_of_text" ? lawFilterTemplate : key=== "is_analysed" ? isAnalysedFilterTemplate : ""}
+                    filterMatchModeOptions={filterMatchModeOptions}
                     body={
                     ['department', 'sector_of_activity'].includes(key) ? simpleArrayBodyTemplate('department' || 'sector_of_activity')
                       : key === 'is_analysed' ? simpleTranslation('is_analysed', 'OPTIONS') :

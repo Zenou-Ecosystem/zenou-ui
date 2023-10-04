@@ -110,6 +110,7 @@
   "OPTIONS.DECISION": "Decision",
   "LABEL.PROOF": "Proof",
   "TEXT.IMAGE_TEXT": "Scan document and upload here",
+
   "OPTIONS.SECTORS_OF_ACTIVITIES.AIR": "Air",
   "OPTIONS.SECTORS_OF_ACTIVITIES.LAND": "Land",
   "OPTIONS.SECTORS_OF_ACTIVITIES.WATER": "Water",
@@ -125,6 +126,7 @@
   "OPTIONS.NO": "Non",
   "OPTIONS.INFORMATION": "Information",
   "OPTIONS.WEAK": "Weak",
+  "OPTIONS.STRONG": "Strong",
   "OPTIONS.MEDIUM": "Medium",
   "OPTIONS.MAJOR": "Major",
   "OPTIONS.CRITICAL": "Critical",
@@ -282,6 +284,42 @@
   "OPTIONS.FINANCIAL": "Financial",
   "OPTIONS.ORGANISATION": "Organisation",
   "OPTIONS.PRODUCTS":"Product",
-  "OPTIONS.IMAGE": "Image"
+  "OPTIONS.IMAGE": "Image",
+
+  "HOME.WELCOME": "Welcome back,",
+  "HOME.WELCOME.SUBTITLE": "An overview of the system's information",
+  "NUMBER_OF_TEXT": "Number of text",
+  "NUMBER_OF_CONTROL": "Number of controls",
+  "NUMBER_OF_ACTION_PLAN": "Number of action plan",
+  "NUMBER_OF_COMPANY": "Number of registered companies",
+
+  "FILTER.GENERAL": "General",
+  "FILTER.BY_IMPACT": "By impact",
+  "FILTER.BY_NATURE_OF_IMPACT": "By nature of impact",
+  "FILTER.BY_APPLICABILITY": "By applicability",
+  "SELECT.BY_SECTOR_OF_ACTIVITIES": "Sector of activity",
+  "SELECT.TEXT_BY_SECTOR_OF_ACTIVITY": "Text by sector of activity",
+  "SELECT.CONFORMED_TEXT_BY_SECTOR_OF_ACTIVITY": "Conformed text by sector of activity",
+
+  "PERCENTAGE_CONFORM": "Percentage conformed",
+  "PERCENTAGE_NOT-CONFORM": "Percentage not conformed",
+  "PERCENTAGE_ANALYSED": "Percentage analysed",
+  "PERCENTAGE_NOT_ANALYSED": "Percentage not analysed",
+  "CONFORMITY_RATE": "Conformity rate",
+  "TOTAL_NUMBER_OF_TEXT_CONFORM": "Total number of conformed text",
+  "TOTAL_NUMBER_OF_ANALYSED_TEXT": "Total number of analysed text",
+
+  "STATISTICS.HOME.TITLE1": "Simple text statistics",
+  "STATISTICS.HOME.TITLE2": "General conformity statistics",
+  "STATISTICS.HOME.TITLE3": "General analysis statistics",
+  "STATISTICS.HOME.TITLE4": "List of some laws",
+
+  "FILTER.EQUALS": "Equals",
+  "FILTER.NOT_EQUALS": "Not equal",
+  "FILTER.CONTAINS": "contains",
+  "FILTER.START_WITH": "Start with",
+  "FILTER.ENDS_WITH": "Ends with",
+  "FILTER.NOT_CONTAINS": "Not contains",
+  "FILTER.NO_FILTER": "Aucun filtre"
 
 }

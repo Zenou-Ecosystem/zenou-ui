@@ -1,16 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import './controls.scss'
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
 import { Dialog } from 'primereact/dialog';
 import AddControl from "./AddControl";
-import { HiPlus } from "react-icons/hi";
 import { ControlContext } from "../../../contexts/ControlContext";
 import { ControlActionTypes } from "../../../store/action-types/control.actions";
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
-import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import EditControl from './EditControl';
 import { useSelector } from 'react-redux';
@@ -19,26 +17,24 @@ import { initialState } from '../../../store/state';
 function Controls() {
     const controls = useSelector((state: typeof initialState) => state.controls);
 
-    const [visible, setVisible] = useState(false);
-    const [editVisible, setEditVisible] = useState(false);
+    const [visible, setVisible] = React.useState(false);
+    const [editVisible, setEditVisible] = React.useState(false);
 
-    const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+    const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
 
-    React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+    React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
     const openAddControlForm = () => {
         setVisible(true);
     }
 
-    const toast = useRef<Toast>(null);
-    const onUpload = () => {
-        toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
-        // fetchControls().then(setControls);
-    };
+    // const onUpload = () => {
+    //     toast?.current?.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+    //     // fetchControls().then(setControls);
+    // };
 
     return (
       <div className="w-full md:px-4">
-        <Toast ref={toast}></Toast>
         <BasicCard title={""}
                    headerStyles="font-medium text-3xl py-4"
                    content={() => (

@@ -1,16 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
 import { Dialog } from 'primereact/dialog';
-import { HiPlus } from "react-icons/hi";
 import { ActionsContext } from "../../../contexts/ActionsContext";
 import AddAction from "./AddActions";
 import { ActionsActionTypes } from '../../../store/action-types/action.actions';
 import { can } from "../../../utils/access-control.utils";
 import { AppUserActions } from "../../../constants/user.constants";
 import { useSelector } from 'react-redux';
-import { Toast } from 'primereact/toast';
 import { currentLanguageValue, translationService } from '../../../services/translation.service';
 import EditAction from './EditAction';
 import { initialState } from '../../../store/state';
@@ -19,22 +17,19 @@ function Actions() {
 
   const actions = useSelector((state: typeof initialState) => state.actions);
 
-    const [visible, setVisible] = useState(false);
-    const [showEdit, setShowEdit]= useState(false);
+    const [visible, setVisible] = React.useState(false);
+    const [showEdit, setShowEdit]= React.useState(false);
 
-    const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+    const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
 
-    React.useMemo(() => currentLanguageValue.subscribe(setCurrentLanguage), [currentLanguage]);
+    React.useMemo(() => currentLanguageValue.subscribe(setCurrentLanguage), []);
 
     const openAddActionForm = () => {
         setVisible(true);
     }
 
-    const toast = useRef<Toast>(null);
-
     return (
       <div className="w-full md:px-4">
-        <Toast ref={toast}></Toast>
         <BasicCard title={''}
                    headerStyles="font-medium text-3xl py-4"
                    content={() => (

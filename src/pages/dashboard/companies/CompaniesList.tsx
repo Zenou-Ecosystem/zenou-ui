@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from "../../../core/Button/Button";
 import BasicCard from "../../../core/card/BasicCard";
 import Datatable from "../../../core/table/Datatable";
 import { Dialog } from "primereact/dialog";
 import AddCompany from "./AddCompany";
-import { HiPlus } from "react-icons/hi";
 import { CompanyContext } from "../../../contexts/CompanyContext";
 import { CompanyActionTypes } from "../../../store/action-types/company.actions";
 import { can } from "../../../utils/access-control.utils";
@@ -17,17 +16,16 @@ import { initialState } from '../../../store/state';
 function CompaniesList() {
   const companies = useSelector((state: typeof initialState) => state.companies);
 
-  const [visible, setVisible] = useState(false);
-  const [editVisible, setEditVisible] = useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const [editVisible, setEditVisible] = React.useState(false);
 
-  const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
+  const [currentLanguage, setCurrentLanguage] = React.useState<string>('fr');
 
   React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   const openAddCompanyForm = () => {
     setVisible(true);
   };
-
 
   return (
     <div className="w-full md:px-4">

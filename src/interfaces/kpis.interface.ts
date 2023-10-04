@@ -1,11 +1,27 @@
-export interface LawKPIs {
-    total: number;
-    totalAnalysed: number;
-    percentageAnalysed: number;
-    percentageNotAnalysed: number;
-    totalConform: number;
-    percentageConform: number;
-    percentageNotConform: number;
+type IDomains = "air" | "land" | "water" | "environment" | "business" | "education" | "transport" | "health" | "agriculture";
+
+export interface IStatistics {
+    total: number | null;
+    totalAnalysed: number | null;
+    percentageAnalysed: number | null;
+    percentageNotAnalysed: number | null;
+    totalConform: number | null;
+    percentageConform: number | null;
+    percentageNotConform: number | null;
+    complianceRate: number | null;
+    costOfCompliance: CostOfCompliance;
+    domains: Domains;
+}
+
+interface Domains {
+    applicability: Record<IDomains, number | null>;
+    conformity: Record<IDomains, number | null>;
+    analysis: Record<IDomains, number | null>;
+}
+
+interface CostOfCompliance {
+    expected: number | null;
+    actual: number | null;
 }
 
 export interface OptionsFilter {

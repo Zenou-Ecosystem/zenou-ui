@@ -1,12 +1,5 @@
 import { IApiInterface } from './api.interface';
 
-type ILawOptionTitles = "decree" | "order" | "decision";
-type ILawTitles = ['convention', 'law', 'decree', 'order', 'decisions', 'notes', 'guidance', 'direction'];
-type ILawLocations = ['international', 'continental', 'national'];
-type ILawCompliance = ['complaint', 'non-compliant', 'in progress'];
-type ILawDomains = ["air", "land", "water", "environment", "business", "education", "transport", "health", "agriculture"];
-type ILawDecisions = ['informative', 'administrative', 'financial'];
-
 export interface ILaws extends IApiInterface  {
     number: string;
 
