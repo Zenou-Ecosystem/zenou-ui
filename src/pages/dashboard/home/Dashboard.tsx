@@ -393,7 +393,7 @@ export default function Dashboard() {
                     <div className="max-w-sm h-full">
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
-                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalConform}</h4>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalConform ?? 0}</h4>
                           <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'TOTAL_NUMBER_OF_TEXT_CONFORM')}</span>
                         </div>
                       </div>
@@ -403,7 +403,7 @@ export default function Dashboard() {
                     <div className="max-w-sm h-full">
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
-                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalAnalysed}</h4>
+                          <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{statisticsState?.totalAnalysed ?? 0}</h4>
                           <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'TOTAL_NUMBER_OF_ANALYSED_TEXT')}</span>
                         </div>
                       </div>

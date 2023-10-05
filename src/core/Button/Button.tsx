@@ -18,7 +18,7 @@ function Button(prop: {
   return (
     <button
       id={id ?? ""}
-      className={`btn-comp border-none fixed bottom-5 right-3 md:bottom-0 md:right-0 md:relative flex gap-2 items-center rounded-md text-white font-medium ${
+      className={`btn-comp z-10 border-none fixed bottom-5 right-3 md:bottom-0 md:right-0 md:relative flex gap-2 items-center rounded-md text-white font-medium ${
         styles ? styles : ""
       }`}
       onClick={handler}

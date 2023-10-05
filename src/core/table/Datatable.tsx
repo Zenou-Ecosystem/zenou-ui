@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import httpHandlerService from '../../services/httpHandler.service';
 import { MultiSelect } from 'primereact/multiselect';
 import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
 
 function Datatable(props: {
   data: any[];
@@ -112,6 +113,14 @@ function Datatable(props: {
         className="p-column-filter p-inputtext-sm"
         style={{ width: '10rem', maxWidth:"100%" }}
       /> );
+  }
+
+  const defaultFilterTemplate = (options: any) => {
+    return <InputText
+      className='p-inputtext-sm'
+      placeholder={translationService(currentLanguage, 'FILTER_BY')}
+      onChange={(e) => options.filterApplyCallback(e.target.value)}
+    />
   }
 
   const isAnalysedFilterTemplate = (options: any) => {
@@ -263,10 +272,9 @@ function Datatable(props: {
                     header={props.translationKey ? translationService(currentLanguage,`${props.translationKey}.${key.toUpperCase()}`): key}
                     sortable
                     filter={!!props?.filterKeys}
-                    filterPlaceholder={`Filtré par ${key}`}
                     filterClear={key === "type_of_text" ? <> </> : <i className='pi pi-filter'></i> }
                     showFilterMenu={!["type_of_text", "is_analysed"].includes(key)}
-                    filterElement={key === "type_of_text" ? lawFilterTemplate : key=== "is_analysed" ? isAnalysedFilterTemplate : ""}
+                    filterElement={key === "type_of_text" ? lawFilterTemplate : key=== "is_analysed" ? isAnalysedFilterTemplate : defaultFilterTemplate}
                     filterMatchModeOptions={filterMatchModeOptions}
                     body={
                     ['department', 'sector_of_activity'].includes(key) ? simpleArrayBodyTemplate('department' || 'sector_of_activity')

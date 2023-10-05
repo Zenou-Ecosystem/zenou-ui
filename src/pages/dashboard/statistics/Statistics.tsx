@@ -12,7 +12,7 @@ import Button from '../../../core/Button/Button';
 import { initialState } from '../../../store/state';
 import {useSelector} from "react-redux";
 
-function Statistics() {
+export default function Statistics() {
   const [state, setState] = React.useState() as any;
   const [chartData, setChartData] = React.useState({}) as any;
   const [chartOptions, setChartOptions] = React.useState({});
@@ -24,7 +24,7 @@ function Statistics() {
   const defaultDates = [new Date(Date.now()).toISOString(), new Date().toISOString()];
 
   const [currentLanguage, setCurrentLanguage] = useState<string>('fr');
-  React.useMemo(()=>currentLanguageValue.subscribe(setCurrentLanguage), []);
+  React.useMemo(() => currentLanguageValue.subscribe(setCurrentLanguage), []);
 
   React.useEffect(()=> {
     (async () => {
@@ -37,7 +37,10 @@ function Statistics() {
       setState(data);
 
    const generalLawData = {
-      labels: ["Poucentage analysé", 'Poucentage non-analysé'],
+     labels: [
+       translationService(currentLanguage,'PERCENTAGE_ANALYSED'),
+       translationService(currentLanguage,'PERCENTAGE_NOT_ANALYSED'),
+     ],
       datasets: [
         {
           data: [data?.percentageAnalysed ?? 0, data?.percentageNotAnalysed ?? 0],
@@ -46,7 +49,10 @@ function Statistics() {
     };
 
     const generalConformityAnalysis = {
-      labels: ["Poucentage comforme", 'Poucentage non-conforme'],
+      labels: [
+        translationService(currentLanguage,'PERCENTAGE_CONFORM'),
+        translationService(currentLanguage,'PERCENTAGE_NOT-CONFORM')
+      ],
       datasets: [
         {
           data: [data?.percentageConform ?? 0, data?.percentageNotConform ?? 0],
@@ -55,7 +61,10 @@ function Statistics() {
     };
 
     const filterByDatesLawDate = {
-      labels: ["Poucentage analysé", 'Poucentage non-analysé'],
+      labels: [
+        translationService(currentLanguage,'PERCENTAGE_ANALYSED'),
+        translationService(currentLanguage,'PERCENTAGE_NOT_ANALYSED'),
+      ],
       datasets: [
         {
           data: [filter?.summary?.percentageAnalysed ?? 0, filter?.summary?.percentageNotAnalysed ?? 0],
@@ -64,7 +73,10 @@ function Statistics() {
     };
 
     const filterByDatesConformityData = {
-      labels: ["Poucentage comforme", 'Poucentage non-conforme'],
+      labels: [
+        translationService(currentLanguage,'PERCENTAGE_CONFORM'),
+        translationService(currentLanguage,'PERCENTAGE_NOT-CONFORM')
+      ],
       datasets: [
         {
           data: [filter?.summary?.percentageConform ?? 0, filter?.summary?.percentageNotConform ?? 0],
@@ -86,7 +98,7 @@ function Statistics() {
     setChartOptions(options);
     })()
 
-  }, []);
+  }, [user?.role]);
 
     const submitDate = async () => {
 
@@ -100,7 +112,10 @@ function Statistics() {
       setChartData((previousState: any) => {
         return {  ...previousState,
           filterByDatesLawDate: {
-            labels: ["Poucentage analysé", 'Poucentage non-analysé'],
+            labels: [
+              translationService(currentLanguage,'PERCENTAGE_ANALYSED'),
+              translationService(currentLanguage,'PERCENTAGE_NOT_ANALYSED'),
+            ],
             datasets: [
               {
                 data: [filter?.summary?.percentageAnalysed ?? 0, filter?.summary?.percentageNotAnalysed ?? 0],
@@ -109,7 +124,10 @@ function Statistics() {
           }
         ,
         filterByDatesConformityData: {
-          labels: ["Poucentage comforme", 'Poucentage non-conforme'],
+          labels: [
+            translationService(currentLanguage,'PERCENTAGE_CONFORM'),
+            translationService(currentLanguage,'PERCENTAGE_NOT-CONFORM')
+          ],
           datasets: [
             {
               data: [filter?.summary?.percentageConform ?? 0, filter?.summary?.percentageNotConform ?? 0],
@@ -122,11 +140,10 @@ function Statistics() {
 
     // @ts-ignore
   return (
-        <div>
-            {/*<CustomActiveShapeChartComponent />*/}
+        <div className='mt-10'>
           <div className='mb-10 md:px-10'>
-            <h2 className='text-2xl py-2 font-medium'>Statistique</h2>
-            <p className='text-gray-400 font-normal'>Section des statistique du systeme</p>
+            <h2 className='text-2xl py-2 font-medium'>{translationService(currentLanguage,'STATISTICS.TITLE')}</h2>
+            <p className='text-gray-400 font-normal'>{translationService(currentLanguage,'STATISTICS.SUBTITLE')}</p>
           </div>
           <div className='w-11/12 mx-auto'>
             <div className='my-8'>
@@ -134,13 +151,13 @@ function Statistics() {
                 <h1
                   className="font-medium text-lg"
                 >
-                  Statistique lois generales
+                  {translationService(currentLanguage,'STATISTICS.BY_DATE_RANGE')}
                 </h1>
                 <div className='flex gap-4'>
                   <Calendar placeholder="Range" className='p-inputtext-sm' value={dates} onChange={(e : CalendarChangeEvent) => setDates(e?.value)} selectionMode="range" readOnlyInput />
                   {" "}
                   <Button
-                    title={translationService(currentLanguage,'BUTTON.NEW')}
+                    title={translationService(currentLanguage,'REGISTRATION.BUTTON.SUBMIT')}
                     styles="flex-row-reverse relative bottom-0 px-4 py-2.5 text-sm items-center rounded-full"
                     onClick={submitDate}
                     Icon={{
@@ -158,7 +175,7 @@ function Statistics() {
                       <div className="max-w-xs h-full">
                         <div className='flex items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.expected ?? "0"} XAF</h4>
-                          <span className="text-gray-700 text-center font-normal">Taux de montant requi d'applicabilité</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'TOTAL_EXPECTED_COMPLIANCE_AMOUNT')}</span>
                         </div>
                       </div>
                     </div>
@@ -168,7 +185,7 @@ function Statistics() {
                       <div className="max-w-xs h-full">
                         <div className='flex py-4 items-center w-full h-full justify-center flex-col'>
                           <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.costOfCompliance?.actual ?? "0"} XAF</h4>
-                          <span className="text-gray-700 text-center font-normal">Taux de montant deja verse</span>
+                          <span className="text-gray-700 text-center font-normal">{translationService(currentLanguage,'TOTAL_ACTUAL_COMPLIANCE_AMOUNT')}</span>
                         </div>
                       </div>
                     </div>
@@ -193,7 +210,7 @@ function Statistics() {
                         <div className="max-w-xs h-full">
                           <div className='flex items-center w-full h-full justify-center flex-col'>
                             <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.total ?? "0"}</h4>
-                            <span className="text-gray-700 font-normal">Taux de loi</span>
+                            <span className="text-gray-700 font-normal">{translationService(currentLanguage,'NUMBER_OF_TEXT')}</span>
                           </div>
                         </div>
                       </div>
@@ -203,7 +220,7 @@ function Statistics() {
                         <div className="max-w-xs h-full">
                           <div className='flex items-center w-full h-full justify-center flex-col'>
                             <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.totalConform ?? "0"}</h4>
-                            <span className="text-gray-700 font-normal">Taux de loi conforme</span>
+                            <span className="text-gray-700 font-normal">{translationService(currentLanguage,'TOTAL_NUMBER_OF_TEXT_CONFORM')}</span>
                           </div>
                         </div>
                       </div>
@@ -213,7 +230,7 @@ function Statistics() {
                         <div className="max-w-xs h-full">
                           <div className='flex items-center w-full h-full justify-center flex-col'>
                             <h4 className="text-2xl leading-8 text-center text-gray-700 font-bold">{lawsStatistics?.summary?.totalAnalysed ?? "0"}</h4>
-                            <span className="text-gray-700 font-normal">Taux de loi analyser</span>
+                            <span className="text-gray-700 font-normal">{translationService(currentLanguage,'TOTAL_NUMBER_OF_ANALYSED_TEXT')}</span>
                           </div>
                         </div>
                       </div>
@@ -221,22 +238,23 @@ function Statistics() {
                   </div>
                 </div>
 
-                <Datatable
-                  data={lawsStatistics?.laws ?? []}
-                  fields={[
-                    "title_of_text",
-                    "type_of_text",
-                    "actions",
-                  ]}
-                  actionTypes={LawActionTypes}
-                  context={LawContext}
-                  translationKey={'LAW.ADD.FORM'}
-                  accessControls={{
-                    EDIT: AppUserActions.EDIT_LAW,
-                    DELETE: AppUserActions.DELETE_LAW,
-                    VIEW: AppUserActions.VIEW_LAW,
-                  }}
-                />
+                {/*<Datatable*/}
+                {/*  data={lawsStatistics?.laws ?? []}*/}
+                {/*  fields={[*/}
+                {/*    "title_of_text",*/}
+                {/*    "type_of_text",*/}
+                {/*    "actions",*/}
+                {/*  ]}*/}
+                {/*  actionTypes={LawActionTypes}*/}
+                {/*  context={LawContext}*/}
+                {/*  translationKey={'LAW.ADD.FORM'}*/}
+                {/*  accessControls={{*/}
+                {/*    EDIT: AppUserActions.EDIT_LAW,*/}
+                {/*    DELETE: AppUserActions.DELETE_LAW,*/}
+                {/*    VIEW: AppUserActions.VIEW_LAW,*/}
+                {/*  }}*/}
+                {/*/>*/}
+
               </div>
             </div>
 
@@ -244,5 +262,3 @@ function Statistics() {
         </div>
     )
 }
-
-export default Statistics

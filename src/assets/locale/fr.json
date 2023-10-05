@@ -333,6 +333,9 @@
   "TOTAL_NUMBER_OF_TEXT_CONFORM" : "Nombre total de textes conformes",
   "TOTAL_NUMBER_OF_ANALYSED_TEXT" : "Nombre total de textes analysés",
 
+  "TOTAL_EXPECTED_COMPLIANCE_AMOUNT" : "Coût total attendu de la mise en conformité",
+  "TOTAL_ACTUAL_COMPLIANCE_AMOUNT" : "Montant total de conformité déjà accordé",
+
   "STATISTICS.HOME.TITLE1" : "Statistiques sur les textes simples",
   "STATISTICS.HOME.TITLE2" : "Statistiques générales de conformité",
   "STATISTICS.HOME.TITLE3" : "Statistiques d'analyse générale",
@@ -344,6 +347,11 @@
   "FILTER.START_WITH" : "Commencer par",
   "FILTER.ENDS_WITH" : "Finit par",
   "FILTER.NOT_CONTAINS" : "Ne contient pas",
-  "FILTER.NO_FILTER": ""
+  "FILTER.NO_FILTER": "Aucun filtre",
+  "FILTER_BY": "Filtre par",
+
+  "STATISTICS.TITLE" : "Statistiques du système",
+  "STATISTICS.SUBTITLE" : "Voici une représentation des statistiques du système",
+  "STATISTICS.BY_DATE_RANGE" : "Filtrer par plage de dates"
 
 }
